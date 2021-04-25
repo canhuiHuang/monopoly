@@ -4,7 +4,7 @@ import Board from './Board';
 import PubNubReact from 'pubnub-react';
 import Swal from "sweetalert2";  
 import shortid  from 'shortid';
-import './Game.css';
+import './css/board.css';
  
 class App extends Component {
   constructor(props) {  
@@ -310,9 +310,7 @@ class App extends Component {
           {
             !this.state.isPlaying &&
             <div className="game">
-              <div className="board" onClick={e=>{
-                console.log('Click! ', this.state);
-              }}>
+              <div className="wtf">
                 <input type="text" placeholder="nickname" onChange={e=> this.setName(e)}/>
                 <div className="button-container">
                   <button 
@@ -328,6 +326,7 @@ class App extends Component {
                   </button>
                 </div>                        
                 <div>{this.displayUsers()}</div>
+                <Board />
               </div>
             </div>
           }
