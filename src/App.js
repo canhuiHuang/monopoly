@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import Game from './Game';
-import Board from './Board';
+import Game from './Components/Game';
+import Board from './Components/Board';
 import PubNubReact from 'pubnub-react';
+import PiecePicker from './Components/PiecePicker';
 import Swal from "sweetalert2";  
 import shortid  from 'shortid';
-import './css/board.css';
+import './css/main.css';
  
 class App extends Component {
   constructor(props) {  
@@ -22,9 +23,10 @@ class App extends Component {
       isRoomCreator: false,
       isDisabled: false,
       myTurn: false,
-      users: {[generatedUUID]: {name: 'uwu'}},
+      users: {[generatedUUID]: {name: 'uwu', player: 'player-null'}},
       name: 'uwu',
-      uuid: generatedUUID
+      uuid: generatedUUID,
+      player: 'player-null'
     };
 
     this.lobbyChannel = null;
@@ -41,7 +43,7 @@ class App extends Component {
         if (event.action === 'join') {
           const curUsers = this.state.users;
           if (!curUsers.hasOwnProperty(event.uuid)){
-            curUsers[event.uuid] = {name: 'goku'};
+            curUsers[event.uuid] = {name: 'goku', player: 'player-null'};
             this.setState({
               users: curUsers
             })
@@ -70,7 +72,7 @@ class App extends Component {
           });
         }
       }
-      console.log(event);
+      console.log('presence listener: ',event);
     }
 
     this.pubnub.addListener({
@@ -90,10 +92,6 @@ class App extends Component {
     // Check that the player is connected to a channel
     if(this.lobbyChannel != null){
       this.pubnub.getMessage(this.lobbyChannel, (msg) => {
-        // Start the game once an opponent joins the channel
-        // if(msg.message.notRoomCreator){
-        //   // Create a different channel for the game
-        //   this.gameChannel = 'tictactoegame--' + this.roomId;
 
         // Received users info
             if (msg.message.users) {
@@ -134,15 +132,49 @@ class App extends Component {
                   channel: this.lobbyChannel
                 });
             }
-            
-        //   this.pubnub.subscribe({
-        //     channels: [this.gameChannel]
-        //   });
-              
-          // this.setState({
-          //   isPlaying: true
-          // });  
 
+            // Listen for gameStart
+            if (msg.message.gameStart){
+              this.setState({
+                isPlaying: true
+              });}
+
+            // Listen for picks
+            if (msg.message.myPick) {
+              const curUsers = this.state.users;
+
+              let idAlreadyPicked = false;
+
+              if(curUsers[msg.publisher].hasOwnProperty('piece_id')) {
+                if (curUsers[msg.publisher].piece_id === msg.message.myPick){
+                  idAlreadyPicked = true;
+                }
+              }
+              
+              for (let uuid in curUsers){
+                if(curUsers.hasOwnProperty(uuid)){
+                  if(uuid.hasOwnProperty('piece_id')){
+                    if (uuid.piece_id === msg.message.myPick) {
+                      idAlreadyPicked = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (!idAlreadyPicked) {
+                curUsers[msg.publisher].piece_id = msg.message.myPick;
+                this.setState({
+                  users: curUsers
+                });
+
+                this.pubnub.publish({
+                  message: {users: this.state.users},
+                  channel: this.lobbyChannel
+                })
+              }
+            }
+
+            
           // Close the modals if they are opened
           Swal.close();
         }
@@ -153,8 +185,9 @@ class App extends Component {
   // Create a room channel
   onPressCreate = (e) => {
     // Create a random name for the channel
-    this.roomId = shortid.generate().substring(0,5);
-    this.lobbyChannel = 'tictactoelobby--' + this.roomId;
+    this.roomId = shortid.generate().substring(0,5).toUpperCase();
+    this.lobbyChannel = 'monopolylobby--' + this.roomId;
+    console.log(this.roomId);
 
     this.pubnub.subscribe({
       channels: [this.lobbyChannel],
@@ -214,8 +247,8 @@ class App extends Component {
 
   // Join a room channel
   joinRoom = (value) => {
-    this.roomId = value;
-    this.lobbyChannel = 'tictactoelobby--' + this.roomId;
+    this.roomId = value.toUpperCase();
+    this.lobbyChannel = 'monopolylobby--' + this.roomId;
 
     // Check the number of people in the channel
     this.pubnub.hereNow({
@@ -300,11 +333,40 @@ class App extends Component {
     console.log(this.pubnub.getUUID());
   }
 
+  showStartButton = () => {
+    if (this.state.isRoomCreator && this.displayUsers().length > 1) {
+      return (<button className="start-button"
+      onClick={(e) => this.startGame()}
+      > Start </button>)
+    } else
+      return(<div></div>)
+  }
+
+  startGame = () => {
+    this.setState({
+      isPlaying: true
+    })
+
+    this.pubnub.publish({
+      message: {
+        gameStart: true
+      },
+      channel: this.lobbyChannel
+    });
+  }
+
+  onPublish = (messagePackage) => {
+    this.pubnub.publish({
+      message: messagePackage,
+      channel: this.lobbyChannel});
+    console.log('msg package sent:', messagePackage);
+  }
+
   render() {  
     return (  
         <div> 
           <div className="title">
-            <p>React Tic Tac Toe</p>
+            <p>Monopoly</p>
           </div>
 
           {
@@ -324,28 +386,19 @@ class App extends Component {
                     onClick={(e) => this.onPressJoin()}
                     > Join 
                   </button>
+                  {this.showStartButton()}
                 </div>                        
                 <div>{this.displayUsers()}</div>
-                <Board />
+                
               </div>
             </div>
           }
-
           {
-            this.state.isPlaying &&
-            <Game onClick={e=>{
-              console.log('clickeado');
-              console.log(this.state.users);
-            }}
-              pubnub={this.pubnub}
-              gameChannel={this.gameChannel} 
-              piece={this.state.piece}
-              isRoomCreator={this.state.isRoomCreator}
-              myTurn={this.state.myTurn}
-              xUsername={this.state.xUsername}
-              oUsername={this.state.oUsername}
-              endGame={this.endGame}
-            />
+            !this.state.isPlaying && 
+            <div className="game-container">
+              <PiecePicker onPublish={this.onPublish}/>
+              <Board />
+            </div>
           }
         </div>
     );  

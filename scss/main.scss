@@ -1,3 +1,5 @@
+@import "smallComponents";
+
 // =================
 // TYPOGRAPHY
 // =================
@@ -30,7 +32,7 @@ $dark-blue: #5a6dba;
 
 body {
   margin: 0;
-  background-image: url("https://i.pinimg.com/originals/a4/73/cd/a473cda6c0a58d9b2e2bc2292d16c334.jpg");
+  background-color: #26252c;
   background-position: center;
   background-repeat: repeat;
   background-size: 100px;
@@ -38,7 +40,16 @@ body {
   font-weight: 400;
   font-size: 10px;
   color: $black;
-  text-transform: uppercase;
+}
+#root > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.game-container {
+  display: flex;
+  flex-direction: column;
 }
 
 h1,
@@ -88,6 +99,7 @@ h6 {
   padding-right: 50px;
   transform: scale(0.9);
   transition: transform ease 0.3s;
+  text-transform: uppercase;
 }
 
 .board {
@@ -98,7 +110,7 @@ h6 {
   margin: 50px auto;
   width: 994px;
   height: 994px;
-  background: #fa811d;
+  background: #3f3e3d;
   border: 2px solid $black;
 }
 
@@ -116,9 +128,9 @@ h6 {
 .title {
   grid-column: 1 / 9;
   grid-row: 4;
-  font-size: 90px;
+  font-size: 1rem;
   font-weight: 400;
-  letter-spacing: 12px;
+  letter-spacing: 3px;
 }
 
 .community-chest-deck {

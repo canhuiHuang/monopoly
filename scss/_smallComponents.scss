@@ -1,0 +1,53 @@
+.piece-picker {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  background-color: rgb(212, 224, 224);
+  width: 600px;
+  height: 300px;
+  align-self: center;
+  border-radius: 25px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  border: 2px solid #333;
+
+  .s-piece-container {
+    display: flex;
+    position: relative;
+    align-self: center;
+    margin-left: 26px;
+    margin-bottom: 20px;
+    margin-top: 15px;
+    text-align: center;
+    width: 85px;
+    height: 85px;
+    z-index: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    border-radius: 20px;
+    &:hover {
+      border: 2px solid rgba(51, 51, 51,0.3);
+    }
+
+    .shadow {
+      width: 80px;
+      height: 40px;
+      border-bottom-left-radius: 50% 50%;
+      border-bottom-right-radius: 50% 50%;
+      border-top-left-radius: 50% 50%;
+      border-top-right-radius: 50% 50%;
+      background: radial-gradient(rgba(43, 42, 42, 0.85) 28%, transparent 70%);
+      position: absolute;
+      top: 45px;
+      right: 0;
+      z-index: -1;
+      align-self: center;
+    }
+    img {
+      padding: 0.7rem;
+      height: 85px;
+      width: 85px;
+    }
+  }
+}
