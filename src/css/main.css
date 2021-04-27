@@ -27,6 +27,12 @@
     border-radius: 20px; }
     .piece-picker .s-piece-container:hover {
       border: 2px solid rgba(51, 51, 51, 0.3); }
+    .piece-picker .s-piece-container.self {
+      border: 4.8px solid #6a9b75;
+      background-color: white; }
+    .piece-picker .s-piece-container.other {
+      border: 4.5px solid #e46a44;
+      background-color: #dadada; }
     .piece-picker .s-piece-container .shadow {
       width: 80px;
       height: 40px;

@@ -396,7 +396,7 @@ class App extends Component {
           {
             !this.state.isPlaying && 
             <div className="game-container">
-              <PiecePicker onPublish={this.onPublish}/>
+              <PiecePicker pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}onPublish={this.onPublish}/>
               <Board />
             </div>
           }

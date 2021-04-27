@@ -1,3 +1,7 @@
+//Picker stage
+$self-color: #6a9b75;
+$other-color: #e46a44;
+
 .piece-picker {
   display: flex;
   flex-wrap: wrap;
@@ -27,7 +31,15 @@
     padding: 2rem;
     border-radius: 20px;
     &:hover {
-      border: 2px solid rgba(51, 51, 51,0.3);
+      border: 2px solid rgba(51, 51, 51, 0.3);
+    }
+    &.self {
+      border: 4.8px solid $self-color;
+      background-color: rgb(255, 255, 255);
+    }
+    &.other {
+      border: 4.5px solid $other-color;
+      background-color: rgb(218, 218, 218);
     }
 
     .shadow {
