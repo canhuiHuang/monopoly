@@ -23,7 +23,7 @@ class App extends Component {
       isRoomCreator: false,
       isDisabled: false,
       myTurn: false,
-      users: {[generatedUUID]: {name: 'uwu', player: 'player-null'}},
+      users: {[generatedUUID]: {name: 'uwu', player: 'player-null', piece_id: ''}},
       name: 'uwu',
       uuid: generatedUUID,
       player: 'player-null'
@@ -43,7 +43,7 @@ class App extends Component {
         if (event.action === 'join') {
           const curUsers = this.state.users;
           if (!curUsers.hasOwnProperty(event.uuid)){
-            curUsers[event.uuid] = {name: 'goku', player: 'player-null'};
+            curUsers[event.uuid] = {name: 'goku', player: 'player-null', piece_id: ''};
             this.setState({
               users: curUsers
             })
@@ -138,42 +138,6 @@ class App extends Component {
               this.setState({
                 isPlaying: true
               });}
-
-            // Listen for picks
-            if (msg.message.myPick) {
-              const curUsers = this.state.users;
-
-              let idAlreadyPicked = false;
-
-              if(curUsers[msg.publisher].hasOwnProperty('piece_id')) {
-                if (curUsers[msg.publisher].piece_id === msg.message.myPick){
-                  idAlreadyPicked = true;
-                }
-              }
-              
-              for (let uuid in curUsers){
-                if(curUsers.hasOwnProperty(uuid)){
-                  if(uuid.hasOwnProperty('piece_id')){
-                    if (uuid.piece_id === msg.message.myPick) {
-                      idAlreadyPicked = true;
-                      break;
-                    }
-                  }
-                }
-              }
-              if (!idAlreadyPicked) {
-                curUsers[msg.publisher].piece_id = msg.message.myPick;
-                this.setState({
-                  users: curUsers
-                });
-
-                this.pubnub.publish({
-                  message: {users: this.state.users},
-                  channel: this.lobbyChannel
-                })
-              }
-            }
-
             
           // Close the modals if they are opened
           Swal.close();
@@ -396,7 +360,7 @@ class App extends Component {
           {
             !this.state.isPlaying && 
             <div className="game-container">
-              <PiecePicker pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}onPublish={this.onPublish}/>
+              <PiecePicker isRoomCreator={this.state.isRoomCreator}lobbyChannel={this.lobbyChannel} pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}onPublish={this.onPublish}/>
               <Board />
             </div>
           }
