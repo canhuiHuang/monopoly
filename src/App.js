@@ -123,11 +123,9 @@ class App extends Component {
                 console.log('soy host y recibi ', msg);
                 if (curUsers[msg.publisher]) {
                   curUsers[msg.publisher].name = msg.message.namePhase;
-                  console.log('aber1');
                   this.setState({
                     users: curUsers
                   });
-                  console.log('aber2');
 
                   // Send users back to all subscribers
                   this.pubnub.publish({
@@ -136,7 +134,6 @@ class App extends Component {
                     },
                     channel: this.lobbyChannel
                   });
-                  console.log('aber3');
                 }
                 
             }
@@ -168,7 +165,6 @@ class App extends Component {
     // Create a random name for the channel
     this.roomId = shortid.generate().substring(0,5).toUpperCase();
     this.lobbyChannel = 'monopolylobby--' + this.roomId;
-    console.log(this.roomId);
 
     this.pubnub.subscribe({
       channels: [this.lobbyChannel],
@@ -310,8 +306,6 @@ class App extends Component {
     this.setState({
       name: e.target.value
     })
-    
-    console.log(this.pubnub.getUUID());
   }
 
   showStartButton = () => {
@@ -327,11 +321,6 @@ class App extends Component {
 
     this.pieceSelectionChannel = 'piecePickerLobby--' + shortid.generate().toUpperCase();
 
-    this.pubnub.subscribe({
-      channels: [this.pieceSelectionChannel],
-      withPresence: true
-    });
-
     this.setState({
       isPlaying: true
     })
@@ -343,13 +332,6 @@ class App extends Component {
       },
       channel: this.lobbyChannel
     });
-  }
-
-  onPublish = (messagePackage) => {
-    this.pubnub.publish({
-      message: messagePackage,
-      channel: this.lobbyChannel});
-    console.log('msg package sent:', messagePackage);
   }
 
   render() {  

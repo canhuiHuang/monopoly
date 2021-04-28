@@ -8,32 +8,32 @@ class PiecePicker extends Component {
 
         this.state = {
             users: this.props.users,
-            myUUID: this.props.myUUID
+            myUUID: this.props.myUUID,
+            isRoomCreator: this.props.isRoomCreator
         }
-        console.log('constructor: ',this.state.users)
-    }
 
+    }
 
     pubnubHandler = () => {
         if(this.props.lobbyChannel != null){
+            console.log('entre');
             this.props.pubnub.getMessage(this.props.lobbyChannel, (msg) => {
-                console.log('aka');
                 // Listen for users
-                if (!this.props.isRoomCreator) {
+                if (!this.state.isRoomCreator) {
                     console.log('no soy host');
                 }
 
                 if (msg.message.users) {
                     console.log(
-                        'received:'
+                        'received:', this.state.isRoomCreator, 'XDXD'
                     );
                     this.setState({
                         users: msg.message.users
                     })
                 }
                 // Listen for picks
-                if (this.props.isRoomCreator) {
-                    console.log('listened something');
+                if (this.state.isRoomCreator) {
+                    console.log('roomCreator listened');
                     if (msg.message.myPick) {
                         const curUsers = this.state.users;
 
@@ -72,11 +72,12 @@ class PiecePicker extends Component {
             });
         };
     }
-
     componentDidMount(){
+        console.log('MOUNTED');
         this.pubnubHandler();
     }
     componentDidUpdate(){
+        console.log('UPDATED');
         this.pubnubHandler();
     }
 
@@ -90,8 +91,6 @@ class PiecePicker extends Component {
             channel: this.props.lobbyChannel});
         
         console.log('msg package sent:', {myPick: index});
-
-        console.log(index);
     }
 
     renderPieces = ()=> {
@@ -119,7 +118,6 @@ class PiecePicker extends Component {
         ];
          
         for (let uuid of Object.keys(this.state.users)) {
-            console.log('pre-entrado', this.state.users[uuid]);
             if (this.state.users[uuid].piece_id){
                 pieces[this.state.users[uuid].piece_id].player = 'other';
             }
@@ -130,7 +128,6 @@ class PiecePicker extends Component {
                     pieces[this.state.users[this.state.myUUID].piece_id].player = 'self';
                 } 
         }
-        console.log(this.state.users);
 
         const showPieces = [];
         pieces.forEach((piece,index) => {
