@@ -23,13 +23,14 @@ class App extends Component {
       isRoomCreator: false,
       isDisabled: false,
       myTurn: false,
-      users: {[generatedUUID]: {name: 'uwu', player: 'player-null'}},
+      users: {[generatedUUID]: {name: 'uwu', player: 'player-null', piece_id: ''}},
       name: 'uwu',
       uuid: generatedUUID,
       player: 'player-null'
     };
 
     this.lobbyChannel = null;
+    this.pieceSelectionChannel = null;
     this.gameChannel = null;
     this.roomId = null;    
     this.pubnub.init(this);
@@ -43,7 +44,7 @@ class App extends Component {
         if (event.action === 'join') {
           const curUsers = this.state.users;
           if (!curUsers.hasOwnProperty(event.uuid)){
-            curUsers[event.uuid] = {name: 'goku', player: 'player-null'};
+            curUsers[event.uuid] = {name: 'goku', player: 'player-null', piece_id: ''};
             this.setState({
               users: curUsers
             })
@@ -95,6 +96,7 @@ class App extends Component {
 
         // Received users info
             if (msg.message.users) {
+              console.log('received: ', msg.message.users);
               const users = msg.message.users;
               
               // If name hasn't set yet, send name to host.
@@ -119,61 +121,40 @@ class App extends Component {
             if (msg.message.namePhase && this.state.isRoomCreator) {
                 const curUsers = this.state.users;
                 console.log('soy host y recibi ', msg);
-                curUsers[msg.publisher].name = msg.message.namePhase;
-                this.setState({
-                  users: curUsers
-                });
+                if (curUsers[msg.publisher]) {
+                  curUsers[msg.publisher].name = msg.message.namePhase;
+                  console.log('aber1');
+                  this.setState({
+                    users: curUsers
+                  });
+                  console.log('aber2');
 
-                // Send users back to all subscribers
-                this.pubnub.publish({
-                  message: {
-                    users: this.state.users
-                  },
-                  channel: this.lobbyChannel
-                });
+                  // Send users back to all subscribers
+                  this.pubnub.publish({
+                    message: {
+                      users: this.state.users
+                    },
+                    channel: this.lobbyChannel
+                  });
+                  console.log('aber3');
+                }
+                
             }
 
             // Listen for gameStart
-            if (msg.message.gameStart){
+            if (msg.message.gameStart && msg.message.pieceSelectionChannel){
+
+              this.pieceSelectionChannel = msg.message.pieceSelectionChannel;
+
+              this.pubnub.subscribe({
+                channels: [this.pieceSelectionChannel],
+                withPresence: true
+              });
+
               this.setState({
                 isPlaying: true
-              });}
-
-            // Listen for picks
-            if (msg.message.myPick) {
-              const curUsers = this.state.users;
-
-              let idAlreadyPicked = false;
-
-              if(curUsers[msg.publisher].hasOwnProperty('piece_id')) {
-                if (curUsers[msg.publisher].piece_id === msg.message.myPick){
-                  idAlreadyPicked = true;
-                }
-              }
-              
-              for (let uuid in curUsers){
-                if(curUsers.hasOwnProperty(uuid)){
-                  if(uuid.hasOwnProperty('piece_id')){
-                    if (uuid.piece_id === msg.message.myPick) {
-                      idAlreadyPicked = true;
-                      break;
-                    }
-                  }
-                }
-              }
-              if (!idAlreadyPicked) {
-                curUsers[msg.publisher].piece_id = msg.message.myPick;
-                this.setState({
-                  users: curUsers
-                });
-
-                this.pubnub.publish({
-                  message: {users: this.state.users},
-                  channel: this.lobbyChannel
-                })
-              }
+              });
             }
-
             
           // Close the modals if they are opened
           Swal.close();
@@ -268,7 +249,7 @@ class App extends Component {
           this.pubnub.publish({
             message: {
               notRoomCreator: true,
-              name: this.state.name
+              namePhase: this.state.name
             },
             channel: this.lobbyChannel
           });
@@ -343,13 +324,22 @@ class App extends Component {
   }
 
   startGame = () => {
+
+    this.pieceSelectionChannel = 'piecePickerLobby--' + shortid.generate().toUpperCase();
+
+    this.pubnub.subscribe({
+      channels: [this.pieceSelectionChannel],
+      withPresence: true
+    });
+
     this.setState({
       isPlaying: true
     })
 
     this.pubnub.publish({
       message: {
-        gameStart: true
+        gameStart: true,
+        pieceSelectionChannel: this.pieceSelectionChannel
       },
       channel: this.lobbyChannel
     });
@@ -394,10 +384,9 @@ class App extends Component {
             </div>
           }
           {
-            !this.state.isPlaying && 
+            this.state.isPlaying && 
             <div className="game-container">
-              <PiecePicker pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}onPublish={this.onPublish}/>
-              <Board />
+              <PiecePicker isRoomCreator={this.state.isRoomCreator} lobbyChannel={this.pieceSelectionChannel} pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}/>
             </div>
           }
         </div>
