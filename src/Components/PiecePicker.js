@@ -8,7 +8,6 @@ class PiecePicker extends Component {
 
         this.state = {
             users: this.props.users,
-<<<<<<< HEAD
             myUUID: this.props.myUUID,
             isRoomCreator: this.props.isRoomCreator
         }
@@ -21,43 +20,20 @@ class PiecePicker extends Component {
             this.props.pubnub.getMessage(this.props.lobbyChannel, (msg) => {
                 // Listen for users
                 if (!this.state.isRoomCreator) {
-=======
-            myUUID: this.props.myUUID
-        }
-        console.log('constructor: ',this.state.users)
-    }
-
-
-    pubnubHandler = () => {
-        if(this.props.lobbyChannel != null){
-            this.props.pubnub.getMessage(this.props.lobbyChannel, (msg) => {
-                console.log('aka');
-                // Listen for users
-                if (!this.props.isRoomCreator) {
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
                     console.log('no soy host');
                 }
 
                 if (msg.message.users) {
                     console.log(
-<<<<<<< HEAD
                         'received:', this.state.isRoomCreator, 'XDXD'
-=======
-                        'received:'
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
                     );
                     this.setState({
                         users: msg.message.users
                     })
                 }
                 // Listen for picks
-<<<<<<< HEAD
                 if (this.state.isRoomCreator) {
                     console.log('roomCreator listened');
-=======
-                if (this.props.isRoomCreator) {
-                    console.log('listened something');
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
                     if (msg.message.myPick) {
                         const curUsers = this.state.users;
 
@@ -96,20 +72,12 @@ class PiecePicker extends Component {
             });
         };
     }
-<<<<<<< HEAD
     componentDidMount(){
         console.log('MOUNTED');
         this.pubnubHandler();
     }
     componentDidUpdate(){
         console.log('UPDATED');
-=======
-
-    componentDidMount(){
-        this.pubnubHandler();
-    }
-    componentDidUpdate(){
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
         this.pubnubHandler();
     }
 
@@ -123,11 +91,6 @@ class PiecePicker extends Component {
             channel: this.props.lobbyChannel});
         
         console.log('msg package sent:', {myPick: index});
-<<<<<<< HEAD
-=======
-
-        console.log(index);
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
     }
 
     renderPieces = ()=> {
@@ -155,10 +118,6 @@ class PiecePicker extends Component {
         ];
          
         for (let uuid of Object.keys(this.state.users)) {
-<<<<<<< HEAD
-=======
-            console.log('pre-entrado', this.state.users[uuid]);
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
             if (this.state.users[uuid].piece_id){
                 pieces[this.state.users[uuid].piece_id].player = 'other';
             }
@@ -169,10 +128,6 @@ class PiecePicker extends Component {
                     pieces[this.state.users[this.state.myUUID].piece_id].player = 'self';
                 } 
         }
-<<<<<<< HEAD
-=======
-        console.log(this.state.users);
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
 
         const showPieces = [];
         pieces.forEach((piece,index) => {

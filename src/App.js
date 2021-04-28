@@ -123,17 +123,9 @@ class App extends Component {
                 console.log('soy host y recibi ', msg);
                 if (curUsers[msg.publisher]) {
                   curUsers[msg.publisher].name = msg.message.namePhase;
-<<<<<<< HEAD
                   this.setState({
                     users: curUsers
                   });
-=======
-                  console.log('aber1');
-                  this.setState({
-                    users: curUsers
-                  });
-                  console.log('aber2');
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
 
                   // Send users back to all subscribers
                   this.pubnub.publish({
@@ -142,10 +134,6 @@ class App extends Component {
                     },
                     channel: this.lobbyChannel
                   });
-<<<<<<< HEAD
-=======
-                  console.log('aber3');
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
                 }
                 
             }
@@ -333,14 +321,6 @@ class App extends Component {
 
     this.pieceSelectionChannel = 'piecePickerLobby--' + shortid.generate().toUpperCase();
 
-<<<<<<< HEAD
-=======
-    this.pubnub.subscribe({
-      channels: [this.pieceSelectionChannel],
-      withPresence: true
-    });
-
->>>>>>> 3b1c1bff7fb6190bb679f09cf29998ce4c42248e
     this.setState({
       isPlaying: true
     })
