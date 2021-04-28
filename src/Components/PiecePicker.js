@@ -1,6 +1,33 @@
 import React, { Component } from 'react';
 import rollover_sound from '../sounds/rollover.mp3'
+import shortid from 'shortid';
+import Game from './Game';
+
+
 import pepe5head from '../images/pepe5head.png';
+import snorlax from '../images/snorlax.png';
+const pieces = [
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax,
+    pepe5head,
+    snorlax
+];
 
 class PiecePicker extends Component {
     constructor(props) {
@@ -9,30 +36,47 @@ class PiecePicker extends Component {
         this.state = {
             users: this.props.users,
             myUUID: this.props.myUUID,
-            isRoomCreator: this.props.isRoomCreator
+            started: false
         }
-
+        this.gameChannel = null;
     }
 
     pubnubHandler = () => {
         if(this.props.lobbyChannel != null){
             console.log('entre');
             this.props.pubnub.getMessage(this.props.lobbyChannel, (msg) => {
-                // Listen for users
-                if (!this.state.isRoomCreator) {
-                    console.log('no soy host');
+                // Listen for START
+                if(msg.message.gameChannel) {
+                    console.log('heard START');
+
+                    this.gameChannel = msg.message.gameChannel;
+
+                    // Assign the url to users
+                    const newUsersState = this.state.users;
+                    for (let uuid in newUsersState) {
+                        newUsersState[uuid].piece_id = pieces[newUsersState[uuid].piece_id];
+                    }
+                    console.log(newUsersState);
+
+                    this.setState({
+                        started: true
+                    })
+
+                    this.props.pubnub.subscribe({
+                        channels: [msg.message.gameChannel],
+                        withPresence: true
+                      });
+                      console.log('gamechannel: ', this.gameChannel);
                 }
 
+                // Listen for users
                 if (msg.message.users) {
-                    console.log(
-                        'received:', this.state.isRoomCreator, 'XDXD'
-                    );
                     this.setState({
                         users: msg.message.users
                     })
                 }
                 // Listen for picks
-                if (this.state.isRoomCreator) {
+                if (this.props.isRoomCreator) {
                     console.log('roomCreator listened');
                     if (msg.message.myPick) {
                         const curUsers = this.state.users;
@@ -96,25 +140,25 @@ class PiecePicker extends Component {
     renderPieces = ()=> {
         const pieces = [
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
+            {url: snorlax, player: ''},
             {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''},
-            {url: pepe5head, player: ''}
+            {url: snorlax, player: ''}
         ];
          
         for (let uuid of Object.keys(this.state.users)) {
@@ -141,10 +185,41 @@ class PiecePicker extends Component {
         return showPieces;
     }
 
+    isReady = () => {
+        let isReady = true;
+        for(let uuid in this.state.users) {
+            if(this.state.users[uuid].piece_id === '')
+                isReady = false;
+        }
+        if (isReady){
+            console.log('ready papu');
+        }
+        return isReady;
+    }
+
+    start = () => {
+        // Send msg to ALL to sub new channel,
+        const gameChannel = 'monopolygame--' + shortid.generate().toUpperCase();
+        this.props.pubnub.publish({
+            message: {gameChannel: gameChannel},
+            channel: this.props.lobbyChannel});
+    }
+
     render() {
         return (
-            <div className="piece-picker">
-                {this.renderPieces()}
+            <div>
+                {!this.state.started && 
+                    <div>
+                        <div className="piece-picker">
+                            {this.renderPieces()}
+                        </div>
+                        {this.props.isRoomCreator && <button onClick={()=>this.start()} disabled={!this.isReady()}>Start Game</button>}
+                        {this.isReady() && !this.props.isRoomCreator && <div>Waiting for others to pick...</div> }
+                    </div>
+                }
+                {
+                    this.state.started && <Game users={this.state.users} gameChannel={this.gameChannel}/>
+                }
             </div>
         )
     }

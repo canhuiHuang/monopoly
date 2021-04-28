@@ -23,10 +23,9 @@ class App extends Component {
       isRoomCreator: false,
       isDisabled: false,
       myTurn: false,
-      users: {[generatedUUID]: {name: 'uwu', player: 'player-null', piece_id: ''}},
+      users: {[generatedUUID]: {name: 'uwu', piece_id: ''}},
       name: 'uwu',
       uuid: generatedUUID,
-      player: 'player-null'
     };
 
     this.lobbyChannel = null;
@@ -44,7 +43,7 @@ class App extends Component {
         if (event.action === 'join') {
           const curUsers = this.state.users;
           if (!curUsers.hasOwnProperty(event.uuid)){
-            curUsers[event.uuid] = {name: 'goku', player: 'player-null', piece_id: ''};
+            curUsers[event.uuid] = {name: 'goku', piece_id: ''};
             this.setState({
               users: curUsers
             })
