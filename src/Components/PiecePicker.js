@@ -10,14 +10,19 @@ class PiecePicker extends Component {
             users: this.props.users,
             myUUID: this.props.myUUID
         }
+        console.log('constructor: ',this.state.users)
     }
 
-    componentDidUpdate(){
 
+    pubnubHandler = () => {
         if(this.props.lobbyChannel != null){
             this.props.pubnub.getMessage(this.props.lobbyChannel, (msg) => {
-
+                console.log('aka');
                 // Listen for users
+                if (!this.props.isRoomCreator) {
+                    console.log('no soy host');
+                }
+
                 if (msg.message.users) {
                     console.log(
                         'received:'
@@ -68,9 +73,15 @@ class PiecePicker extends Component {
         };
     }
 
+    componentDidMount(){
+        this.pubnubHandler();
+    }
+    componentDidUpdate(){
+        this.pubnubHandler();
+    }
+
     onHover = () => {
         const sound = new Audio(rollover_sound);
-        console.log('aka');
         sound.play();
     }
     onClick = (index) => {
@@ -113,10 +124,11 @@ class PiecePicker extends Component {
                 pieces[this.state.users[uuid].piece_id].player = 'other';
             }
         }
-        if (this.state.users[this.state.myUUID].hasOwnProperty('piece_id')){
-            if (pieces[this.state.users[this.state.myUUID].piece_id] !== undefined) {
-                pieces[this.state.users[this.state.myUUID].piece_id].player = 'self';
-            } 
+        if (this.state.users[this.state.myUUID]){
+            if (this.state.users[this.state.myUUID].hasOwnProperty('piece_id'))
+                if (pieces[this.state.users[this.state.myUUID].piece_id] !== undefined) {
+                    pieces[this.state.users[this.state.myUUID].piece_id].player = 'self';
+                } 
         }
         console.log(this.state.users);
 
