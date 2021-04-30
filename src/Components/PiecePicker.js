@@ -56,7 +56,7 @@ class PiecePicker extends Component {
                     let turn = 1;
                     for (let uuid in newUsersState) {
                         newUsersState[uuid].piece_id = pieces[newUsersState[uuid].piece_id];
-                        newUsersState[uuid].balance = 0;
+                        newUsersState[uuid].balance = 1500;
                         newUsersState[uuid].properties = [];
                         newUsersState[uuid].cards = [];
                         newUsersState[uuid].bankrupt = false;
@@ -225,7 +225,7 @@ class PiecePicker extends Component {
                     </div>
                 }
                 {
-                    this.state.started && <Game users={this.state.users} gameChannel={this.gameChannel} pubnub={this.props.pubnub}/>
+                    this.state.started && <Game isRoomCreator={this.props.isRoomCreator} users={this.state.users} gameChannel={this.gameChannel} pubnub={this.props.pubnub} myTurn={this.state.users[this.state.myUUID].turn}/>
                 }
             </div>
         )
