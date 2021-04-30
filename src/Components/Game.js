@@ -9,18 +9,32 @@ export class Game extends Component {
 
         this.state = {
             users: this.props.users,
+            turn: 1
+        }
+    }
+
+    componentDidMount (){
+        console.log('mounted boi');
+        if(this.props.gameChannel != null){
+            this.props.pubnub.getMessage(this.props.gameChannel, (msg) => {
+                // Someone left
+                if (msg.message.userUUID) {
+                    const curUsers = this.state.users;
+                    delete curUsers[msg.message.userUUID];
+
+                    this.setState({
+                        users: curUsers
+                    })
+                }
+            });
         }
     }
 
     render() {
         return (
-            <div>
-                <Board />
-                <div className="UI">
-                    <UsersStats />
-                    <OnlineStatus users={this.state.users}/>
-                    holii
-                </div>
+            <div className="game">
+                <Board users={this.state.users} />
+                <UsersStats users={this.state.users} turn={this.state.turn}/>
             </div>
         )
     }

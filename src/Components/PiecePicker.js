@@ -51,10 +51,17 @@ class PiecePicker extends Component {
 
                     this.gameChannel = msg.message.gameChannel;
 
-                    // Assign the url to users
+                    // Assign the url to users & new properties
                     const newUsersState = this.state.users;
+                    let turn = 1;
                     for (let uuid in newUsersState) {
                         newUsersState[uuid].piece_id = pieces[newUsersState[uuid].piece_id];
+                        newUsersState[uuid].balance = 0;
+                        newUsersState[uuid].properties = [];
+                        newUsersState[uuid].cards = [];
+                        newUsersState[uuid].bankrupt = false;
+                        newUsersState[uuid].turn = turn;
+                        turn++;
                     }
                     console.log(newUsersState);
 
@@ -218,7 +225,7 @@ class PiecePicker extends Component {
                     </div>
                 }
                 {
-                    this.state.started && <Game users={this.state.users} gameChannel={this.gameChannel}/>
+                    this.state.started && <Game users={this.state.users} gameChannel={this.gameChannel} pubnub={this.props.pubnub}/>
                 }
             </div>
         )

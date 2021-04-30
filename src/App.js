@@ -70,6 +70,16 @@ class App extends Component {
             },
             channel: this.lobbyChannel
           });
+
+          // Publish to Game
+          if (event.channel.startsWith('monopolygame--')) {
+            this.pubnub.publish({
+              message: {
+                userUUID: event.uuid
+              },
+              channel: event.channel
+            });
+          }
         }
       }
       console.log('presence listener: ',event);

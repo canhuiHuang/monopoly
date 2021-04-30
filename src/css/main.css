@@ -51,6 +51,81 @@
       height: 85px;
       width: 85px; }
 
+.game {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; }
+
+.onlineUsers {
+  padding: 2rem;
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: 13px;
+  margin-right: 2.8rem;
+  height: 0 auto; }
+  .onlineUsers .onlineUser {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to top, #333 0.5%, rgba(252, 245, 242, 0.85) 5%);
+    border: #333 2px solid;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    min-width: 245px; }
+    .onlineUsers .onlineUser .top {
+      display: flex; }
+      .onlineUsers .onlineUser .top .icon {
+        position: relative;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: 2px solid orangered;
+        padding: 1.2rem;
+        margin: 0.5rem;
+        overflow: hidden;
+        background-color: rgba(77, 75, 75, 0.75); }
+        .onlineUsers .onlineUser .top .icon.player-1 {
+          border: 2px solid #5762be; }
+        .onlineUsers .onlineUser .top .icon.player-2 {
+          border: 2px solid #d85d82; }
+        .onlineUsers .onlineUser .top .icon.player-3 {
+          border: 2px solid #d8cc5d; }
+        .onlineUsers .onlineUser .top .icon.player-4 {
+          border: 2px solid #e63838; }
+        .onlineUsers .onlineUser .top .icon.player-5 {
+          border: 2px solid #5dd85d; }
+        .onlineUsers .onlineUser .top .icon.player-6 {
+          border: 2px solid #d85dd8; }
+        .onlineUsers .onlineUser .top .icon.player-7 {
+          border: 2px solid #3f4fe6; }
+        .onlineUsers .onlineUser .top .icon.player-8 {
+          border: 2px solid #5dd0d8; }
+        .onlineUsers .onlineUser .top .icon.player-9 {
+          border: 2px solid #f39c4b; }
+        .onlineUsers .onlineUser .top .icon.player-10 {
+          border: 2px solid #8f6e50; }
+        .onlineUsers .onlineUser .top .icon.player-11 {
+          border: 2px solid #3a3738; }
+        .onlineUsers .onlineUser .top .icon.player-12 {
+          border: 2px solid #196e19; }
+        .onlineUsers .onlineUser .top .icon.player-13 {
+          border: 2px solid #51176b; }
+        .onlineUsers .onlineUser .top .icon.player-14 {
+          border: 2px solid #bca1e9; }
+        .onlineUsers .onlineUser .top .icon img {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 36px;
+          height: 36px; }
+      .onlineUsers .onlineUser .top .name {
+        font-size: 1.2rem;
+        padding: 1.2rem; }
+    .onlineUsers .onlineUser .bottom .balance {
+      font-size: 1.6rem;
+      padding: 1rem;
+      margin-left: 0.3rem; }
+
 * {
   box-sizing: border-box; }
 
@@ -69,7 +144,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; }
+  align-items: space-between; }
 
 .game-container {
   display: flex;
