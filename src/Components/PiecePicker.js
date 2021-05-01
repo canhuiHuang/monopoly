@@ -225,7 +225,7 @@ class PiecePicker extends Component {
                     </div>
                 }
                 {
-                    this.state.started && <Game isRoomCreator={this.props.isRoomCreator} users={this.state.users} gameChannel={this.gameChannel} pubnub={this.props.pubnub} myTurn={this.state.users[this.state.myUUID].turn}/>
+                    this.state.started && <Game myUUID={this.state.myUUID} isRoomCreator={this.props.isRoomCreator} users={this.state.users} gameChannel={this.gameChannel} pubnub={this.props.pubnub} myTurn={this.state.users[this.state.myUUID].turn}/>
                 }
             </div>
         )

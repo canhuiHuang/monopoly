@@ -1,0 +1,110 @@
+{
+    "quirinoHouse": {
+        "property-name": "Quirino's house",
+        "price": 140,
+        "rent": [10, 50, 150, 450, 625, 750],
+        "house-cost": 100,
+        "multiplier-value": 1.3,
+        "color-set": "pink",
+        "mortgage-value": 70
+    },
+    "jardinBotanico": {
+        "property-name": "Botanical Garden of Culiacan",
+        "price": 140,
+        "rent": [10, 50, 150, 450, 625, 750],
+        "house-cost": 100,
+        "multiplier-value": 1.3,
+        "color-set": "pink",
+        "mortgage-value": 70
+    },
+    "JYPEBuilding": {
+        "property-name": "JYPE Building",
+        "price": 160,
+        "rent": [12, 60, 80, 500, 700, 900],
+        "house-cost": 100,
+        "multiplier-value": 1.3,
+        "color-set": "pink",
+        "mortgage-value": 80
+    },
+    "cityWok": {
+        "property-name": "City Wok",
+        "price": 180,
+        "rent": [14, 70, 200, 550, 750, 950],
+        "house-cost": 100,
+        "multiplier-value": 1.2,
+        "color-set": "orange",
+        "mortgage-value": 90
+    },
+    "lomita": {
+        "property-name": "Lomita",
+        "price": 180,
+        "rent": [14, 70, 200, 550, 750, 950],
+        "house-cost": 100,
+        "multiplier-value": 1.2,
+        "color-set": "orange",
+        "mortgage-value": 90
+    },
+    "forum": {
+        "property-name": "Forum",
+        "price": 200,
+        "rent": [16, 80, 220, 600, 800, 1000],
+        "house-cost": 100,
+        "multiplier-value": 1.2,
+        "color-set": "orange",
+        "mortgage-value": 100
+    },
+    "hotelCalifornia": {
+        "property-name": "Hotel California",
+        "price": 220,
+        "rent": [18, 90, 220, 500, 700, 975],
+        "house-cost": 150,
+        "multiplier-value": 1.15,
+        "color-set": "purple",
+        "mortgage-value": 110
+    },
+    "cheetosCorp": {
+        "property-name": "Cheetos Corp.",
+        "price": 220,
+        "rent": [18, 90, 220, 500, 700, 975],
+        "house-cost": 150,
+        "multiplier-value": 1.15,
+        "color-set": "purple",
+        "mortgage-value": 110
+    },
+    "helloKityCorp": {
+        "property-name": "Hello Kitty Corp.",
+        "price": 220,
+        "rent": [18, 90, 220, 500, 700, 975],
+        "house-cost": 150,
+        "multiplier-value": 1.15,
+        "color-set": "purple",
+        "mortgage-value": 110
+    },
+    "arizonaCorp": {
+        "property-name": "Hello Kitty Corp.",
+        "price": 220,
+        "rent": [18, 90, 220, 500, 700, 975],
+        "house-cost": 150,
+        "multiplier-value": 1.15,
+        "color-set": "purple",
+        "mortgage-value": 110
+    },
+    "zpacticGamingHouse": {
+        "property-name": "Zpatic Gaming House",
+        "price": 220,
+        "rent": [18, 90, 220, 500, 700, 975],
+        "house-cost": 150,
+        "multiplier-value": 1.15,
+        "color-set": "purple",
+        "mortgage-value": 110
+    },
+    "jojoConvention": {
+        "property-name": "Jojo Convention",
+        "price": 220,
+        "rent": [18, 90, 220, 500, 700, 975],
+        "house-cost": 150,
+        "multiplier-value": 1.15,
+        "color-set": "purple",
+        "mortgage-value": 110
+    }
+}

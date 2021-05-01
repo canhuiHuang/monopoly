@@ -56,6 +56,87 @@
   justify-content: space-between;
   align-items: flex-start; }
 
+.player-1 {
+  border: 2px solid #5762be; }
+
+.player-2 {
+  border: 2px solid #d85d82; }
+
+.player-3 {
+  border: 2px solid #d8cc5d; }
+
+.player-4 {
+  border: 2px solid #e63838; }
+
+.player-5 {
+  border: 2px solid #5dd85d; }
+
+.player-6 {
+  border: 2px solid #d85dd8; }
+
+.player-7 {
+  border: 2px solid #3f4fe6; }
+
+.player-8 {
+  border: 2px solid #5dd0d8; }
+
+.player-9 {
+  border: 2px solid #f39c4b; }
+
+.player-10 {
+  border: 2px solid #8f6e50; }
+
+.player-11 {
+  border: 2px solid #3a3738; }
+
+.player-12 {
+  border: 2px solid #196e19; }
+
+.player-13 {
+  border: 2px solid #51176b; }
+
+.player-14 {
+  border: 2px solid #bca1e9; }
+
+.player-15 {
+  border: 2px solid #fcf0f4; }
+
+.player-16 {
+  border: 2px solid #f8e00a; }
+
+.userCards {
+  display: flex;
+  flex-wrap: wrap; }
+  .userCards .userCard {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    border: #333 solid 2px;
+    border-radius: 10px;
+    width: 100px;
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    align-items: center;
+    justify-content: center; }
+    .userCards .userCard .icon {
+      position: relative;
+      max-width: 42px;
+      max-height: 42px;
+      border-radius: 50%;
+      padding: 1.2rem;
+      margin: 0.5rem;
+      overflow: hidden;
+      background-color: rgba(77, 75, 75, 0.75); }
+    .userCards .userCard img {
+      top: 0;
+      left: 0;
+      position: absolute;
+      max-width: 42px;
+      max-height: 42px; }
+    .userCards .userCard .name {
+      font-size: 1.2rem;
+      padding: 1.2rem; }
+
 .onlineUsers {
   padding: 2rem;
   padding-top: 1.5rem;
@@ -79,43 +160,10 @@
         width: 42px;
         height: 42px;
         border-radius: 50%;
-        border: 2px solid orangered;
         padding: 1.2rem;
         margin: 0.5rem;
         overflow: hidden;
         background-color: rgba(77, 75, 75, 0.75); }
-        .onlineUsers .onlineUser .top .icon.player-1 {
-          border: 2px solid #5762be; }
-        .onlineUsers .onlineUser .top .icon.player-2 {
-          border: 2px solid #d85d82; }
-        .onlineUsers .onlineUser .top .icon.player-3 {
-          border: 2px solid #d8cc5d; }
-        .onlineUsers .onlineUser .top .icon.player-4 {
-          border: 2px solid #e63838; }
-        .onlineUsers .onlineUser .top .icon.player-5 {
-          border: 2px solid #5dd85d; }
-        .onlineUsers .onlineUser .top .icon.player-6 {
-          border: 2px solid #d85dd8; }
-        .onlineUsers .onlineUser .top .icon.player-7 {
-          border: 2px solid #3f4fe6; }
-        .onlineUsers .onlineUser .top .icon.player-8 {
-          border: 2px solid #5dd0d8; }
-        .onlineUsers .onlineUser .top .icon.player-9 {
-          border: 2px solid #f39c4b; }
-        .onlineUsers .onlineUser .top .icon.player-10 {
-          border: 2px solid #8f6e50; }
-        .onlineUsers .onlineUser .top .icon.player-11 {
-          border: 2px solid #3a3738; }
-        .onlineUsers .onlineUser .top .icon.player-12 {
-          border: 2px solid #196e19; }
-        .onlineUsers .onlineUser .top .icon.player-13 {
-          border: 2px solid #51176b; }
-        .onlineUsers .onlineUser .top .icon.player-14 {
-          border: 2px solid #bca1e9; }
-        .onlineUsers .onlineUser .top .icon.player-15 {
-          border: 2px solid #fcf0f4; }
-        .onlineUsers .onlineUser .top .icon.player-16 {
-          border: 2px solid #f8e00a; }
         .onlineUsers .onlineUser .top .icon img {
           top: 0;
           left: 0;

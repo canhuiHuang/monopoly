@@ -68,6 +68,94 @@
   align-items: flex-start;
 }
 
+.player-1 {
+  border: 2px solid $player1-color;
+}
+.player-2 {
+  border: 2px solid $player2-color;
+}
+.player-3 {
+  border: 2px solid $player3-color;
+}
+.player-4 {
+  border: 2px solid $player4-color;
+}
+.player-5 {
+  border: 2px solid $player5-color;
+}
+.player-6 {
+  border: 2px solid $player6-color;
+}
+.player-7 {
+  border: 2px solid $player7-color;
+}
+.player-8 {
+  border: 2px solid $player8-color;
+}
+.player-9 {
+  border: 2px solid $player9-color;
+}
+.player-10 {
+  border: 2px solid $player10-color;
+}
+.player-11 {
+  border: 2px solid $player11-color;
+}
+.player-12 {
+  border: 2px solid $player12-color;
+}
+.player-13 {
+  border: 2px solid $player13-color;
+}
+.player-14 {
+  border: 2px solid $player14-color;
+}
+.player-15 {
+  border: 2px solid $player15-color;
+}
+.player-16 {
+  border: 2px solid $player16-color;
+}
+
+.userCards {
+  display: flex;
+  flex-wrap: wrap;
+  .userCard {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    border: #333 solid 2px;
+    border-radius: 10px;
+    width: 100px;
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    .icon {
+      position: relative;
+      max-width: 42px;
+      max-height: 42px;
+      border-radius: 50%;
+      padding: 1.2rem;
+      margin: 0.5rem;
+      overflow: hidden;
+      background-color: rgba(77, 75, 75, 0.75);
+    }
+    img {
+      top: 0;
+      left: 0;
+      position: absolute;
+      max-width: 42px;
+      max-height: 42px;
+    }
+
+    .name {
+      font-size: 1.2rem;
+      padding: 1.2rem;
+    }
+  }
+}
+
 .onlineUsers {
   padding: 2rem;
   padding-top: 1.5rem;
@@ -97,62 +185,10 @@
         width: 42px;
         height: 42px;
         border-radius: 50%;
-        border: 2px solid orangered;
         padding: 1.2rem;
         margin: 0.5rem;
         overflow: hidden;
         background-color: rgba(77, 75, 75, 0.75);
-
-        & {
-          &.player-1 {
-            border: 2px solid $player1-color;
-          }
-          &.player-2 {
-            border: 2px solid $player2-color;
-          }
-          &.player-3 {
-            border: 2px solid $player3-color;
-          }
-          &.player-4 {
-            border: 2px solid $player4-color;
-          }
-          &.player-5 {
-            border: 2px solid $player5-color;
-          }
-          &.player-6 {
-            border: 2px solid $player6-color;
-          }
-          &.player-7 {
-            border: 2px solid $player7-color;
-          }
-          &.player-8 {
-            border: 2px solid $player8-color;
-          }
-          &.player-9 {
-            border: 2px solid $player9-color;
-          }
-          &.player-10 {
-            border: 2px solid $player10-color;
-          }
-          &.player-11 {
-            border: 2px solid $player11-color;
-          }
-          &.player-12 {
-            border: 2px solid $player12-color;
-          }
-          &.player-13 {
-            border: 2px solid $player13-color;
-          }
-          &.player-14 {
-            border: 2px solid $player14-color;
-          }
-          &.player-15 {
-            border: 2px solid $player15-color;
-          }
-          &.player-16 {
-            border: 2px solid $player16-color;
-          }
-        }
 
         img {
           top: 0;

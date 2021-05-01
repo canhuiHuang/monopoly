@@ -3,6 +3,7 @@ import Board from './Board';
 import UsersStats from './UsersStats';
 import OnlineStatus from './OnlineStatus';
 import Dices from './Dices';
+import Swal from "sweetalert2"; 
 
 function getRand(max, offset=1) {
     return Math.round(Math.random() * max + offset);
@@ -15,7 +16,7 @@ export class Game extends Component {
         this.state = {
             users: this.props.users,
             turn: 1,
-            eventsQueue: [startTurnEvent(1)],
+            eventsQueue: [this.startTurnEvent(1)],
         }
         this.throwCounter = 1;
     }
@@ -26,6 +27,59 @@ export class Game extends Component {
             message: {startTurn: turn},
             channel: this.props.gameChannel
         })
+    }
+    playTurn(){
+        // Jail
+
+        // Business
+        const sellTo = (uuid) => {
+            const displayPropertiesNCards = () => {
+                const my = this.props.users[this.props.myUUID];
+
+                for (let property in my.properties) {
+
+                }
+                for (let card in my.cards) {
+                    
+                }
+
+            }
+
+            if (uuid === 'bank') {
+
+            } else {
+
+            }
+        }
+
+
+        let lista = '';
+        let i = 0;
+        for(let uuid in this.props.users) {
+            if(!this.props.users[uuid].bankrupt) {
+                lista +=
+                    `<div key={i} class="userCard" onClick={sellTo(${uuid})}>
+                        <div class="icon player-${this.props.users[uuid].turn}" ><img src=${this.props.users[uuid].piece_id} alt=${this.props.users[uuid].name}/></div>
+                        <div class="name" >${this.props.users[uuid].name}</div>
+                </div>`;
+            }
+        }
+        lista += `<div key={i} class="userCard" onClick={sellTo(${bank})}>
+                    <div class="icon player-bank" ><img src=${this.props.users[uuid].piece_id} alt="bank"/></div>
+                    <div class="name" >Bank</div>
+            </div>`;
+        console.log(lista);
+
+        Swal.fire({
+            title: 'Would you like to sell',
+            html: '<div class="userCards">' + lista + '</div>',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            confirmButtonText: "Done"
+        })
+    }
+    spectateTurn(){
+        console.log('spectating');
     }
 
 
@@ -80,7 +134,7 @@ export class Game extends Component {
     render() {
         return (
             <div className="game">
-                {<Dices onClick={onThrow} throwAnimation={this.throwAnimation}/>}
+                {/* {<Dices onClick={this.onThrow} throwAnimation={this.throwAnimation}/>} */}
                 <Board users={this.state.users} />
                 <UsersStats users={this.state.users} turn={this.state.turn}/>
             </div>
