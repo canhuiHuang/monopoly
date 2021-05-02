@@ -43,11 +43,9 @@ class PiecePicker extends Component {
 
     pubnubHandler = () => {
         if(this.props.lobbyChannel != null){
-            console.log('entre');
             this.props.pubnub.getMessage(this.props.lobbyChannel, (msg) => {
                 // Listen for START
                 if(msg.message.gameChannel) {
-                    console.log('heard START');
 
                     this.gameChannel = msg.message.gameChannel;
 
@@ -73,7 +71,6 @@ class PiecePicker extends Component {
                         channels: [msg.message.gameChannel],
                         withPresence: true
                       });
-                      console.log('gamechannel: ', this.gameChannel);
                 }
 
                 // Listen for users
@@ -84,7 +81,6 @@ class PiecePicker extends Component {
                 }
                 // Listen for picks
                 if (this.props.isRoomCreator) {
-                    console.log('roomCreator listened');
                     if (msg.message.myPick) {
                         const curUsers = this.state.users;
 
@@ -141,7 +137,6 @@ class PiecePicker extends Component {
             message: {myPick: index},
             channel: this.props.lobbyChannel});
         
-        console.log('msg package sent:', {myPick: index});
     }
 
     renderPieces = ()=> {
