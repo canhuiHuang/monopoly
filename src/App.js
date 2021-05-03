@@ -345,11 +345,13 @@ class App extends Component {
 
   render() {  
     return (  
-        <div> 
-          <div className="title">
+        <div>
+          {
+            !this.state.isPlaying &&
+            <div className="title">
             <p>Monopoly</p>
           </div>
-
+          }
           {
             !this.state.isPlaying &&
             <div className="game">

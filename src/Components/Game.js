@@ -5,6 +5,7 @@ import OnlineStatus from './OnlineStatus';
 import Dices from './Dices';
 import Swal from "sweetalert2";
 import properties from './Data/properties.json';
+import SellWindow from './SellWindow';
 
 import arizonaCorp from './cardImages/arizonaCorp.png';
 import cheetosCorp from './cardImages/cheetosCorp.png'; 
@@ -46,8 +47,10 @@ export class Game extends Component {
             users: this.props.users,
             turn: 1,
             eventsQueue: [this.startTurnEvent],
-            bankProperties: bankProperties
+            bankProperties: bankProperties,
+            showSellWindow: false
         }
+        
         this.throwCounter = 1;
     }
 
@@ -60,110 +63,7 @@ export class Game extends Component {
     }
 
     playTurn = () => {
-        console.log('jugando turno');
-        // Jail
-
-        // Business
-        const business = () => {
-            const displayUsers = () => {
-
-                const sellTo = uuid => {
-
-                    // Display properties & cards
-                    const my = this.props.users[this.props.myUUID];
-
-                    // Bank
-                    const sellHouses = (property) => {
-                        this.props.pubnub.publish({
-                            message: {sellHouses: true, property: property},
-                            channel: this.props.gameChannel
-                        });
-                    }
-                    const sellProperty = (property) => {
-                        this.props.pubnub.publish({
-                            message: {sellProperty: true, property: property},
-                            channel: this.props.gameChannel
-                        });
-                    }
-
-                    const propertyCards = '';
-                    let i = 0;
-                    for (let property in my.properties) {
-                        propertyCards +=
-                            `<div key=${i} class="propertyCard-with-btns">
-                                <div class="propertyCard" onClick={onClickCard(${property})}>
-                                    <div class="propertyCard-container">
-                                    <div class="name ${property.data.color_set}" >${property.data.property_name}</div>
-                                    <img src=${property.image} alt=""/>
-                                    <div class="rent" >Rent: $${property.data.rent[0]}</div>
-                                    <div class="house" ><div>With 1 House</div><div>$${property.data.rent[1]}</div></div>
-                                    <div class="house" ><div>With 2 Houses</div><div>$${property.data.rent[2]}</div></div>
-                                    <div class="house" ><div>With 3 Houses</div><div>$${property.data.rent[3]}</div></div>
-                                    <div class="house" ><div>With 4 Houses</div><div>$${property.data.rent[4]}</div></div>
-                                    <div class="house" ><div>With HOTEL</div><div>${property.data.rent[5]}</div></div>
-                                    <div class="mortgage" >Mortgage Value: $${property.data.mortgage_value}</div>
-                                    <div class="houses-cost" >Houses cost: $${property.data.house_cost} each</div>
-                                    <div class="hotel-cost" >Hotel cost: $${property.data.house_cost} plus 4 houses</div>
-                                    <div class="info-footer" >If a player owns ALL the lots of any Color Group, the rent is doubled on unimproved lots while the rent on improved lots is affected by a multiplier.</div>
-                                    </div>
-                                </div>`;
-                        if (property.houses > 0){
-                            propertyCards +=
-                            `<button key=${i} class="sellHouses-btn" onClick={sellHouses(${property})}>Sell Houses</button>`;
-                        }
-                        propertyCards +=
-                            `<button key=${i} class="sellProperty-btn" onClick={sellProperty(${property})}>Sell Property</button>
-                            </div>`;
-                            i++;
-                    }
-                    console.log(propertyCards);
-                    Swal.fire({
-                        title: 'Select property that you want to sell',
-                        html: '<div class="propertyCards">' + propertyCards + '</div>',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        confirmButtonText: "Done"
-                    })
-                    // for (let card in my.cards) {
-                        
-                    // }
-                }
-
-                // const sellTo = (uuid) => {
-                //     //
-                //     console.log(uuid);
-                // }
-
-                
-
-                let lista = '';
-                let i = 0;
-                for(let uuid in this.props.users) {
-                    if(!this.props.users[uuid].bankrupt) {
-                        lista +=
-                            `<div key=${i} class="userCard" onClick={sellTo(${uuid})}>
-                                <div class="icon player-${this.props.users[uuid].turn}" ><img src=${this.props.users[uuid].piece_id} alt=${this.props.users[uuid].name}/></div>
-                                <div class="name" >${this.props.users[uuid].name}</div>
-                        </div>`;
-                    }
-                }
-                lista += `<div key=${i} class="userCard" onClick={sellTo('bank')}>
-                            <div class="icon player-bank" ><img src=${this.props.users[this.props.myUUID].piece_id} alt="bank"/></div>
-                            <div class="name" >Bank</div>
-                    </div>`; 
-                console.log(lista);
-                Swal.fire({
-                    title: 'Would you like to sell to someone?',
-                    html: '<div class="userCards">' + lista + '</div>',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    confirmButtonText: "Done"
-                })
-
-            }
-            displayUsers();
-        }
-        business();
+        console.log('playing');
     }
     spectateTurn(){
         console.log('spectating');
@@ -183,6 +83,22 @@ export class Game extends Component {
 
     componentDidMount (){
         console.log('mounted boi');
+
+        const users = this.state.users;
+
+        users[this.props.myUUID].properties.lomita = bankProperties.lomita;
+
+        users[this.props.myUUID].properties.quirinoHouse = bankProperties.quirinoHouse;
+        users[this.props.myUUID].properties.JYPEBuilding = bankProperties.JYPEBuilding;
+        users[this.props.myUUID].properties.jojoConvention = bankProperties.jojoConvention;
+        users[this.props.myUUID].properties.jojoConvention.houses = 3;
+
+        users[this.props.myUUID].properties.JYPEBuilding.houses = 5;
+
+        this.setState({
+            users: users
+        });
+        console.log(this.state.users);
 
         if (this.props.isRoomCreator) {
             console.log('holis');
@@ -234,40 +150,43 @@ export class Game extends Component {
     
                     }
 
-                    // Sell Houses to Bank
-                    if (msg.message.sellHouses && msg.message.property) {
-                        const curUsers = this.props.users;
+                    // Sell Property
+                    else if (msg.message.sellProperty) {
+                        if (msg.message.user === 'bank'){
+                            const curUsers = this.state.users;
 
-                        console.log(msg.message.property);
-                        const amount = msg.message.property.houses;
-                        
-                        curUsers[msg.publisher].properties[msg.message.property.camelName].houses = 0;
+                            const amountOfHouses = curUsers[msg.publisher].properties[msg.message.property].houses;
+                            
+                            const earning = amountOfHouses*Math.round(curUsers[msg.publisher].properties[msg.message.property].data.house_cost / 2) + curUsers[msg.publisher].properties[msg.message.property].data.mortgage_value;
+                            curUsers[msg.publisher].balance += earning;
 
-                        curUsers[msg.publisher].balance += amount*Math.round(curUsers[msg.publisher].properties[msg.message.property.camelName].house_cost / 2);
+                            delete curUsers[msg.publisher].properties[msg.message.property];
 
-                        this.setState({
-                            users: curUsers
-                        });
-                        this.props.pubnub.publish({
-                            message: {users: this.state.users},
-                            channel: this.props.gameChannel
-                        })
+                            this.setState({
+                                users: curUsers
+                            });
+                            this.props.pubnub.publish({
+                                message: {users: this.state.users, transactionDone: true},
+                                channel: this.props.gameChannel
+                            })
+                        }
                     }
-                    if (msg.message.sellProperty && msg.message.property) {
-                        const curUsers = this.props.users;
 
-                        console.log(msg.message.property);
-                        const amount = msg.message.property.houses;
-                        
-                        delete curUsers[msg.publisher].properties[msg.message.property.camelName];
+                    // Sell Houses to Bank
+                    else if (msg.message.sellHouses) {
+                        const curUsers = this.state.users;
 
-                        curUsers[msg.publisher].balance += amount*Math.round(curUsers[msg.publisher].properties[msg.message.property.camelName].house_cost / 2) + msg.message.property.mortgage_value;
+                        const amountOfHouses = curUsers[msg.publisher].properties[msg.message.property].houses;
 
+                        curUsers[msg.publisher].properties[msg.message.property].houses = 0;
+
+                        const earning = amountOfHouses*Math.round(curUsers[msg.publisher].properties[msg.message.property].data.house_cost / 2);
+                        curUsers[msg.publisher].balance += earning;
                         this.setState({
                             users: curUsers
                         });
                         this.props.pubnub.publish({
-                            message: {users: this.state.users},
+                            message: {users: this.state.users, transactionDone: true},
                             channel: this.props.gameChannel
                         })
                     }
@@ -276,10 +195,19 @@ export class Game extends Component {
             });
         }
     }
+    onDone = () => {
+        this.setState({
+            showSellWindow: false
+        })
+    }
 
     render() {
         return (
             <div className="game">
+                {this.state.turn === this.props.myTurn && <button className="btn btn-sell" onClick={() => this.setState({
+                    showSellWindow: !this.state.showSellWindow
+                })}>Sell</button>}
+                {this.state.showSellWindow && <SellWindow pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} users={this.state.users} myUUID={this.props.myUUID} onDone={this.onDone}/>}
                 {/* {<Dices onClick={this.onThrow} throwAnimation={this.throwAnimation}/>} */}
                 <Board users={this.state.users} />
                 <UsersStats users={this.state.users} turn={this.state.turn}/>

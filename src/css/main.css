@@ -104,20 +104,36 @@
 .player-16 {
   border: 2px solid #f8e00a; }
 
+.title-sell,
+.title-sellProperty {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333; }
+
 .userCards {
+  padding-top: 1rem;
+  padding-bottom: 1.4rem;
   display: flex;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+  overflow-y: scroll; }
   .userCards .userCard {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
     border: #333 solid 2px;
     border-radius: 10px;
-    width: 100px;
+    min-width: 110px;
+    max-width: 150px;
     margin-left: 1rem;
     margin-top: 0.5rem;
     align-items: center;
-    justify-content: center; }
+    justify-content: center;
+    transition: transform 0.1s ease-in;
+    cursor: pointer; }
+    .userCards .userCard:hover {
+      transform: scale(1.03); }
+    .userCards .userCard.bank {
+      background-color: #d7eed4; }
     .userCards .userCard .icon {
       position: relative;
       max-width: 42px;
@@ -135,7 +151,9 @@
       max-height: 42px; }
     .userCards .userCard .name {
       font-size: 1.2rem;
-      padding: 1.2rem; }
+      padding: 1.2rem;
+      word-wrap: break-word;
+      max-width: 150px; }
 
 .onlineUsers {
   padding: 2rem;
@@ -152,7 +170,8 @@
     border: #333 2px solid;
     border-radius: 10px;
     margin-bottom: 1rem;
-    min-width: 245px; }
+    min-width: 245px;
+    max-width: 360px; }
     .onlineUsers .onlineUser .top {
       display: flex; }
       .onlineUsers .onlineUser .top .icon {
@@ -177,6 +196,153 @@
       font-size: 1.6rem;
       padding: 1rem;
       margin-left: 0.3rem; }
+
+.btn {
+  padding: 0.4rem 2.2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16), 0 1px 6px rgba(0, 0, 0, 0.23);
+  transition: transform 0.12s ease;
+  cursor: pointer; }
+
+.btn:hover {
+  transform: scale(1.03); }
+
+.btn-sell {
+  background-color: #d44949;
+  color: #f1f1f1;
+  position: fixed;
+  bottom: 8px;
+  left: 2.4rem;
+  z-index: 3; }
+
+.sellProperty-btn,
+.sellHouses-btn {
+  max-width: 130px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0.2rem;
+  border: none;
+  border-radius: 16px;
+  padding: 0.4rem 1rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16), 0 1px 6px rgba(0, 0, 0, 0.23);
+  transition: transform 0.2s ease-in, font-weight 0.2s ease-in; }
+  .sellProperty-btn:hover,
+  .sellHouses-btn:hover {
+    transform: scale(1.03); }
+
+.sellProperty-btn {
+  background-color: #e79696; }
+
+.sellHouses-btn {
+  background-color: #ca7676; }
+
+.btn-done {
+  border-radius: 5px; }
+
+.sellWindow {
+  border-radius: 8px;
+  padding: 2.4rem;
+  background-color: #ecf0f1;
+  z-index: 4;
+  position: fixed;
+  align-self: center;
+  text-align: center;
+  min-width: 35vw;
+  max-width: 38vw;
+  top: 20vh;
+  left: 32.5vw; }
+
+.layer {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(38, 39, 37, 0.5);
+  position: fixed;
+  z-index: 3; }
+
+.sellProperty-window {
+  border-radius: 8px;
+  padding: 2.4rem;
+  background-color: white;
+  position: fixed;
+  align-self: center;
+  text-align: center;
+  min-width: 35vw;
+  max-width: 42vw;
+  max-height: 800px;
+  top: 10vh;
+  left: 32.5vw;
+  z-index: 6;
+  overflow-y: scroll; }
+  .sellProperty-window .propertyCards {
+    padding-top: 1rem;
+    padding-bottom: 1.4rem;
+    display: flex;
+    flex-wrap: wrap; }
+    .sellProperty-window .propertyCards .propertyCard-with-btns {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0.6rem; }
+      .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard {
+        background-color: whitesmoke;
+        margin: 0.3rem;
+        padding: 5px 2px;
+        transition: transform 0.1s ease-in; }
+        .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard:hover {
+          transform: scale(1.03); }
+        .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container {
+          border: 1px solid #333;
+          padding: 0;
+          margin: 0.2rem;
+          width: 186px;
+          position: relative;
+          font-size: 0.8rem;
+          font-weight: 530; }
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .name {
+            border: 1px solid #333;
+            margin: 5px 3px;
+            min-height: 34px;
+            max-height: 36px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            padding-top: 9px; }
+            .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .name.orange {
+              color: #333; }
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .rent {
+            margin-top: 0.5rem; }
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .house {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.1rem;
+            margin-left: 0.9rem;
+            margin-right: 0.9rem; }
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .hotel {
+            display: flex;
+            justify-content: center; }
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .mortgage,
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .houses-cost,
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .hotel-cost {
+            font-size: 0.75rem; }
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container img {
+            z-index: 7;
+            width: 130px;
+            max-height: 185px;
+            position: absolute;
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            opacity: 0.15;
+            overflow: hidden; }
+          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .info-footer {
+            font-size: 0.5rem;
+            margin-bottom: 0.6rem; }
+
+.sellProperty-container {
+  overflow-y: scroll; }
+  .sellProperty-container .layer {
+    z-index: 5; }
 
 .dices-component .title {
   padding: 20px;

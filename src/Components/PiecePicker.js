@@ -55,7 +55,7 @@ class PiecePicker extends Component {
                     for (let uuid in newUsersState) {
                         newUsersState[uuid].piece_id = pieces[newUsersState[uuid].piece_id];
                         newUsersState[uuid].balance = 1500;
-                        newUsersState[uuid].properties = [];
+                        newUsersState[uuid].properties = {};
                         newUsersState[uuid].cards = [];
                         newUsersState[uuid].bankrupt = false;
                         newUsersState[uuid].turn = turn;
