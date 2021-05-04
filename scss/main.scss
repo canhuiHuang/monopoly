@@ -10,22 +10,6 @@
 $body-font: "Oswald", sans-serif;
 
 // =================
-// COLORS
-// =================
-
-$black: #080808;
-$brown: #640303;
-$board: #fafaf8;
-$dark-purple: #5e3577;
-$light-blue: #d2eaf5;
-$purple: #b02f7c;
-$orange: #fa811d;
-$red: #f50c2b;
-$yellow: #ffed20;
-$green: #41994e;
-$dark-blue: #5a6dba;
-
-// =================
 // GLOBAL
 // =================
 
@@ -35,7 +19,7 @@ $dark-blue: #5a6dba;
 
 body {
   margin: 0;
-  background-color: #26252c;
+  background-color: $background-color;
   background-position: center;
   background-repeat: repeat;
   background-size: 100px;
@@ -123,6 +107,7 @@ h6 {
   transform: scale(0.9);
   transition: transform ease 0.3s;
   text-transform: uppercase;
+  margin-bottom: 14rem;
 }
 
 .board {

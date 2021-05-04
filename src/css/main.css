@@ -350,6 +350,40 @@
   .sellProperty-container .layer {
     z-index: 5; }
 
+.card-list {
+  display: flex;
+  text-align: center;
+  position: fixed;
+  z-index: 2;
+  bottom: -21rem;
+  left: 12rem;
+  background-color: rgba(22, 22, 24, 0.85);
+  padding: 0.8rem 1.3rem;
+  border-radius: 10px;
+  padding-right: 160px;
+  padding-bottom: 10rem;
+  transition: bottom ease-in-out 0.2s;
+  cursor: pointer; }
+  .card-list:hover {
+    bottom: -8.5rem; }
+  .card-list.show {
+    bottom: -8.5rem; }
+  .card-list .propertyCard {
+    border-radius: 2px;
+    cursor: initial;
+    z-index: 2;
+    margin: 0;
+    box-shadow: -1rem 0 1.2rem #26252c;
+    transition: 0.2s; }
+    .card-list .propertyCard:not(:first-child) {
+      margin-left: -130px; }
+    .card-list .propertyCard:hover {
+      transform: translateY(-1rem) scale(1.11);
+      margin-left: 1.1rem;
+      margin-right: 1.1rem; }
+    .card-list .propertyCard:hover ~ .propertyCard {
+      transform: translateX(130px); }
+
 .dices-component .title {
   padding: 20px;
   font: 16px/20px Arial, sans-serif;
@@ -583,7 +617,8 @@ h6 {
   padding-right: 50px;
   transform: scale(0.9);
   transition: transform ease 0.3s;
-  text-transform: uppercase; }
+  text-transform: uppercase;
+  margin-bottom: 14rem; }
 
 .board {
   display: grid;

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 // Pass property object as props.
 function PropertyCard({property}) {
@@ -22,4 +22,4 @@ function PropertyCard({property}) {
     )
 }
 
-export default PropertyCard
+export default PropertyCard;

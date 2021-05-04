@@ -418,3 +418,46 @@
     z-index: 5;
   }
 }
+
+.card-list {
+  display: flex;
+  text-align: center;
+  position: fixed;
+  z-index: 2;
+  bottom: -21rem;
+  left: 12rem;
+  background-color: rgba(22, 22, 24, 0.85);
+  padding: 0.8rem 1.3rem;
+  border-radius: 10px;
+  padding-right: 160px;
+  padding-bottom: 10rem;
+  transition: bottom ease-in-out 0.2s;
+  cursor: pointer;
+  &:hover {
+    bottom: -8.5rem;
+  }
+  &.show {
+    bottom: -8.5rem;
+  }
+
+  .propertyCard {
+    border-radius: 2px;
+    cursor: initial;
+    z-index: 2;
+    margin: 0;
+    box-shadow: -1rem 0 1.2rem $background-color;
+    transition: 0.2s;
+
+    &:not(:first-child) {
+      margin-left: -130px;
+    }
+    &:hover {
+      transform: translateY(-1rem) scale(1.11);
+      margin-left: 1.1rem;
+      margin-right: 1.1rem;
+    }
+    &:hover ~ .propertyCard {
+      transform: translateX(130px);
+    }
+  }
+}

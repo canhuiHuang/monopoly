@@ -114,7 +114,6 @@ export class Game extends Component {
             console.log(curQueue);
             (curQueue.shift())();
             
-
             this.setState({
                 eventsQueue: curQueue
             })
@@ -286,7 +285,7 @@ export class Game extends Component {
                 })}>Sell</button>}
                 {this.state.showSellWindow && (!this.state.sellDisabled? <SellWindow pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} users={this.state.users} myUUID={this.props.myUUID} onDone={this.onDone} onOffer={this.onOffer}/> : <WaitingForOffer />)}
                 {/* {<Dices onClick={this.onThrow} throwAnimation={this.throwAnimation}/>} */}
-                <Deck />
+                <Deck properties={this.state.users[this.props.myUUID].properties}/>
                 <Board users={this.state.users} />
                 <UsersStats users={this.state.users} turn={this.state.turn}/>
             </div>
