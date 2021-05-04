@@ -204,6 +204,11 @@
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16), 0 1px 6px rgba(0, 0, 0, 0.23);
   transition: transform 0.12s ease;
   cursor: pointer; }
+  .btn:disabled {
+    cursor: not-allowed;
+    background-color: #969292; }
+    .btn:disabled:hover {
+      transform: none; }
 
 .btn:hover {
   transform: scale(1.03); }
@@ -284,60 +289,61 @@
       flex-direction: column;
       align-items: center;
       margin: 0.6rem; }
-      .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard {
-        background-color: whitesmoke;
-        margin: 0.3rem;
-        padding: 5px 2px;
-        transition: transform 0.1s ease-in; }
-        .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard:hover {
-          transform: scale(1.03); }
-        .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container {
-          border: 1px solid #333;
-          padding: 0;
-          margin: 0.2rem;
-          width: 186px;
-          position: relative;
-          font-size: 0.8rem;
-          font-weight: 530; }
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .name {
-            border: 1px solid #333;
-            margin: 5px 3px;
-            min-height: 34px;
-            max-height: 36px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            padding-top: 9px; }
-            .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .name.orange {
-              color: #333; }
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .rent {
-            margin-top: 0.5rem; }
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .house {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.1rem;
-            margin-left: 0.9rem;
-            margin-right: 0.9rem; }
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .hotel {
-            display: flex;
-            justify-content: center; }
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .mortgage,
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .houses-cost,
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .hotel-cost {
-            font-size: 0.75rem; }
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container img {
-            z-index: 7;
-            width: 130px;
-            max-height: 185px;
-            position: absolute;
-            margin-left: auto;
-            margin-right: auto;
-            left: 0;
-            right: 0;
-            opacity: 0.15;
-            overflow: hidden; }
-          .sellProperty-window .propertyCards .propertyCard-with-btns .propertyCard .propertyCard-container .info-footer {
-            font-size: 0.5rem;
-            margin-bottom: 0.6rem; }
+
+.propertyCard {
+  background-color: whitesmoke;
+  margin: 0.3rem;
+  padding: 5px 2px;
+  transition: transform 0.1s ease-in; }
+  .propertyCard:hover {
+    transform: scale(1.03); }
+  .propertyCard .propertyCard-container {
+    border: 1px solid #333;
+    padding: 0;
+    margin: 0.2rem;
+    width: 186px;
+    position: relative;
+    font-size: 0.8rem;
+    font-weight: 530; }
+    .propertyCard .propertyCard-container .name {
+      border: 1px solid #333;
+      margin: 5px 3px;
+      min-height: 34px;
+      max-height: 36px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      padding-top: 9px; }
+      .propertyCard .propertyCard-container .name.orange {
+        color: #333; }
+    .propertyCard .propertyCard-container .rent {
+      margin-top: 0.5rem; }
+    .propertyCard .propertyCard-container .house {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.1rem;
+      margin-left: 0.9rem;
+      margin-right: 0.9rem; }
+    .propertyCard .propertyCard-container .hotel {
+      display: flex;
+      justify-content: center; }
+    .propertyCard .propertyCard-container .mortgage,
+    .propertyCard .propertyCard-container .houses-cost,
+    .propertyCard .propertyCard-container .hotel-cost {
+      font-size: 0.75rem; }
+    .propertyCard .propertyCard-container img {
+      z-index: 7;
+      width: 130px;
+      max-height: 185px;
+      position: absolute;
+      margin-left: auto;
+      margin-right: auto;
+      left: 0;
+      right: 0;
+      opacity: 0.15;
+      overflow: hidden; }
+    .propertyCard .propertyCard-container .info-footer {
+      font-size: 0.5rem;
+      margin-bottom: 0.6rem; }
 
 .sellProperty-container {
   overflow-y: scroll; }
@@ -449,6 +455,61 @@
 .dices-component .dot_3, .dices-component .dot_6, .dices-component .dot_9 {
   left: 80px; }
 
+.help_stepbro {
+  z-index: 3;
+  height: 100vh;
+  width: 100vw;
+  font-family: Helvetica; }
+
+.loader {
+  height: 20px;
+  width: 800px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto; }
+
+.loader--text {
+  position: absolute;
+  top: 200%;
+  left: 2rem;
+  margin: auto; }
+
+.loader--text:after {
+  content: "Waiting for offer's response";
+  color: rgba(228, 166, 51, 0.8);
+  font-size: 3rem;
+  font-weight: bold;
+  animation-name: loading-text;
+  animation-duration: 3s;
+  animation-iteration-count: infinite; }
+
+@keyframes loader {
+  15% {
+    transform: translateX(0); }
+  45% {
+    transform: translateX(780px); }
+  65% {
+    transform: translateX(780px); }
+  95% {
+    transform: translateX(0); } }
+
+@keyframes loading-text {
+  0% {
+    content: "Waiting for offer's response";
+    font-size: 3rem; }
+  25% {
+    content: "Waiting for offer's response.";
+    font-size: 2.98rem; }
+  50% {
+    content: "Waiting for offer's response..";
+    font-size: 3rem; }
+  75% {
+    content: "Waiting for offer's response...";
+    font-size: 3rem; } }
+
 * {
   box-sizing: border-box; }
 
@@ -461,7 +522,19 @@ body {
   font-family: "Oswald", sans-serif;
   font-weight: 400;
   font-size: 10px;
-  color: #080808; }
+  color: #080808;
+  /* Track */
+  /* Handle */
+  /* Handle on hover */ }
+  body ::-webkit-scrollbar {
+    width: 13px; }
+  body ::-webkit-scrollbar-track {
+    background: transparent; }
+  body ::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 5px; }
+  body ::-webkit-scrollbar-thumb:hover {
+    background: #444; }
 
 #root > div {
   display: flex;

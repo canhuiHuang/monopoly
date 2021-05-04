@@ -246,6 +246,14 @@
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16), 0 1px 6px rgba(0, 0, 0, 0.23);
   transition: transform 0.12s ease;
   cursor: pointer;
+  &:disabled {
+    cursor: not-allowed;
+    background-color: rgb(150, 146, 146);
+
+    &:hover {
+      transform: none;
+    }
+  }
 }
 .btn:hover {
   transform: scale(1.03);
@@ -330,79 +338,80 @@
       flex-direction: column;
       align-items: center;
       margin: 0.6rem;
-      .propertyCard {
-        background-color: rgb(245, 245, 245);
-        margin: 0.3rem;
-        padding: 5px 2px;
-        transition: transform 0.1s ease-in;
-
-        &:hover {
-          transform: scale(1.03);
-        }
-
-        .propertyCard-container {
-          border: 1px solid #333;
-          padding: 0;
-          margin: 0.2rem;
-          width: 186px;
-          position: relative;
-          font-size: 0.8rem;
-          font-weight: 530;
-
-          .name {
-            border: 1px solid #333;
-            margin: 5px 3px;
-            min-height: 34px;
-            max-height: 36px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            padding-top: 9px;
-
-            &.orange {
-              color: #333;
-            }
-          }
-          .rent {
-            margin-top: 0.5rem;
-          }
-          .house {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.1rem;
-            margin-left: 0.9rem;
-            margin-right: 0.9rem;
-          }
-          .hotel {
-            display: flex;
-            justify-content: center;
-          }
-          .mortgage,
-          .houses-cost,
-          .hotel-cost {
-            font-size: 0.75rem;
-          }
-
-          img {
-            z-index: 7;
-            width: 130px;
-            max-height: 185px;
-            position: absolute;
-            margin-left: auto;
-            margin-right: auto;
-            left: 0;
-            right: 0;
-            opacity: 0.15;
-            overflow: hidden;
-          }
-          .info-footer {
-            font-size: 0.5rem;
-            margin-bottom: 0.6rem;
-          }
-        }
-      }
     }
   }
 }
+.propertyCard {
+  background-color: rgb(245, 245, 245);
+  margin: 0.3rem;
+  padding: 5px 2px;
+  transition: transform 0.1s ease-in;
+
+  &:hover {
+    transform: scale(1.03);
+  }
+
+  .propertyCard-container {
+    border: 1px solid #333;
+    padding: 0;
+    margin: 0.2rem;
+    width: 186px;
+    position: relative;
+    font-size: 0.8rem;
+    font-weight: 530;
+
+    .name {
+      border: 1px solid #333;
+      margin: 5px 3px;
+      min-height: 34px;
+      max-height: 36px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      padding-top: 9px;
+
+      &.orange {
+        color: #333;
+      }
+    }
+    .rent {
+      margin-top: 0.5rem;
+    }
+    .house {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.1rem;
+      margin-left: 0.9rem;
+      margin-right: 0.9rem;
+    }
+    .hotel {
+      display: flex;
+      justify-content: center;
+    }
+    .mortgage,
+    .houses-cost,
+    .hotel-cost {
+      font-size: 0.75rem;
+    }
+
+    img {
+      z-index: 7;
+      width: 130px;
+      max-height: 185px;
+      position: absolute;
+      margin-left: auto;
+      margin-right: auto;
+      left: 0;
+      right: 0;
+      opacity: 0.15;
+      overflow: hidden;
+    }
+    .info-footer {
+      font-size: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+  }
+}
+
 .sellProperty-container {
   overflow-y: scroll;
   .layer {

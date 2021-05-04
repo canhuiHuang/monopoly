@@ -27,7 +27,7 @@ export class SellWindow extends Component {
         );
         for(let uuid in this.props.users) {
             i++;  
-            if(!this.props.users[uuid].bankrupt) {
+            if(!this.props.users[uuid].bankrupt && uuid !== this.props.myUUID) {
                 lista.push(
                     <div key={i} className="userCard" onClick={() => this.selectUser(uuid)}>
                         <div className={`icon player-${this.props.users[uuid].turn}`} ><img src={this.props.users[uuid].piece_id} alt={this.props.users[uuid].name}/></div>
@@ -42,7 +42,7 @@ export class SellWindow extends Component {
     render() {
         return (
             <div className="sell-container">
-                {this.state.selectedUser !== null && <SellPropertiesWindow pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} selectedUser={this.state.selectedUser} users={this.props.users} myUUID={this.props.myUUID} selectUser={this.selectUser}/>}
+                {this.state.selectedUser !== null && <SellPropertiesWindow pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} onOffer={this.props.onOffer} selectedUser={this.state.selectedUser} users={this.props.users} myUUID={this.props.myUUID} selectUser={this.selectUser}/>}
                 <div className="sellWindow">
                     <div className="title-sell">Who are you selling to?</div>
                     <div className="userCards">

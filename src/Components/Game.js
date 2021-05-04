@@ -6,6 +6,8 @@ import Dices from './Dices';
 import Swal from "sweetalert2";
 import properties from './Data/properties.json';
 import SellWindow from './SellWindow';
+import WaitingForOffer from './WaitingForOffer';
+import Deck from './Deck';
 
 import arizonaCorp from './cardImages/arizonaCorp.png';
 import cheetosCorp from './cardImages/cheetosCorp.png'; 
@@ -48,7 +50,8 @@ export class Game extends Component {
             turn: 1,
             eventsQueue: [this.startTurnEvent],
             bankProperties: bankProperties,
-            showSellWindow: false
+            showSellWindow: false,
+            sellDisabled: false
         }
         
         this.throwCounter = 1;
@@ -78,6 +81,11 @@ export class Game extends Component {
         this.props.pubnub.publish({
             message: {getDicesNumbers: true},
             channel: this.props.gameChannel
+        })
+    }
+    onOffer = () => {
+        this.setState({
+            sellDisabled: true
         })
     }
 
@@ -122,6 +130,49 @@ export class Game extends Component {
                     })
                 }
 
+                // Listen for successful offers
+                if (msg.message.transactionDone && (msg.message.successful_seller === this.props.myUUID || msg.message.successful_buyer === this.props.myUUID)) {
+                    if (msg.message.soldToBank) {
+                        Swal.fire('Order completed!', '', 'success');
+                    } else {
+                        Swal.fire('Offer Taken!', '', 'success');
+                    }
+                    this.setState({
+                        sellDisabled: false
+                    })
+                }
+                // Listen for unsucessful offers
+                if (msg.message.deny && msg.message.sellerUUID === this.props.myUUID ) {
+                    Swal.fire('Offer Denied!', '', 'error');
+                    this.setState({
+                        sellDisabled: false
+                    })
+                }
+
+                // Listen for Sell offers as Buyer
+                if (msg.message.sellProperty && msg.message.user === this.props.myUUID) {
+                    Swal.fire({
+                        title: `${this.state.users[msg.publisher].name} wants to sell you ${bankProperties[msg.message.property].data.property_name} for $${msg.message.price}`,
+                        showDenyButton: true,
+                        showCancelButton: false,
+                        confirmButtonText: `Take Offer`,
+                        denyButtonText: `Deny Offer`,
+                      }).then((result) => { 
+                        if (result.isConfirmed) {
+                            this.props.pubnub.publish({
+                                message: {sellerUUID: msg.publisher, buyerUUID: this.props.myUUID, accept: true, property: msg.message.property, offer: msg.message.price},
+                                channel: this.props.gameChannel
+                            })
+                        } else if (result.isDenied || result.isDismissed) {
+                            this.props.pubnub.publish({
+                                message: {sellerUUID: msg.publisher, deny: true, property: msg.message.property},
+                                channel: this.props.gameChannel
+                            })
+                          Swal.fire('Offer Denied', '', 'info');
+                        }
+                      })
+                }
+
                 // Someone left
                 if (msg.message.userUUID) {
                     const curUsers = this.state.users;
@@ -149,27 +200,53 @@ export class Game extends Component {
     
     
                     }
+                    // Listen for succesfull offers
+                    else if (msg.message.accept) {
+                        const curUsers = this.state.users;
 
-                    // Sell Property
-                    else if (msg.message.sellProperty) {
-                        if (msg.message.user === 'bank'){
-                            const curUsers = this.state.users;
+                        // Seller
+                        curUsers[msg.message.sellerUUID].balance += parseInt(msg.message.offer);
+                        const transferedProperty = curUsers[msg.message.sellerUUID].properties[msg.message.property];
+                        delete curUsers[msg.message.sellerUUID].properties[msg.message.property];
 
-                            const amountOfHouses = curUsers[msg.publisher].properties[msg.message.property].houses;
-                            
-                            const earning = amountOfHouses*Math.round(curUsers[msg.publisher].properties[msg.message.property].data.house_cost / 2) + curUsers[msg.publisher].properties[msg.message.property].data.mortgage_value;
-                            curUsers[msg.publisher].balance += earning;
+                        // Buyer
+                        curUsers[msg.message.buyerUUID].properties[msg.message.property] = transferedProperty;
+                        curUsers[msg.message.buyerUUID].balance -= msg.message.offer;
 
-                            delete curUsers[msg.publisher].properties[msg.message.property];
+                        this.setState({
+                            users: curUsers
+                        })
 
-                            this.setState({
-                                users: curUsers
-                            });
-                            this.props.pubnub.publish({
-                                message: {users: this.state.users, transactionDone: true},
-                                channel: this.props.gameChannel
-                            })
-                        }
+                        // Publish results
+                        this.props.pubnub.publish({
+                            message: {
+                                users: this.state.users, 
+                                transactionDone: true, 
+                                successful_seller: msg.message.sellerUUID, 
+                                successful_buyer: msg.message.buyerUUID, 
+                                broadcast_message: `${curUsers[msg.message.sellerUUID].name} sold ${bankProperties[msg.message.property].property_name} to ${curUsers[msg.message.buyerUUID].name} for $${msg.message.offer}.`},
+                            channel: this.props.gameChannel
+                        })
+                    }
+
+                    // Sell Property to bank
+                    else if (msg.message.sellProperty && msg.message.user === 'bank') {
+                        const curUsers = this.state.users;
+
+                        const amountOfHouses = curUsers[msg.publisher].properties[msg.message.property].houses;
+                        
+                        const earning = amountOfHouses*Math.round(curUsers[msg.publisher].properties[msg.message.property].data.house_cost / 2) + curUsers[msg.publisher].properties[msg.message.property].data.mortgage_value;
+                        curUsers[msg.publisher].balance += earning;
+
+                        delete curUsers[msg.publisher].properties[msg.message.property];
+
+                        this.setState({
+                            users: curUsers
+                        });
+                        this.props.pubnub.publish({
+                            message: {successful_seller: msg.publisher, soldToBank: true,users: this.state.users, transactionDone: true, broadcast_message: `${curUsers[msg.publisher].name} sold ${bankProperties[msg.message.property].property_name} to the bank for $${earning}.`},
+                            channel: this.props.gameChannel
+                        })
                     }
 
                     // Sell Houses to Bank
@@ -186,7 +263,7 @@ export class Game extends Component {
                             users: curUsers
                         });
                         this.props.pubnub.publish({
-                            message: {users: this.state.users, transactionDone: true},
+                            message: {successful_seller: msg.publisher, soldToBank: true,users: this.state.users, transactionDone: true, broadcast_message: `${curUsers[msg.publisher].name} sold the houses of ${bankProperties[msg.message.property].property_name} to the bank for $${earning}.`},
                             channel: this.props.gameChannel
                         })
                     }
@@ -204,11 +281,12 @@ export class Game extends Component {
     render() {
         return (
             <div className="game">
-                {this.state.turn === this.props.myTurn && <button className="btn btn-sell" onClick={() => this.setState({
+                {this.state.turn === this.props.myTurn && <button disabled={this.state.sellDisabled}className="btn btn-sell" onClick={() => this.setState({
                     showSellWindow: !this.state.showSellWindow
                 })}>Sell</button>}
-                {this.state.showSellWindow && <SellWindow pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} users={this.state.users} myUUID={this.props.myUUID} onDone={this.onDone}/>}
+                {this.state.showSellWindow && (!this.state.sellDisabled? <SellWindow pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} users={this.state.users} myUUID={this.props.myUUID} onDone={this.onDone} onOffer={this.onOffer}/> : <WaitingForOffer />)}
                 {/* {<Dices onClick={this.onThrow} throwAnimation={this.throwAnimation}/>} */}
+                <Deck />
                 <Board users={this.state.users} />
                 <UsersStats users={this.state.users} turn={this.state.turn}/>
             </div>
