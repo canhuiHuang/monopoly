@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Armata&display=swap");
 .piece-picker {
   display: flex;
   flex-wrap: wrap;
@@ -217,9 +218,25 @@
   background-color: #d44949;
   color: #f1f1f1;
   position: fixed;
-  bottom: 8px;
+  bottom: 49px;
+  padding: 0.85rem 2.4rem;
+  width: 11rem;
   left: 2.4rem;
-  z-index: 3; }
+  z-index: 3;
+  border: #202020 solid 1px; }
+
+.btn-dices {
+  background-color: #b6eeaf;
+  border-radius: 3px;
+  width: 11.5rem;
+  padding: 0.9rem 2.4rem;
+  position: fixed;
+  bottom: 49px;
+  left: 16rem;
+  z-index: 3;
+  border: #1d1c1c solid 1px; }
+  .btn-dices:hover {
+    border: #aff5a8 solid 1px; }
 
 .sellProperty-btn,
 .sellHouses-btn {
@@ -268,7 +285,7 @@
 .sellProperty-window {
   border-radius: 8px;
   padding: 2.4rem;
-  background-color: white;
+  background-color: #ecf0f1;
   position: fixed;
   align-self: center;
   text-align: center;
@@ -299,12 +316,37 @@
     transform: scale(1.03); }
   .propertyCard .propertyCard-container {
     border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
     padding: 0;
     margin: 0.2rem;
     width: 186px;
+    height: auto;
     position: relative;
     font-size: 0.8rem;
     font-weight: 530; }
+    .propertyCard .propertyCard-container .line {
+      width: 170px;
+      height: 2px;
+      background-color: #333;
+      border-radius: 1px;
+      align-self: center; }
+    .propertyCard .propertyCard-container .line-bottom {
+      margin-bottom: 15px; }
+    .propertyCard .propertyCard-container .special-name {
+      padding-top: 2px;
+      padding-bottom: 2px;
+      font-size: 0.8rem;
+      font-weight: 750; }
+    .propertyCard .propertyCard-container .desc {
+      text-align: left;
+      text-indent: 13px;
+      margin: 2px 5px;
+      font-size: 0.7rem; }
+    .propertyCard .propertyCard-container .mortgage-transport,
+    .propertyCard .propertyCard-container .mortgage-utility {
+      margin-top: 0.9rem;
+      margin-bottom: 0.75rem; }
     .propertyCard .propertyCard-container .name {
       border: 1px solid #333;
       margin: 5px 3px;
@@ -331,6 +373,7 @@
     .propertyCard .propertyCard-container .hotel-cost {
       font-size: 0.75rem; }
     .propertyCard .propertyCard-container img {
+      border-radius: 13px;
       z-index: 7;
       width: 130px;
       max-height: 185px;
@@ -339,8 +382,20 @@
       margin-right: auto;
       left: 0;
       right: 0;
+      bottom: 2.5rem;
       opacity: 0.15;
       overflow: hidden; }
+    .propertyCard .propertyCard-container .transport,
+    .propertyCard .propertyCard-container .utility {
+      margin-top: 8px;
+      margin-bottom: 7px;
+      position: static;
+      opacity: 1;
+      width: 60px;
+      height: 60px; }
+    .propertyCard .propertyCard-container .transport {
+      width: 72px;
+      height: 72px; }
     .propertyCard .propertyCard-container .info-footer {
       font-size: 0.5rem;
       margin-bottom: 0.6rem; }
@@ -355,8 +410,8 @@
   text-align: center;
   position: fixed;
   z-index: 2;
-  bottom: -21rem;
-  left: 12rem;
+  bottom: -19.5rem;
+  left: 28.5rem;
   background-color: rgba(22, 22, 24, 0.85);
   padding: 0.8rem 1.3rem;
   border-radius: 10px;
@@ -365,9 +420,9 @@
   transition: bottom ease-in-out 0.2s;
   cursor: pointer; }
   .card-list:hover {
-    bottom: -8.5rem; }
+    bottom: -7.2rem; }
   .card-list.show {
-    bottom: -8.5rem; }
+    bottom: -7.2rem; }
   .card-list .propertyCard {
     border-radius: 2px;
     cursor: initial;
@@ -391,8 +446,12 @@
   text-align: center; }
 
 .dices-component .container {
+  z-index: 2;
+  position: fixed;
   display: flex;
-  justify-content: center; }
+  justify-content: center;
+  bottom: 95px;
+  left: 17px; }
 
 .dices-component .dice {
   width: 100px;
@@ -416,9 +475,10 @@
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 2px;
   overflow: hidden;
-  background: #c00;
+  background: #f5eae0;
   -webkit-backface-visibility: hidden;
-  backface-visibility: hidden; }
+  backface-visibility: hidden;
+  box-shadow: 0 5px 6px rgba(0, 0, 0, 0.16), 0 5px 6px rgba(0, 0, 0, 0.23); }
 
 .dices-component .side_1 {
   transform: translateZ(-50px) rotateX(180deg); }
@@ -468,25 +528,37 @@
   height: 20px;
   margin: -10px 0 0 -10px;
   border-radius: 10px;
-  background: #fff;
-  box-shadow: inset 0 0 10px rgba(204, 0, 0, 0.5); }
+  background: #2e2d2d;
+  box-shadow: inset 0 0 10px rgba(24, 24, 24, 0.5); }
 
-.dices-component .dot_1, .dices-component .dot_2, .dices-component .dot_3 {
+.dices-component .dot_1,
+.dices-component .dot_2,
+.dices-component .dot_3 {
   top: 20px; }
 
-.dices-component .dot_4, .dices-component .dot_5, .dices-component .dot_6 {
+.dices-component .dot_4,
+.dices-component .dot_5,
+.dices-component .dot_6 {
   top: 50px; }
 
-.dices-component .dot_7, .dices-component .dot_8, .dices-component .dot_9 {
+.dices-component .dot_7,
+.dices-component .dot_8,
+.dices-component .dot_9 {
   top: 80px; }
 
-.dices-component .dot_1, .dices-component .dot_4, .dices-component .dot_7 {
+.dices-component .dot_1,
+.dices-component .dot_4,
+.dices-component .dot_7 {
   left: 20px; }
 
-.dices-component .dot_2, .dices-component .dot_5, .dices-component .dot_8 {
+.dices-component .dot_2,
+.dices-component .dot_5,
+.dices-component .dot_8 {
   left: 50px; }
 
-.dices-component .dot_3, .dices-component .dot_6, .dices-component .dot_9 {
+.dices-component .dot_3,
+.dices-component .dot_6,
+.dices-component .dot_9 {
   left: 80px; }
 
 .help_stepbro {
@@ -553,8 +625,8 @@ body {
   background-position: center;
   background-repeat: repeat;
   background-size: 100px;
-  font-family: "Oswald", sans-serif;
-  font-weight: 400;
+  font-family: "Oswald", sans-serif, Tahoma, Verdana;
+  font-weight: 520;
   font-size: 10px;
   color: #080808;
   /* Track */
@@ -630,6 +702,12 @@ h6 {
   height: 994px;
   background: #3f3e3d;
   border: 2px solid #080808; }
+  .board .title {
+    grid-column: 1 / 9;
+    grid-row: 4;
+    font-size: 90px;
+    font-weight: 420;
+    letter-spacing: 12px; }
 
 .center {
   grid-column: 2 / 11;
@@ -640,13 +718,6 @@ h6 {
   grid-template-rows: repeat(7, 1fr);
   justify-items: center;
   align-items: center; }
-
-.title {
-  grid-column: 1 / 9;
-  grid-row: 4;
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 3px; }
 
 .community-chest-deck {
   grid-column: 2 / 4;
@@ -723,11 +794,22 @@ h6 {
     width: 80px; }
   .space .name,
   .space .instructions {
-    padding-left: 15px;
-    padding-right: 15px; }
+    word-wrap: break-word;
+    z-index: 1;
+    transform: translateY(-1px);
+    padding-left: 8px;
+    padding-right: 8px; }
+  .space img {
+    border-radius: 10px;
+    opacity: 0.8;
+    position: absolute;
+    width: 62px;
+    height: 62px;
+    bottom: 14px;
+    right: 7px; }
   .space .price {
     font-size: 7px;
-    font-weight: 400;
+    font-weight: 500;
     padding-bottom: 5px; }
 
 .corner .container {
@@ -919,3 +1001,25 @@ h6 {
 .three-line-name {
   position: relative;
   top: 5px; }
+
+.pieces {
+  z-index: 2;
+  position: absolute;
+  bottom: 150px;
+  right: 164px; }
+  .pieces .piece {
+    transition: transform 0.2s ease-in-out;
+    position: absolute; }
+    .pieces .piece img {
+      width: 49px; }
+
+.barra {
+  border-radius: 15px 15px 0 0;
+  z-index: 3;
+  bottom: -5px;
+  position: fixed;
+  width: 100vw;
+  height: 40px;
+  background: #262429;
+  border: rgba(32, 32, 32, 0.8) solid 3px;
+  box-shadow: 0 1px 9px rgba(19, 14, 14, 0.16), 0 6px 6px rgba(0, 0, 0, 0.23); }

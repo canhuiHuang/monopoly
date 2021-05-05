@@ -1,6 +1,6 @@
-import React from 'react'
+import React,{useEffect, useRef} from 'react';
 
-function Dices({onThrow}) {
+function Dices({dicesValues, rollIt}) {
 
         let rollTimeout;
         
@@ -30,12 +30,22 @@ function Dices({onThrow}) {
                 setVals(dice1Value,dice2Value);
             }, 1000);
         }
-      
-        window.addEventListener('click', ()=>{onThrow()});
+
+        const mounted = useRef();
+        useEffect(() => {
+        if (!mounted.current) {
+            // do componentDidMount logic
+            mounted.current = true;
+        } else {
+            // do componentDidUpdate logic
+            if (rollIt){
+                rollDice(dicesValues.value1, dicesValues.value2);
+            }
+        }
+        });
 
     return (
         <div className="dices-component">
-            <div className="title">Click to roll the dice</div>
             <div className="container">
             <div className="dice dice_1">
                 <div className="cube">

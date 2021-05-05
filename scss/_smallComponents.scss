@@ -255,6 +255,7 @@
     }
   }
 }
+
 .btn:hover {
   transform: scale(1.03);
 }
@@ -262,9 +263,27 @@
   background-color: rgb(212, 73, 73);
   color: rgb(241, 241, 241);
   position: fixed;
-  bottom: 8px;
+  bottom: 49px;
+  padding: 0.85rem 2.4rem;
+  width: 11rem;
   left: 2.4rem;
   z-index: 3;
+  border: rgb(32, 32, 32) solid 1px;
+}
+.btn-dices {
+  background-color: rgb(182, 238, 175);
+  border-radius: 3px;
+  width: 11.5rem;
+  padding: 0.9rem 2.4rem;
+  position: fixed;
+  bottom: 49px;
+  left: 16rem;
+  z-index: 3;
+  border: rgb(29, 28, 28) solid 1px;
+
+  &:hover {
+    border: rgb(175, 245, 168) solid 1px;
+  }
 }
 .sellProperty-btn,
 .sellHouses-btn {
@@ -315,7 +334,7 @@
 .sellProperty-window {
   border-radius: 8px;
   padding: 2.4rem;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(236, 240, 241);
   position: fixed;
   align-self: center;
   text-align: center;
@@ -353,13 +372,44 @@
 
   .propertyCard-container {
     border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
     padding: 0;
     margin: 0.2rem;
     width: 186px;
+    height: auto;
     position: relative;
     font-size: 0.8rem;
     font-weight: 530;
 
+    .line {
+      width: 170px;
+      height: 2px;
+      background-color: #333;
+      border-radius: 1px;
+      align-self: center;
+    }
+    .line-bottom {
+      margin-bottom: 15px;
+    }
+
+    .special-name {
+      padding-top: 2px;
+      padding-bottom: 2px;
+      font-size: 0.8rem;
+      font-weight: 750;
+    }
+    .desc {
+      text-align: left;
+      text-indent: 13px;
+      margin: 2px 5px;
+      font-size: 0.7rem;
+    }
+    .mortgage-transport,
+    .mortgage-utility {
+      margin-top: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
     .name {
       border: 1px solid #333;
       margin: 5px 3px;
@@ -394,6 +444,7 @@
     }
 
     img {
+      border-radius: 13px;
       z-index: 7;
       width: 130px;
       max-height: 185px;
@@ -402,8 +453,22 @@
       margin-right: auto;
       left: 0;
       right: 0;
+      bottom: 2.5rem;
       opacity: 0.15;
       overflow: hidden;
+    }
+    .transport,
+    .utility {
+      margin-top: 8px;
+      margin-bottom: 7px;
+      position: static;
+      opacity: 1;
+      width: 60px;
+      height: 60px;
+    }
+    .transport {
+      width: 72px;
+      height: 72px;
     }
     .info-footer {
       font-size: 0.5rem;
@@ -424,8 +489,8 @@
   text-align: center;
   position: fixed;
   z-index: 2;
-  bottom: -21rem;
-  left: 12rem;
+  bottom: -19.5rem;
+  left: 28.5rem;
   background-color: rgba(22, 22, 24, 0.85);
   padding: 0.8rem 1.3rem;
   border-radius: 10px;
@@ -434,10 +499,10 @@
   transition: bottom ease-in-out 0.2s;
   cursor: pointer;
   &:hover {
-    bottom: -8.5rem;
+    bottom: -7.2rem;
   }
   &.show {
-    bottom: -8.5rem;
+    bottom: -7.2rem;
   }
 
   .propertyCard {

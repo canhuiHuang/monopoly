@@ -2,12 +2,13 @@
 @import "variables";
 @import "dices";
 @import "loader";
+@import url("https://fonts.googleapis.com/css2?family=Armata&display=swap");
 
 // =================
 // TYPOGRAPHY
 // =================
 
-$body-font: "Oswald", sans-serif;
+$body-font: "Oswald", sans-serif, Tahoma, Verdana;
 
 // =================
 // GLOBAL
@@ -24,7 +25,7 @@ body {
   background-repeat: repeat;
   background-size: 100px;
   font-family: $body-font;
-  font-weight: 400;
+  font-weight: 520;
   font-size: 10px;
   color: $black;
 
@@ -120,6 +121,14 @@ h6 {
   height: 994px;
   background: #3f3e3d;
   border: 2px solid $black;
+
+  .title {
+    grid-column: 1 / 9;
+    grid-row: 4;
+    font-size: 90px;
+    font-weight: 420;
+    letter-spacing: 12px;
+  }
 }
 
 .center {
@@ -131,14 +140,6 @@ h6 {
   grid-template-rows: repeat(7, 1fr);
   justify-items: center;
   align-items: center;
-}
-
-.title {
-  grid-column: 1 / 9;
-  grid-row: 4;
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 3px;
 }
 
 .community-chest-deck {
@@ -246,13 +247,25 @@ h6 {
 
   .name,
   .instructions {
-    padding-left: 15px;
-    padding-right: 15px;
+    word-wrap: break-word;
+    z-index: 1;
+    transform: translateY(-1px);
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  img {
+    border-radius: 10px;
+    opacity: 0.8;
+    position: absolute;
+    width: 62px;
+    height: 62px;
+    bottom: 14px;
+    right: 7px;
   }
 
   .price {
     font-size: 7px;
-    font-weight: 400;
+    font-weight: 500;
     padding-bottom: 5px;
   }
 }
@@ -539,4 +552,31 @@ h6 {
 .three-line-name {
   position: relative;
   top: 5px;
+}
+
+.pieces {
+  z-index: 2;
+  position: absolute;
+  bottom: 150px;
+  right: 164px;
+  .piece {
+    transition: transform 0.2s ease-in-out;
+    position: absolute;
+
+    img {
+      width: 49px;
+    }
+  }
+}
+
+.barra {
+  border-radius: 15px 15px 0 0;
+  z-index: 3;
+  bottom: -5px;
+  position: fixed;
+  width: 100vw;
+  height: 40px;
+  background: rgb(38, 36, 41);
+  border: rgba(32, 32, 32, 0.8) solid 3px;
+  box-shadow: 0 1px 9px rgba(19, 14, 14, 0.16), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
