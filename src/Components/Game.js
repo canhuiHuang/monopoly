@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import Board from './Board';
 import UsersStats from './UsersStats';
 import buyWindow from './buyWindow';
@@ -697,7 +697,6 @@ export class Game extends Component {
                         })
                     }
                 }
-                
             });
         }
     }
