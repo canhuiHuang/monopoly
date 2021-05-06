@@ -145,7 +145,7 @@ export class Game extends Component {
             return `
                 <div class="propertyCard">
                     <div class="propertyCard-container">
-                        <div class=${`name ${property.data.color_set}`} >${property.data.property_name}</div>
+                        <div class="name ${property.data.color_set}">${property.data.property_name}</div>
                         <img src=${property.image} alt=""/>
                         <div class="rent" >RENT:  $${property.data.rent[0]}</div>
                         <div class="house" ><div>With 1 House</div><div>$${property.data.rent[1]}</div></div>
