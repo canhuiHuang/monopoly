@@ -89,7 +89,7 @@ export class SellPropertiesWindow extends Component {
                             sellProperty(property, result.value);
                         } else {
                             Swal.fire({
-                                position: 'top',
+                                position: 'center',
                                 allowOutsideClick: false,
                                 icon: 'info',
                                 text: `${this.props.users[this.props.selectedUser].name} doesn't have this much money. Ask for less.`,

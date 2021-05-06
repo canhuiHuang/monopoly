@@ -22,18 +22,20 @@ export class SellWindow extends Component {
         lista.push(
             <div key={i} className="userCard bank" onClick={() => this.selectUser('bank')}>
                 <div className={`icon player-bank`} ><img src={bankImage} alt='bank'/></div>
-                <div className="name" >Bank</div>
+                <div className="name">Bank</div>
             </div>
         );
-        for(let uuid in this.props.users) {
-            i++;  
-            if(!this.props.users[uuid].bankrupt && uuid !== this.props.myUUID) {
-                lista.push(
-                    <div key={i} className="userCard" onClick={() => this.selectUser(uuid)}>
-                        <div className={`icon player-${this.props.users[uuid].turn}`} ><img src={this.props.users[uuid].piece_id} alt={this.props.users[uuid].name}/></div>
-                        <div className="name" >{this.props.users[uuid].name}</div>
-                    </div>
-                );
+        if (!this.props.strictMode){
+            for(let uuid in this.props.users) {
+                i++;  
+                if(!this.props.users[uuid].bankrupt && uuid !== this.props.myUUID) {
+                    lista.push(
+                        <div key={i} className="userCard" onClick={() => this.selectUser(uuid)}>
+                            <div className={`icon player-${this.props.users[uuid].turn}`} ><img src={this.props.users[uuid].piece_id} alt={this.props.users[uuid].name}/></div>
+                            <div className="name" >{this.props.users[uuid].name}</div>
+                        </div>
+                    );
+                }
             }
         }
         return lista;
@@ -48,7 +50,7 @@ export class SellWindow extends Component {
                     <div className="userCards">
                         {this.renderUsers()}
                     </div>
-                    <button className="btn btn-done" onClick={() => {this.props.onDone()}}>Done</button>
+                    <button className="btn btn-done" onClick={() => {this.props.onDone()}} disabled={this.props.strictMode}>Done</button>
                 </div>
                 <div className="layer"></div>
             </div>

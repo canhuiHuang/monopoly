@@ -42,6 +42,7 @@ function Board({users, allProperties}) {
 		{x:33,y:-270},
 		{x:33,y:-187},
 		{x:33,y:-107},
+		{x: -400, y: -400}	// Jail position --> index: 40
 	]
 
 	// DOM manipulation to zoom the board.

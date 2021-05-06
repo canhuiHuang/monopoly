@@ -35,7 +35,7 @@ function PropertyCard({property}) {
                     <div className="house" ><div>If 2 portals</div><div>${property.data.rent[1]}</div></div>
                     <div className="house" ><div>If 3   ...</div><div>${property.data.rent[2]}</div></div>
                     <div className="house" ><div>If 4   ...</div><div>${property.data.rent[3]}</div></div>
-                    <div className="house mortgage-transport" ><div>Bank Sell Price $</div><div>${property.data.mortgage_value}</div></div>
+                    <div className="house mortgage-transport" ><div>Bank Sell Price</div><div>${property.data.mortgage_value}</div></div>
                 </div>
             </div>
         )
@@ -48,14 +48,13 @@ function PropertyCard({property}) {
                     <div className='special-name'>{property.data.property_name}</div>
                     <div className="line line-bottom"></div>
 
-                    <div className="desc">If one "Utility" is owned, rent is {property.data.multiplier_value[0]} imes amount shown on dice.</div>
-                    <div className="desc">If both "Utilities" are owned, rent is {property.data.multiplier_value[1]} imes amount shown on dice.</div>
-                    <div className="house mortgage-utility" ><div>Bank Sell Price $</div><div>${property.data.mortgage_value}</div></div>
+                    <div className="desc">If one "Utility" is owned, rent is {property.data.multiplier_value[0]} times amount shown on dice.</div>
+                    <div className="desc">If both "Utilities" are owned, rent is {property.data.multiplier_value[1]} times amount shown on dice.</div>
+                    <div className="house mortgage-utility" ><div>Bank Sell Price</div><div>${property.data.mortgage_value}</div></div>
                 </div>
             </div>
         );
     } else return <div className="error">something is wrong :p</div>
-   
 }
 
 export default PropertyCard;

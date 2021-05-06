@@ -1,4 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Armata&display=swap");
+.swal2-popup {
+  align-items: center; }
+
 .piece-picker {
   display: flex;
   flex-wrap: wrap;
