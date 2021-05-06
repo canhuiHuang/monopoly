@@ -160,7 +160,8 @@ export class Game extends Component {
                     </div>
                 </div>
             `
-        } else if (property.data.type === 'transport') {
+        }
+         else if (property.data.type === 'transport') {
             return `
                 <div class="propertyCard">
                     <div class="propertyCard-container">
@@ -472,24 +473,26 @@ export class Game extends Component {
 
                                 const property = positionsArray[curPosition].property;
 
+                                // If has enough money
                                 if (owner === '' && this.state.users[this.props.myUUID].balance >= property.data.price) {
                                     // Swal.fire(`Would you like to purchase ${property.property_name}?`, '', 'info'); // Update it with Swal/with-react later
                                     Swal.fire({
                                         title: `Would you like to purchase ${property.data.property_name}?`,
                                         html: this.htmlPropertyCard(property),
                                         showDenyButton: true,
-                                        showCancelButton: true,
-                                        confirmButtonText: `Save`,
-                                        denyButtonText: `Don't save`,
+                                        showCancelButton: false,
+                                        confirmButtonText: `Buy`,
+                                        denyButtonText: `No thanks`,
                                       }).then((result) => {
                                         /* Read more about isConfirmed, isDenied below */
                                         if (result.isConfirmed) {
                                           Swal.fire('Saved!', '', 'success')
-                                        } else if (result.isDenied) {
-                                          Swal.fire('Changes are not saved', '', 'info')
+                                        } else if (result.isDenied || result.isDismissed) {
+                                          Swal.fire(`You chose not to purchase ${property.data.property_name}`, '', 'warning')
                                         }
                                       })
                                 } else if (owner === this.props.myUUID && positionsArray[curPosition].type === 'normal') {
+                                    // If has enough money
                                     if (this.state.users[this.props.myUUID].balance >= property.data.house_cost)
                                     Swal.fire(`Would you like to improve ${property.data.property_name} for $${property.data.house_cost}?`, '', 'info'); // Update it with Swal/with-react later
                                 }
