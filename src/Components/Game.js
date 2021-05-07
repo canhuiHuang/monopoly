@@ -15,30 +15,30 @@ import altarDeReyes from './cardImages/altarDeReyes.png';
 import appleStore from './cardImages/appleStore.jpg';
 import arizonaCorp from './cardImages/arizonaCorp.png'
 import bodegaAurrera from './cardImages/bodegaAurrera.jpg';
-import casaDeSteve from './cardImages/casaDeSteve.JPG';
+import casaDeSteve from './cardImages/casaDeSteve.jpg';
 import cheetosCorp from './cardImages/cheetosCorp.png';
-import cinepolis from './cardImages/cinepolis.JPG';
+import cinepolis from './cardImages/cinepolis.jpg';
 import citadelOfRicks from './cardImages/citadelOfRicks.png';
 import cityWok from './cardImages/cityWok.png';
 import demaciaVice from './cardImages/demaciaVice.png';
 import forum from './cardImages/forum.png';
-import globoDelEquipoRocket from './cardImages/globoDelEquipoRocket.JPG';
+import globoDelEquipoRocket from './cardImages/globoDelEquipoRocket.jpg';
 import helloKittyCorp from './cardImages/helloKittyCorp.png';
 import hotelCalifornia from './cardImages/hotelCalifornia.jpg';
 import jardinBotanico from './cardImages/jardinBotanico.png';
 import jojoConvention from './cardImages/jojoConvention.jpg';
 import JYPEBuilding from './cardImages/JYPEBuilding.png';
-import laCasaDeTuCorazon from './cardImages/laCasaDeTuCorazon.JPG';
+import laCasaDeTuCorazon from './cardImages/laCasaDeTuCorazon.jpg';
 import lomita from './cardImages/lomita.png';
-import montanaZopilote from './cardImages/montanaZopilote.JPG';
+import montanaZopilote from './cardImages/montanaZopilote.jpg';
 import quirinoHouse from './cardImages/quirinoHouse.png';
 import zpaticGamingHouse from './cardImages/zpaticGamingHouse.jpg';
-import glokmelkerPortal from './cardImages/glokmelkerPortal.JPG';
-import niflheimViggoPortal from './cardImages/niflheimViggoPortal.JPG';
-import middlenwoodPortal from './cardImages/middlenwoodPortal.JPG';
-import dunklerGartenPortal from './cardImages/dunklerGartenPortal.JPG';
+import glokmelkerPortal from './cardImages/glokmelkerPortal.jpg';
+import niflheimViggoPortal from './cardImages/niflheimViggoPortal.jpg';
+import middlenwoodPortal from './cardImages/middlenwoodPortal.jpg';
+import dunklerGartenPortal from './cardImages/dunklerGartenPortal.jpg';
 import goldMine from './cardImages/goldMine.png';
-import cfe from './cardImages/cfe.JPG';
+import cfe from './cardImages/cfe.jpg';
 
 const allProperties = {
     laCasaDeTuCorazon: {data: properties.laCasaDeTuCorazon, image: laCasaDeTuCorazon, houses: 0, owner: ''},
@@ -276,6 +276,9 @@ export class Game extends Component {
                         allProperties: msg.message.allProperties
                     })
                 }
+                // Listen for user
+                
+
                 // Listen for broadcast message
                 if (msg.message.broadcast_message) {
                     const curBroadcastMessages = this.state.broadcast_messages;
@@ -518,8 +521,9 @@ export class Game extends Component {
                                                     users: curUsers,
                                                     allProperties: curAllProperties
                                                 })
+                                                console.log('aber ke es esto ', this.state.users, this.state.allProperties);
                                                 this.props.pubnub.publish({
-                                                    message: {users: this.state.users, allProperties: this.state.allProperties},
+                                                    message: {user: {uuid: this.props.myUUID, propertyName: property.data.camelName, newBalance: curUsers[this.props.myUUID].balance }, property: property.data.camelName},
                                                     channel: this.props.gameChannel
                                                 });
                                                 Swal.fire(`You have purchased ${property.data.property_name}!`, '', 'success');

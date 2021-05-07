@@ -35,8 +35,8 @@ class App extends Component {
     super(props);
     const generatedUUID = 'uuid-' + shortid.generate() + shortid.generate();
     this.pubnub = new PubNubReact({
-      publishKey: "pub-c-6d0fb65e-2fe5-465e-9c57-e092377761aa", 
-      subscribeKey: "sub-c-4b54e996-9fa8-11eb-9adf-f2e9c1644994",
+      publishKey: "pub-c-92916c4c-4b1e-4cba-88c1-22317012098a", 
+      subscribeKey: "sub-c-27f5a882-9fa3-11eb-8dfb-c2cb28a4a163",
       uuid: generatedUUID
     });
     
@@ -433,6 +433,7 @@ class App extends Component {
               <PiecePicker isRoomCreator={this.state.isRoomCreator} lobbyChannel={this.pieceSelectionChannel} pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}/>
             </div>
           }
+          {/* {!this.state.isPlaying &&} */}
       </div>
     );  
   } 
