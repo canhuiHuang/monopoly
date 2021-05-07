@@ -3,7 +3,7 @@ import rollover_sound from '../sounds/rollover.mp3'
 import shortid from 'shortid';
 import Game from './Game';
 
-
+import cup from '../piecesImages/cup.png';
 import pepe5head from '../piecesImages/pepe5head.png';
 import snorlax from '../piecesImages/snorlax.png';
 import amongus1 from '../piecesImages/amongus1.png';
@@ -11,23 +11,32 @@ import amongus2 from '../piecesImages/amongus2.png';
 import amongus3 from '../piecesImages/amongus3.png';
 import amongus4 from '../piecesImages/amongus4.png';
 import penguin from '../piecesImages/penguin.png';
+import turtle from '../piecesImages/turtle.png';
+import hare from '../piecesImages/hare.png';
+import doge from '../piecesImages/doge.png';
+import douknowdawae from '../piecesImages/douknowdawae.png';
+import spongebob from '../piecesImages/spongebob.png';
+import boo from '../piecesImages/boo.png';
+import toiletPaper from '../piecesImages/toiletPaper.png';
+import bag from '../piecesImages/bag.png';
+import nezuko from '../piecesImages/nezuko.png';
 import ghost from '../piecesImages/ghost.png';
 import padoru from '../piecesImages/padoru.png';
 import padoru2 from '../piecesImages/padoru2.png';
 const globalPieces = [
-    pepe5head,
+    cup,
+    toiletPaper,
+    bag,
     snorlax,
     pepe5head,
-    snorlax,
-    pepe5head,
-    snorlax,
-    pepe5head,
+    spongebob,
+    doge,
     ghost,
-    pepe5head,
-    snorlax,
-    pepe5head,
-    snorlax,
-    pepe5head,
+    douknowdawae,
+    turtle,
+    hare,
+    boo,
+    nezuko,
     amongus1,
     amongus2,
     amongus3,
