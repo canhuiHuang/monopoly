@@ -127,16 +127,20 @@ export class Game extends Component {
 
         this.state = {
             users: this.props.users,
+            maxTurn: 2,
             turn: 1,
             eventsQueue: [this.startTurnEvent],
             allProperties: allProperties,
             showSellWindow: false,
             strictMode: false,
             sellDisabled: false,
+            dicesDisabled: false,
             consecutiveThrows: 0,
             dicesValues: {value1: 1, value2: 2},
             rollIt: false
         }
+
+        console.log('max turn: ', this.state.maxTurn);
         this.movePiece = this.movePiece.bind(this);
     }
 
@@ -197,7 +201,7 @@ export class Game extends Component {
     }
 
     // Events
-    startTurnEvent = () => {
+    gameStart = () => {
         this.props.pubnub.publish({
             message: {startTurn: this.state.turn},
             channel: this.props.gameChannel
@@ -222,14 +226,20 @@ export class Game extends Component {
     }
     
     movePiece = (userUUID, increment) => {
+        const curUsers = this.state.users;
+        // If moving from Jail
+        if (curUsers[userUUID].position === 40) {
+            curUsers[userUUID].position = 10;
+        }
+
         if (increment === 'jail') {
-            const curUsers = this.state.users;
+            
             curUsers[userUUID].position = 40;
             this.setState({
                 users: curUsers
             })
-        } else {
-            const curUsers = this.state.users;
+        } 
+        else {
             curUsers[userUUID].position = (curUsers[userUUID].position + increment) % 40;
             if (curUsers[userUUID].position === 0) {
                 curUsers[userUUID].balance += 200;
@@ -241,36 +251,32 @@ export class Game extends Component {
     }
 
     componentDidMount (){
+        this.setState({
+            maxTurn: Object.keys(this.state.users).length
+        })
         console.log('mounted boi');
 
-        const users = this.state.users;
+        // const users = this.state.users;
 
-        users[this.props.myUUID].properties.lomita = allProperties.lomita;
+        // users[this.props.myUUID].properties.lomita = allProperties.lomita;
 
-        users[this.props.myUUID].properties.quirinoHouse = allProperties.quirinoHouse;
-        users[this.props.myUUID].properties.JYPEBuilding = allProperties.JYPEBuilding;
-        users[this.props.myUUID].properties.cinepolis = allProperties.cinepolis;
+        // users[this.props.myUUID].properties.quirinoHouse = allProperties.quirinoHouse;
+        // users[this.props.myUUID].properties.JYPEBuilding = allProperties.JYPEBuilding;
+        // users[this.props.myUUID].properties.cinepolis = allProperties.cinepolis;
 
-        users[this.props.myUUID].properties.cinepolis.houses = 3;
-        users[this.props.myUUID].properties.JYPEBuilding.houses = 5;
+        // users[this.props.myUUID].properties.cinepolis.houses = 3;
+        // users[this.props.myUUID].properties.JYPEBuilding.houses = 5;
 
-        users[this.props.myUUID].properties.cfe = allProperties.cfe;
-        users[this.props.myUUID].properties.middlenwoodPortal = allProperties.middlenwoodPortal;
+        // users[this.props.myUUID].properties.cfe = allProperties.cfe;
+        // users[this.props.myUUID].properties.middlenwoodPortal = allProperties.middlenwoodPortal;
 
-        this.setState({
-            users: users
-        });
-        console.log(this.state.users);
+        // this.setState({
+        //     users: users
+        // });
+        // console.log(this.state.users);
 
         if (this.props.isRoomCreator) {
-            console.log('holis');
-            const curQueue = this.state.eventsQueue;
-            console.log(curQueue);
-            (curQueue.shift())();
-            
-            this.setState({
-                eventsQueue: curQueue
-            })
+            this.gameStart();
         }
 
         if(this.props.gameChannel != null){
@@ -292,8 +298,7 @@ export class Game extends Component {
                 // Listen for dices result 
                 if (msg.message.dicesResult) {
                      
-                    let moving = false;
-                    // Update Dices
+                    // Update Dices   
                     const updateDices = (result) =>{
                         this.setState({
                             rollIt: true
@@ -305,226 +310,305 @@ export class Game extends Component {
                             rollIt: false
                         })
                     };
-                    const move = (increment) => {
-                        this.movePiece(msg.message.dicesThrower, increment);
-                    }
-                    const landing = () =>{
-                        const curPosition = this.state.users[msg.message.dicesThrower].position;
-                        let owner;
-                        if (positionsArray[curPosition].property) {
-                            owner = this.state.allProperties[positionsArray[curPosition].property.data.camelName].owner;
+
+                    if (msg.message.consecutiveThrows !== 3){
+                        const move = (increment) => {
+                            this.movePiece(msg.message.dicesThrower, increment);
                         }
-                        
-                        // Everyone
-                        if (positionsArray[curPosition].type === 'normal' || positionsArray[curPosition].type === 'utility'){                     
-                            const payRent = (landerUUID, ownerUUID, propertyName) => {
-                                const lander = this.state.users[landerUUID];
-                                const owner = this.state.users[ownerUUID];
+                        const landing = () =>{
+                            const curPosition = this.state.users[msg.message.dicesThrower].position;
+                            let owner;
+                            if (positionsArray[curPosition].property) {
+                                owner = this.state.allProperties[positionsArray[curPosition].property.data.camelName].owner;
+                            }
+                            
+                            // Everyone
+                            if (positionsArray[curPosition].type === 'normal' || positionsArray[curPosition].type === 'utility'){                     
+                                const payRent = (landerUUID, ownerUUID, propertyName) => {
+                                    const lander = this.state.users[landerUUID];
+                                    const owner = this.state.users[ownerUUID];
 
-                                const type = positionsArray[lander.position];
+                                    const type = positionsArray[lander.position].property.data.type;
 
-                                let rentToPay;
-                                // Compute rentToPay according to property types
-                                // For normals
-                                if (type === "normal") {
-                                    // Get rent's price
-                                    const houses = owner.properties[propertyName].houses;
-                                    rentToPay = owner.properties[propertyName].data.rent[houses];
+                                    let rentToPay;
+                                    // Compute rentToPay according to property types
+                                    // For normals
+                                    if (type === "normal") {
+                                        // Get rent's price
+                                        const houses = owner.properties[propertyName].houses;
+                                        rentToPay = owner.properties[propertyName].data.rent[houses];
 
-                                    // If owner has color set, apply multiplier
-                                    const colorSet = owner.properties[propertyName].data.color_set;
-                                    let colorSetCount = 0;
-                                    for(let property in owner.properties) {
-                                        if (owner.properties[property].data.color_set === colorSet) {
-                                            colorSetCount++;
+                                        // If owner has color set, apply multiplier
+                                        const colorSet = owner.properties[propertyName].data.color_set;
+                                        let colorSetCount = 0;
+                                        for(let property in owner.properties) {
+                                            if (owner.properties[property].data.color_set === colorSet) {
+                                                colorSetCount++;
+                                            }
+                                        }
+                                        if (colorSetCount === this.state.allProperties[propertyName].data.totals_in_set) {
+                                            rentToPay = Math.round(rentToPay * this.state.allProperties[propertyName].data.multiplier_value);
+                                        }
+                                    } else if (type === "transport") {
+                                        // Get multiplier
+                                        const colorSet = owner.properties[propertyName].data.color_set;
+                                        let colorSetCount = 0;
+                                        for(let property in owner.properties) {
+                                            if (owner.properties[property].data.color_set === colorSet) {
+                                                colorSetCount++;
+                                            }
+                                        }
+
+                                        // Get rent's price
+                                        rentToPay = owner.properties[propertyName].data.rent[colorSetCount - 1];
+
+                                    } else if (type === "utility") {
+                                        // Dices Animation
+                                        updateDices(msg.message.utilityLandingValues);
+
+                                        // Get multiplier
+                                        let utilitiesCount = 0;
+                                        for(let property in owner.properties) {
+                                            if (owner.properties[property].data.type === "utility") {
+                                                utilitiesCount++;
+                                            }
+                                        }
+                                        const multiplier = owner.properties[propertyName].data.multiplier_value[utilitiesCount - 1];
+
+                                        // Get rent's price
+                                        const resultadosDeDados = msg.message.utilityLandingValues.value1 + msg.message.utilityLandingValues.value2;
+                                        rentToPay = resultadosDeDados * multiplier;
+                                    }
+
+                                    // Get the maximum amount of money from lander first
+                                    console.log('balance: ', lander.balance,'rentTopay: ',rentToPay);
+                                    if (lander.balance >= rentToPay) {
+                                        console.log('balance: ', lander.balance,'rentTopay: ',rentToPay);
+                                        lander.balance -= rentToPay;
+                                        owner.balance += rentToPay;
+
+                                        const curUsers = this.state.users;
+                                        curUsers[landerUUID] = lander;
+                                        curUsers[ownerUUID] = owner;
+                                        this.setState({
+                                            users: curUsers
+                                        })
+                                        this.props.pubnub.publish({
+                                            message: {users: this.state.users},
+                                            channel: this.props.gameChannel
+                                        });
+                                    }   // Wait for lander to pay.
+                                    else {
+                                        if (landerUUID === this.props.myUUID) {
+                                            const my = this.state.users[landerUUID];
+                                            // Calculate worth of all owned properties
+                                            let assests = 0;
+                                            for (let property in my.properties) {
+                                                assests += my.properties[property].data.mortgage_value + my.properties[property].houses * my.properties[property].house_cost;
+                                            }
+
+                                            const amountDue = rentToPay - lander.balance;
+                                            if (assests >= amountDue) {
+                                                this.setState({
+                                                    showSellWindow: true,
+                                                    strictMode: true
+                                                })
+                                                console.log('1- set -- -- STRICT MODE');
+
+                                                while (this.state.strictMode) {
+                                                    console.log('2- STRICT MODE');
+                                                    if (this.state.users[landerUUID].balance >= rentToPay) {
+                                                        // pay
+                                                        const victim = this.state.users[landerUUID];
+                                                        victim.balance -= rentToPay;
+                                                        owner.balance += rentToPay;
+        
+                                                        const curUsers = this.state.users;
+                                                        curUsers[landerUUID] = victim;
+                                                        curUsers[ownerUUID] = owner;
+                                                        this.setState({
+                                                            users: curUsers,
+                                                            strictMode: false
+                                                        })
+                                                        this.props.pubnub.publish({
+                                                            message: {users: this.state.users},
+                                                            channel: this.props.gameChannel
+                                                        });
+                                                    }
+                                                }
+                                            } else {
+                                                // Pay a little & die
+                                                lander.balance -= rentToPay;
+                                                lander.bankrupt = true;
+                                                owner.balance += rentToPay;
+
+                                                const curUsers = this.state.users;
+                                                curUsers[landerUUID] = lander;
+                                                curUsers[ownerUUID] = owner;
+                                                this.setState({
+                                                    users: curUsers
+                                                })
+                                                this.props.pubnub.publish({
+                                                    message: {users: this.state.users},
+                                                    channel: this.props.gameChannel
+                                                });
+                                            }
                                         }
                                     }
-                                    if (colorSetCount === this.state.allProperties[propertyName].data.totals_in_set) {
-                                        rentToPay = Math.round(rentToPay * this.state.allProperties[propertyName].data.multiplier_value);
-                                    }
-                                } else if (type === "transport") {
-                                    // Get multiplier
-                                    const colorSet = owner.properties[propertyName].data.color_set;
-                                    let colorSetCount = 0;
-                                    for(let property in owner.properties) {
-                                        if (owner.properties[property].data.color_set === colorSet) {
-                                            colorSetCount++;
-                                        }
-                                    }
-
-                                    // Get rent's price
-                                    rentToPay = owner.properties[propertyName].data.rent[colorSetCount];
-
-                                } else if (type === "utility") {
-                                    // Dices Animation
-                                    updateDices(msg.message.utilityLandingValues);
-
-                                    // Get multiplier
-                                    let utilitiesCount = 0;
-                                    for(let property in owner.properties) {
-                                        if (owner.properties[property].data.type === "utility") {
-                                            utilitiesCount++;
-                                        }
-                                    }
-                                    const multiplier = owner.properties[propertyName].data.multiplier_value[utilitiesCount - 1];
-
-                                    // Get rent's price
-                                    const resultadosDeDados = msg.message.utilityLandingValues.value1 + msg.message.utilityLandingValues.value2;
-                                    rentToPay = resultadosDeDados * multiplier;
                                 }
 
-                                // Get the maximum amount of money from lander first
-                                if (lander.balance >= rentToPay) {
-                                    lander.balance -= rentToPay;
-                                    owner.balance += rentToPay;
+                                if (owner === this.props.myUUID){
+                                    //
+                                }
+                                else if (owner !== '') {
+                                    payRent(msg.message.dicesThrower, owner, positionsArray[curPosition].property.data.camelName);
+                                }
 
-                                    const curUsers = this.state.users;
-                                    curUsers[landerUUID] = lander;
-                                    curUsers[ownerUUID] = owner;
-                                    this.setState({
-                                        users: curUsers
-                                    })
-                                    this.props.pubnub.publish({
-                                        message: {users: this.state.users},
-                                        channel: this.props.gameChannel
-                                    });
-                                }   // Wait for lander to pay.
-                                else {
-                                    if (landerUUID === this.props.myUUID) {
-                                        const my = this.state.users[landerUUID];
-                                        // Calculate worth of all owned properties
-                                        let assests = 0;
-                                        for (let property in my.properties) {
-                                            assests += my.properties[property].data.mortgage_value + my.properties[property].houses * my.properties[property].house_cost;
-                                        }
+                            } else if (positionsArray[curPosition].type === 'chest') {
+                                Swal.fire('Testing Chest!', '', 'question');
+                            } else if (positionsArray[curPosition].type === 'chance') {
+                                Swal.fire('Testing Chance!', '', 'question');
+                            } else if (positionsArray[curPosition].type === 'goToJail') {
+                                Swal.fire(`${this.state.users[msg.message.dicesThrower].name} goes to Jail`, '', 'info');
+                                move('jail');
+                            } else if (positionsArray[curPosition].type === 'GO') {
+                                if (this.state.turn === this.props.myTurn){Swal.fire('$200 for you!', '', 'success');}
+                            } else if (positionsArray[curPosition].type === 'tax') {
+                                Swal.fire('Testing tax!', '', 'warning');
+                                // Pay here
+                            }
 
-                                        const amountDue = rentToPay - lander.balance;
-                                        if (assests >= amountDue) {
-                                            this.setState({
-                                                showSellWindow: true,
-                                                strictMode: true
-                                            })
-                                            console.log('1- set -- -- STRICT MODE');
+                            // dicesThrower
+                            if (msg.message.dicesThrower === this.props.myUUID) {
+                                if (positionsArray[curPosition].type === 'normal' || positionsArray[curPosition].type === 'utility') {
 
-                                            while (this.state.strictMode) {
-                                                console.log('2- STRICT MODE');
-                                                if (this.state.users[landerUUID].balance >= rentToPay) {
-                                                    // pay
-                                                    const victim = this.state.users[landerUUID];
-                                                    victim.balance -= rentToPay;
-                                                    owner.balance += rentToPay;
-    
+                                    const property = positionsArray[curPosition].property;
+
+                                    // If has enough money
+                                    if (owner === '' && this.state.users[this.props.myUUID].balance >= property.data.price) {
+                                        Swal.fire({
+                                            title: `Would you like to purchase ${property.data.property_name}?`,
+                                            html: this.htmlPropertyCard(property),
+                                            showDenyButton: true,
+                                            showCancelButton: false,
+                                            confirmButtonText: `Buy`,
+                                            denyButtonText: `No thanks`,
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                const curUsers = this.state.users;
+                                                const curAllProperties = this.state.allProperties;
+                                                // Assign property
+                                                curUsers[this.props.myUUID].properties[property.data.camelName] = property;
+                                                curAllProperties[property.data.camelName].owner = this.props.myUUID;
+
+                                                // Adjust balance
+                                                curUsers[this.props.myUUID].balance -= property.data.price;
+
+                                                // Set & Publish Results
+                                                this.setState({
+                                                    users: curUsers,
+                                                    allProperties: curAllProperties
+                                                })
+                                                this.props.pubnub.publish({
+                                                    message: {users: this.state.users, allProperties: this.state.allProperties},
+                                                    channel: this.props.gameChannel
+                                                });
+                                                Swal.fire(`You have purchased ${property.data.property_name}!`, '', 'success');
+
+                                            } else if (result.isDenied || result.isDismissed) {
+                                            Swal.fire(`You chose not to purchase ${property.data.property_name}`, '', 'warning')
+                                            }
+                                        })
+                                    } else if (owner === this.props.myUUID && positionsArray[curPosition].type === 'normal') {
+                                        // If has enough money
+                                        if (this.state.users[this.props.myUUID].balance >= property.data.house_cost && this.state.allProperties[property.data.camelName].houses < 5){
+                                            console.log('improve?');
+                                            Swal.fire({
+                                                title: `Would you like to improve ${property.data.property_name} for $${property.data.house_cost}?`,
+                                                icon: 'info',
+                                                showDenyButton: true,
+                                                showCancelButton: false,
+                                                confirmButtonText: `Improve`,
+                                                denyButtonText: `No thanks`,
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
                                                     const curUsers = this.state.users;
-                                                    curUsers[landerUUID] = victim;
-                                                    curUsers[ownerUUID] = owner;
+                                                    const curAllProperties = this.state.allProperties;
+                                                    // Add house to property
+                                                    curAllProperties[property.data.camelName].houses += 1;
+
+                                                    // Adjust balance
+                                                    curUsers[this.props.myUUID].balance -= property.data.house_cost;
+
+                                                    // Set & Publish Results
                                                     this.setState({
                                                         users: curUsers,
-                                                        strictMode: false
+                                                        allProperties: curAllProperties
                                                     })
                                                     this.props.pubnub.publish({
-                                                        message: {users: this.state.users},
+                                                        message: {users: this.state.users, allProperties: this.state.allProperties},
                                                         channel: this.props.gameChannel
                                                     });
+                                                    Swal.fire(`You purchased 1 house for ${property.data.property_name}!`, '', 'success');
+                                                } else if (result.isDenied || result.isDismissed) {
+                                                    Swal.fire(`You chose not to improve ${property.data.property_name}`, '', 'warning')
                                                 }
-                                            }
-                                        } else {
-                                            // Pay a little & die
-                                            lander.balance -= rentToPay;
-                                            lander.bankrupt = true;
-                                            owner.balance += rentToPay;
-
-                                            const curUsers = this.state.users;
-                                            curUsers[landerUUID] = lander;
-                                            curUsers[ownerUUID] = owner;
-                                            this.setState({
-                                                users: curUsers
                                             })
-                                            this.props.pubnub.publish({
-                                                message: {users: this.state.users},
-                                                channel: this.props.gameChannel
-                                            });
                                         }
                                     }
                                 }
                             }
-
-                            if (owner !== '') {
-                                payRent(msg.message.dicesThrower, owner, positionsArray[curPosition].property.data.camelName);
+                            const finishTurn = () => {
+                                const goAgain = msg.message.dicesResult.value1 === msg.message.dicesResult.value2;
+        
+                                this.props.pubnub.publish({
+                                    message: {finishTurn: true, goAgain: goAgain, finisher: msg.message.dicesThrower},
+                                    channel: this.props.gameChannel
+                                });
                             }
-
-                        } else if (positionsArray[curPosition].type === 'chest') {
-                            Swal.fire('Testing Chest!', '', 'question');
-                        } else if (positionsArray[curPosition].type === 'chance') {
-                            Swal.fire('Testing Chance!', '', 'question');
-                        } else if (positionsArray[curPosition].type === 'goToJail') {
-                            Swal.fire(`${this.state.users[msg.message.dicesThrower].name} goes to Jail`, '', 'info');
-                            move('jail');
-                        } else if (positionsArray[curPosition].type === 'GO') {
-                            Swal.fire('Testing GO!', '', 'success');
-                            // getMoney here
-                        } else if (positionsArray[curPosition].type === 'tax') {
-                            Swal.fire('Testing tax!', '', 'warning');
-                            // Pay here
+                            if (this.props.isRoomCreator)
+                                finishTurn();
+                            console.log('YOU TOUCH MY T');
                         }
-
-                        // dicesThrower
-                        if (msg.message.dicesThrower === this.props.myUUID) {
-                            if (positionsArray[curPosition].type === 'normal' || positionsArray[curPosition].type === 'utility') {
-
-                                const property = positionsArray[curPosition].property;
-
-                                // If has enough money
-                                if (owner === '' && this.state.users[this.props.myUUID].balance >= property.data.price) {
-                                    // Swal.fire(`Would you like to purchase ${property.property_name}?`, '', 'info'); // Update it with Swal/with-react later
-                                    Swal.fire({
-                                        title: `Would you like to purchase ${property.data.property_name}?`,
-                                        html: this.htmlPropertyCard(property),
-                                        showDenyButton: true,
-                                        showCancelButton: false,
-                                        confirmButtonText: `Buy`,
-                                        denyButtonText: `No thanks`,
-                                      }).then((result) => {
-                                        /* Read more about isConfirmed, isDenied below */
-                                        if (result.isConfirmed) {
-                                          Swal.fire('Saved!', '', 'success')
-                                        } else if (result.isDenied || result.isDismissed) {
-                                          Swal.fire(`You chose not to purchase ${property.data.property_name}`, '', 'warning')
+                        const moveAnimation = () => {
+                            //Go to jail
+                            if (msg.message.dicesResult.consecutiveThrows === 3){
+                                move('jail');
+                            } else {
+                                const randInterval = Math.round((Math.random() * 101) + 200);
+                                setTimeout(()=>{
+                                    let i = 0;
+                                    var handler = setInterval(() => {
+                                        move(1);
+                                        i++;
+                                        if (i >= msg.message.dicesResult.value1 + msg.message.dicesResult.value2) {
+                                            clearInterval(handler);
+                                            setTimeout(()=> {landing()}, 220)
                                         }
-                                      })
-                                } else if (owner === this.props.myUUID && positionsArray[curPosition].type === 'normal') {
-                                    // If has enough money
-                                    if (this.state.users[this.props.myUUID].balance >= property.data.house_cost)
-                                    Swal.fire(`Would you like to improve ${property.data.property_name} for $${property.data.house_cost}?`, '', 'info'); // Update it with Swal/with-react later
-                                }
+                                    }, randInterval);
+                                }, 2850)
                             }
                         }
-                    }
-                      
-                    const moveAnimation = () => {
-                        moving = true;
-                        //Go to jail
-                        if (msg.message.dicesResult.consecutiveThrows === 3){
-                            move('jail');
-                        } else {
-                            const randInterval = Math.round((Math.random() * 101) + 200);
-                            setTimeout(()=>{
-                                let i = 0;
-                                var handler = setInterval(() => {
-                                    move(1);
-                                    i++;
-                                    if (i >= msg.message.dicesResult.value1 + msg.message.dicesResult.value2) {
-                                        clearInterval(handler);
-                                        setTimeout(()=> {landing()}, 220)
-                                    }
-                                }, randInterval);
-                            }, 2850)
+                        
+                        updateDices(msg.message.dicesResult);
+                        moveAnimation();    // Includes effects after landing.
+
+                        
+
+                        // More stuff
+                    } else {
+                        // Go to jail
+                        this.movePiece(msg.message.dicesThrower,'jail');
+                        const finishTurn = () => {
+                            this.props.pubnub.publish({
+                                message: {finishTurn: true, goAgain: false, finisher: msg.message.dicesThrower},
+                                channel: this.props.gameChannel
+                            });
                         }
+                        if (this.props.isRoomCreator)
+                            finishTurn();
                     }
-
-                    updateDices(msg.message.dicesResult);
-                    moveAnimation();
-
-                    // More stuff
+                    
 
                 }
 
@@ -583,15 +667,25 @@ export class Game extends Component {
 
                 // startTurn
                 if(msg.message.startTurn) {
-                    if (msg.message.startTurn === this.props.myTurn) {
-                        this.playTurn();
+                    this.setState({
+                        turn: msg.message.startTurn
+                    })
+
+                    if (this.state.turn === this.props.myTurn) {
+                        Swal.fire(`Your Turn`, '', 'info')
+                        this.setState({
+                            sellDisabled: false,
+                            dicesDisabled: false
+                        })
                     } else {
                         this.spectateTurn();
                     }
                 }
 
+
                 // Host
                 if (this.props.isRoomCreator){
+                    // Listen for throw Dices request
                     if(msg.message.getDicesNumbers) {
                         const value1 = getRand(5);
                         const value2 = getRand(5);
@@ -610,8 +704,41 @@ export class Game extends Component {
                             message: {dicesResult: {value1: value1, value2: value2, consecutiveThrows: curConsecutiveThrows}, dicesThrower: msg.publisher, utilityLandingValues: {value1: util_value1, value2: util_value2}},
                             channel: this.props.gameChannel
                         })
-    
                     }
+
+                    // Listen for finishTurn
+                    if (msg.message.finishTurn) {
+                        if (!msg.message.goAgain){
+                            console.log('inside not go again');
+                            
+                            // Get the available turns
+                            const currentTurns = [];
+                            for(let uuid in this.state.users){
+                                if(!this.state.users[uuid].bankrupt) {
+                                    currentTurns.push(this.state.users[uuid].turn)
+                                }
+                            }
+                            // Sort the turns ASC. order
+                            currentTurns.sort((a, b) => a - b);
+
+                            // Get to next available turn
+                            const this_StaticTurn = this.state.users[msg.message.finisher].turn;
+                            const index = currentTurns.indexOf(this_StaticTurn);
+                            const nextIndex = (index + 1) % currentTurns.length;
+                            const nextTurn = currentTurns[nextIndex];
+
+                            this.setState({
+                                turn: nextTurn
+                            })
+                            console.log('NEXT TURN IS: ',this.state.turn);
+                        }
+
+                        this.props.pubnub.publish({
+                            message: {startTurn: this.state.turn},
+                            channel: this.props.gameChannel
+                        });
+                    }
+
                     // Listen for succesfull offers
                     else if (msg.message.accept) {
                         const curUsers = this.state.users;
@@ -697,7 +824,8 @@ export class Game extends Component {
                         })
                     }
                 }
-            });
+                
+            })
         }
     }
     onDone = () => {
@@ -708,6 +836,7 @@ export class Game extends Component {
     throwDices = () => {
         this.setState({
             sellDisabled: true,
+            dicesDisabled: true
         });
         this.props.pubnub.publish({
             message: {getDicesNumbers: true},
@@ -720,10 +849,10 @@ export class Game extends Component {
             <div className="game">
                 {this.state.turn === this.props.myTurn && 
                     <div>
-                        <button disabled={this.state.sellDisabled}className="btn btn-sell" onClick={() => this.setState({
+                        <button disabled={this.state.sellDisabled} className="btn btn-sell" onClick={() => this.setState({
                         showSellWindow: !this.state.showSellWindow
                         })}>Sell</button> 
-                        <button className="btn btn-dices" onClick={()=> this.throwDices()}>Throw Dices</button>
+                        <button disabled={this.state.dicesDisabled} className="btn btn-dices" onClick={()=> this.throwDices()}>Throw Dices</button>
                     </div>}
                 {this.state.showSellWindow && (!this.state.sellDisabled? <SellWindow strictMode={this.state.strictMode} pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} users={this.state.users} myUUID={this.props.myUUID} onDone={this.onDone} onOffer={this.onOffer}/> : <WaitingForOffer />)}
                 <Dices dicesValues={this.state.dicesValues} rollIt={this.state.rollIt}/>

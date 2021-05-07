@@ -42,7 +42,7 @@ function Board({users, allProperties}) {
 		{x:33,y:-270},
 		{x:33,y:-187},
 		{x:33,y:-107},
-		{x: -400, y: -400}	// Jail position --> index: 40
+		{x: -830, y: -22}	// Jail position --> index: 40
 	]
 
 	// DOM manipulation to zoom the board.
@@ -59,6 +59,27 @@ function Board({users, allProperties}) {
             table.style.transform = `scale(${scale})`;
         }
     }
+
+	const renderHouses = (amount) => {
+		const casas = [];
+		for (let i = 0; i< amount; i++){
+			if (i < 4)
+				casas.push(
+					<i key={i} className="fa fa-home"></i>
+				)
+			else
+				casas.push(
+					<i key={i} className="fa fa-hotel" style={{
+						position: 'absolute',
+						top: '-24px',
+						alignSelf: 'center',
+						textAlign: 'center'
+					}}></i>
+				)
+		}
+		return casas;
+	}
+
 	//
 	const renderPieces = () => {
 		const pieces = [];
@@ -116,6 +137,7 @@ function Board({users, allProperties}) {
 		<div className="row horizontal-row bottom-row">
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.altarDeReyes.owner !== ''? users[allProperties.altarDeReyes.owner].turn : 'xd'}`}>{renderHouses(allProperties.altarDeReyes.houses)}</div>
 					<div className="color-bar light-blue"></div>
 					<div className="name">{allProperties.altarDeReyes.data.property_name}</div>
 					<img src={allProperties.altarDeReyes.image} alt="" className="image"/>
@@ -124,6 +146,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.montanaZopilote.owner !== ''? users[allProperties.montanaZopilote.owner].turn : 'xd'}`}>{renderHouses(allProperties.montanaZopilote.houses)}</div>
 					<div className="color-bar light-blue"></div>
 					<div className="name">{allProperties.montanaZopilote.data.property_name}</div>
 					<img src={allProperties.montanaZopilote.image} alt="" className="image"/>
@@ -138,6 +161,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.globoDelEquipoRocket.owner !== ''? users[allProperties.globoDelEquipoRocket.owner].turn : 'xd'}`}>{renderHouses(allProperties.globoDelEquipoRocket.houses)}</div>
 					<div className="color-bar light-blue"></div>
 					<div className="name">{allProperties.globoDelEquipoRocket.data.property_name}</div>
 					<img src={allProperties.globoDelEquipoRocket.image} alt="" className="image"/>
@@ -146,6 +170,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space railroad">
 				<div className="container">
+					<div className ={`land player-${allProperties.glokmelkerPortal.owner !== ''? users[allProperties.glokmelkerPortal.owner].turn : 'xd'}`}></div>
 					<div className="name">{allProperties.glokmelkerPortal.data.property_name}</div>
 					<img src={allProperties.glokmelkerPortal.image} alt="" className="image"/>
 					<div className="price">Price ${allProperties.glokmelkerPortal.data.price}</div>
@@ -160,6 +185,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.casaDeSteve.owner !== ''? users[allProperties.casaDeSteve.owner].turn : 'xd'}`}>{renderHouses(allProperties.casaDeSteve.houses)}</div>
 					<div className="color-bar dark-purple"></div>
 					<div className="name">{allProperties.casaDeSteve.data.property_name}</div>
 					<img src={allProperties.casaDeSteve.image} alt="" className="image"/>
@@ -175,6 +201,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.laCasaDeTuCorazon.owner !== ''? users[allProperties.laCasaDeTuCorazon.owner].turn : 'xd'}`}>{renderHouses(allProperties.laCasaDeTuCorazon.houses)}</div>
 					<div className="color-bar dark-purple"></div>
 					<div className="name">{allProperties.laCasaDeTuCorazon.data.property_name}</div>
 					<img src={allProperties.laCasaDeTuCorazon.image} alt="" className="image"/>
@@ -203,6 +230,7 @@ function Board({users, allProperties}) {
 		<div className="row vertical-row left-row">
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.forum.owner !== ''? users[allProperties.forum.owner].turn : 'xd'}`}>{renderHouses(allProperties.forum.houses)}</div>
 					<div className="color-bar orange"></div>
 					<div className="name">{allProperties.forum.data.property_name}</div>
 					<img src={allProperties.forum.image} alt="" className="image"/>
@@ -211,6 +239,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.lomita.owner !== ''? users[allProperties.lomita.owner].turn : 'xd'}`}>{renderHouses(allProperties.lomita.houses)}</div>
 					<div className="color-bar orange"></div>
 					<div className="name">{allProperties.lomita.data.property_name}</div>
 					<img src={allProperties.lomita.image} alt="" className="image"/>
@@ -226,6 +255,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.cityWok.owner !== ''? users[allProperties.cityWok.owner].turn : 'xd'}`}>{renderHouses(allProperties.cityWok.houses)}</div>
 					<div className="color-bar orange"></div>
 					<div className="name">{allProperties.cityWok.data.property_name}</div>
 					<img src={allProperties.cityWok.image} alt="" className="image"/>
@@ -234,6 +264,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space railroad">
 				<div className="container">
+					<div className ={`land player-${allProperties.niflheimViggoPortal.owner !== ''? users[allProperties.niflheimViggoPortal.owner].turn : 'xd'}`}></div>
 					<div className="name">{allProperties.niflheimViggoPortal.data.property_name}</div>
 					<img src={allProperties.niflheimViggoPortal.image} alt="" className="image"/>
 					<div className="price">PRICE ${allProperties.niflheimViggoPortal.data.price}</div>
@@ -241,6 +272,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.JYPEBuilding.owner !== ''? users[allProperties.JYPEBuilding.owner].turn : 'xd'}`}>{renderHouses(allProperties.JYPEBuilding.houses)}</div>
 					<div className="color-bar purple"></div>
 					<div className="name">{allProperties.JYPEBuilding.data.property_name}</div>
 					<img src={allProperties.JYPEBuilding.image} alt="" className="image"/>
@@ -249,6 +281,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.jardinBotanico.owner !== ''? users[allProperties.jardinBotanico.owner].turn : 'xd'}`}>{renderHouses(allProperties.jardinBotanico.houses)}</div>
 					<div className="color-bar purple"></div>
 					<div className="name">{allProperties.jardinBotanico.data.property_name}</div>
 					<img src={allProperties.jardinBotanico.image} alt="" className="image"/>
@@ -257,6 +290,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space utility electric-company">
 				<div className="container">
+					<div className ={`land player-${allProperties.goldMine.owner !== ''? users[allProperties.goldMine.owner].turn : 'xd'}`}></div>
 					<div className="name">{allProperties.goldMine.data.property_name}</div>
 					<img src={allProperties.goldMine.image} alt="" className="image"/>
 					<div className="price">PRICE ${allProperties.goldMine.data.price}</div>
@@ -264,6 +298,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.quirinoHouse.owner !== ''? users[allProperties.quirinoHouse.owner].turn : 'xd'}`}>{renderHouses(allProperties.quirinoHouse.houses)}</div>
 					<div className="color-bar purple"></div>
 					<div className="name">{allProperties.quirinoHouse.data.property_name}</div>
 					<img src={allProperties.quirinoHouse.image} alt="" className="image"/>
@@ -283,6 +318,7 @@ function Board({users, allProperties}) {
 		<div className="row horizontal-row top-row">
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.hotelCalifornia.owner !== ''? users[allProperties.hotelCalifornia.owner].turn : 'xd'}`}>{renderHouses(allProperties.hotelCalifornia.houses)}</div>
 					<div className="color-bar red"></div>
 					<div className="name">{allProperties.hotelCalifornia.data.property_name}</div>
 					<img src={allProperties.hotelCalifornia.image} alt="" className="image"/>
@@ -297,6 +333,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.cheetosCorp.owner !== ''? users[allProperties.cheetosCorp.owner].turn : 'xd'}`}>{renderHouses(allProperties.cheetosCorp.houses)}</div>
 					<div className="color-bar red"></div>
 					<div className="name">{allProperties.cheetosCorp.data.property_name}</div>
 					<img src={allProperties.cheetosCorp.image} alt="" className="image"/>
@@ -305,6 +342,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.helloKittyCorp.owner !== ''? users[allProperties.helloKittyCorp.owner].turn : 'xd'}`}>{renderHouses(allProperties.helloKittyCorp.houses)}</div>
 					<div className="color-bar red"></div>
 					<div className="name">{allProperties.helloKittyCorp.data.property_name}</div>
 					<img src={allProperties.helloKittyCorp.image} alt="" className="image"/>
@@ -313,6 +351,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space railroad">
 				<div className="container">
+					<div className ={`land player-${allProperties.middlenwoodPortal.owner !== ''? users[allProperties.middlenwoodPortal.owner].turn : 'xd'}`}></div>
 					<div className="name">{allProperties.middlenwoodPortal.data.property_name}</div>
 					<img src={allProperties.middlenwoodPortal.image} alt="" className="image"/>
 					<div className="price">PRICE ${allProperties.middlenwoodPortal.data.price}</div>
@@ -320,6 +359,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.arizonaCorp.owner !== ''? users[allProperties.arizonaCorp.owner].turn : 'xd'}`}>{renderHouses(allProperties.arizonaCorp.houses)}</div>
 					<div className="color-bar yellow"></div>
 					<div className="name">{allProperties.arizonaCorp.data.property_name}</div>
 					<img src={allProperties.arizonaCorp.image} alt="" className="image"/>
@@ -328,6 +368,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.zpaticGamingHouse.owner !== ''? users[allProperties.zpaticGamingHouse.owner].turn : 'xd'}`}>{renderHouses(allProperties.zpaticGamingHouse.houses)}</div>
 					<div className="color-bar yellow"></div>
 					<div className="name">{allProperties.zpaticGamingHouse.data.property_name}</div>
 					<img src={allProperties.zpaticGamingHouse.image} alt="" className="image"/>
@@ -336,6 +377,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space utility waterworks">
 				<div className="container">
+					<div className ={`land player-${allProperties.cfe.owner !== ''? users[allProperties.cfe.owner].turn : 'xd'}`}></div>
 					<div className="name">{allProperties.cfe.data.property_name}</div>
 					<img src={allProperties.cfe.image} alt="" className="image"/>
 					<div className="price">PRICE ${allProperties.cfe.data.price}</div>
@@ -343,6 +385,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.jojoConvention.owner !== ''? users[allProperties.jojoConvention.owner].turn : 'xd'}`}>{renderHouses(allProperties.jojoConvention.houses)}</div>
 					<div className="color-bar yellow"></div>
 					<div className="name">{allProperties.jojoConvention.data.property_name}</div>
 					<img src={allProperties.jojoConvention.image} alt="" className="image"/>
@@ -362,6 +405,7 @@ function Board({users, allProperties}) {
 		<div className="row vertical-row right-row">
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.demaciaVice.owner !== ''? users[allProperties.demaciaVice.owner].turn : 'xd'}`}>{renderHouses(allProperties.demaciaVice.houses)}</div>
 					<div className="color-bar green"></div>
 					<div className="name">{allProperties.demaciaVice.data.property_name}</div>
 					<img src={allProperties.demaciaVice.image} alt="" className="image"/>
@@ -370,6 +414,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.bodegaAurrera.owner !== ''? users[allProperties.bodegaAurrera.owner].turn : 'xd'}`}>{renderHouses(allProperties.bodegaAurrera.houses)}</div>
 					<div className="color-bar green"></div>
 					<div className="name">{allProperties.bodegaAurrera.data.property_name}</div>
 					<img src={allProperties.bodegaAurrera.image} alt="" className="image"/>
@@ -385,6 +430,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.citadelOfRicks.owner !== ''? users[allProperties.citadelOfRicks.owner].turn : 'xd'}`}>{renderHouses(allProperties.citadelOfRicks.houses)}</div>
 					<div className="color-bar green"></div>
 					<div className="name">{allProperties.citadelOfRicks.data.property_name}</div>
 					<img src={allProperties.citadelOfRicks.image} alt="" className="image"/>
@@ -393,6 +439,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space railroad">
 				<div className="container">
+					<div className ={`land player-${allProperties.dunklerGartenPortal.owner !== ''? users[allProperties.dunklerGartenPortal.owner].turn : 'xd'}`}></div>
 					<div className="name">{allProperties.dunklerGartenPortal.data.property_name}</div>
 					<img src={allProperties.dunklerGartenPortal.image} alt="" className="image"/>
 					<div className="price">PRICE ${allProperties.dunklerGartenPortal.data.price}</div>
@@ -406,6 +453,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={`land player-${allProperties.cinepolis.owner !== ''? users[allProperties.cinepolis.owner].turn : 'xd'}`}>{renderHouses(allProperties.cinepolis.houses)}</div>
 					<div className="color-bar dark-blue"></div>
 					<div className="name">{allProperties.cinepolis.data.property_name}</div>
 					<img src={allProperties.cinepolis.image} alt="" className="image"/>
@@ -421,6 +469,7 @@ function Board({users, allProperties}) {
 			</div>
 			<div className="space property">
 				<div className="container">
+					<div className ={` land player-${allProperties.appleStore.owner !== ''? users[allProperties.appleStore.owner].turn : 'xd'}`}>{renderHouses(allProperties.appleStore.houses)}</div>
 					<div className="color-bar dark-blue"></div>
 					<div className="name">{allProperties.appleStore.data.property_name}</div>
 					<img src={allProperties.appleStore.image} alt="" className="image"/>

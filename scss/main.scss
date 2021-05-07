@@ -49,6 +49,17 @@ body {
     background: #444;
   }
 }
+
+.land {
+  border-radius: 15px;
+  min-width: 65px;
+  min-height: 20px;
+  position: absolute;
+  align-self: center;
+  text-align: center;
+  top: -25px;
+}
+
 #root > div {
   display: flex;
   flex-direction: column;

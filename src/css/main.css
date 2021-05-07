@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Armata&display=swap");
 .swal2-popup {
   align-items: center; }
+  .swal2-popup .name {
+    color: #333; }
 
 .piece-picker {
   display: flex;
@@ -62,51 +64,83 @@
 
 .player-1 {
   border: 2px solid #5762be; }
+  .player-1.land {
+    background-color: #5762be; }
 
 .player-2 {
   border: 2px solid #d85d82; }
+  .player-2.land {
+    background-color: #d85d82; }
 
 .player-3 {
   border: 2px solid #d8cc5d; }
+  .player-3.land {
+    background-color: #d8cc5d; }
 
 .player-4 {
   border: 2px solid #e63838; }
+  .player-4.land {
+    background-color: #e63838; }
 
 .player-5 {
   border: 2px solid #5dd85d; }
+  .player-5.land {
+    background-color: #5dd85d; }
 
 .player-6 {
   border: 2px solid #d85dd8; }
+  .player-6.land {
+    background-color: #d85dd8; }
 
 .player-7 {
   border: 2px solid #3f4fe6; }
+  .player-7.land {
+    background-color: #3f4fe6; }
 
 .player-8 {
   border: 2px solid #5dd0d8; }
+  .player-8.land {
+    background-color: #5dd0d8; }
 
 .player-9 {
   border: 2px solid #f39c4b; }
+  .player-9.land {
+    background-color: #f39c4b; }
 
 .player-10 {
   border: 2px solid #8f6e50; }
+  .player-10.land {
+    background-color: #8f6e50; }
 
 .player-11 {
   border: 2px solid #3a3738; }
+  .player-11.land {
+    background-color: #3a3738; }
 
 .player-12 {
   border: 2px solid #196e19; }
+  .player-12.land {
+    background-color: #196e19; }
 
 .player-13 {
   border: 2px solid #51176b; }
+  .player-13.land {
+    background-color: #51176b; }
 
 .player-14 {
   border: 2px solid #bca1e9; }
+  .player-14.land {
+    background-color: #bca1e9; }
 
 .player-15 {
   border: 2px solid #fcf0f4; }
+  .player-15.land {
+    background-color: #fcf0f4; }
 
 .player-16 {
   border: 2px solid #f8e00a; }
+  .player-16.land {
+    background-color: #f8e00a; }
 
 .title-sell,
 .title-sellProperty {
@@ -643,6 +677,15 @@ body {
     border-radius: 5px; }
   body ::-webkit-scrollbar-thumb:hover {
     background: #444; }
+
+.land {
+  border-radius: 15px;
+  min-width: 65px;
+  min-height: 20px;
+  position: absolute;
+  align-self: center;
+  text-align: center;
+  top: -25px; }
 
 #root > div {
   display: flex;
