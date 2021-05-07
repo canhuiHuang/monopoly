@@ -44,7 +44,7 @@ export class SellWindow extends Component {
     render() {
         return (
             <div className="sell-container">
-                {this.state.selectedUser !== null && <SellPropertiesWindow pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} onOffer={this.props.onOffer} selectedUser={this.state.selectedUser} users={this.props.users} myUUID={this.props.myUUID} selectUser={this.selectUser}/>}
+                {this.state.selectedUser !== null && <SellPropertiesWindow allProperties={this.props.allProperties} pubnub={this.props.pubnub} gameChannel={this.props.gameChannel} onOffer={this.props.onOffer} selectedUser={this.state.selectedUser} users={this.props.users} myUUID={this.props.myUUID} selectUser={this.selectUser}/>}
                 <div className="sellWindow">
                     <div className="title-sell">Who are you selling to?</div>
                     <div className="userCards">

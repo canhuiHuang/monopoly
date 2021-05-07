@@ -6,18 +6,130 @@
   }
 }
 
+.contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .title {
+    grid-column: 1 / 9;
+    grid-row: 4;
+    font-size: 4rem;
+    font-weight: 420;
+    letter-spacing: 12px;
+    color: rgb(139, 139, 143);
+  }
+
+  .wtf {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  input {
+    height: 2.2rem;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 0.8rem;
+  }
+  button {
+    margin: 0.1rem 0.6rem;
+    height: 2.2rem;
+    border-radius: 8px;
+    width: 5.2rem;
+    border: none;
+    background-color: rgb(207, 195, 236);
+    transition: transform 0.1s;
+
+    &:hover {
+      background-color: rgb(228, 218, 245);
+      transform: scale(1.03);
+    }
+  }
+
+  .lobbyUsers {
+    margin-top: 5rem;
+    background-color: rgb(233, 231, 235);
+    padding: 1.5rem 4.2rem;
+    border-radius: 32px;
+    border: solid 7px rgb(80, 74, 95);
+
+    .lobbyUser {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      margin: 0 2rem;
+      color: rgb(139, 139, 143);
+      font-size: 1.5rem;
+      word-wrap: break-word;
+      position: relative;
+
+      .s-piece {
+        z-index: 2;
+      }
+      .shadow {
+        width: 65px;
+        height: 30px;
+        border-bottom-left-radius: 50% 50%;
+        border-bottom-right-radius: 50% 50%;
+        border-top-left-radius: 50% 50%;
+        border-top-right-radius: 50% 50%;
+        // background: radial-gradient(rgba(253, 4, 4, 0.85) 28%, transparent 70%);
+        background: radial-gradient(
+          rgba(60, 54, 97, 0.85) 28%,
+          transparent 70%
+        );
+        position: absolute;
+        bottom: 1.5rem;
+        z-index: 1;
+        align-self: center;
+      }
+    }
+  }
+}
+.lobbyUsers {
+  display: flex;
+}
+
+.picking-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h1 {
+    margin-top: 4.5rem;
+    margin-bottom: 0.8rem;
+    font-size: 2.2rem;
+    color: rgb(139, 139, 143);
+  }
+
+  button {
+    border-radius: 10px;
+    width: 12rem;
+    height: 2.4rem;
+    background-color: rgb(227, 223, 236);
+    border: rgba(51, 51, 51, 0.2) solid 2px;
+    transition: all 0.1s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.08);
+    }
+  }
+}
+
 .piece-picker {
   display: flex;
   flex-wrap: wrap;
   overflow-x: hidden;
   overflow-y: scroll;
-  background-color: rgb(212, 224, 224);
+  background-color: rgb(233, 231, 235);
   width: 600px;
   height: 300px;
   align-self: center;
   border-radius: 25px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  border: 2px solid #333;
+  border: solid 4px rgb(80, 74, 95);
+  margin-bottom: 1.4rem;
 
   .s-piece-container {
     display: flex;
@@ -34,8 +146,9 @@
     justify-content: center;
     padding: 2rem;
     border-radius: 20px;
+    cursor: pointer;
     &:hover {
-      border: 2px solid rgba(51, 51, 51, 0.3);
+      border: 3px solid rgba(62, 104, 61, 0.4);
     }
     &.self {
       border: 4.8px solid $self-color;
@@ -235,6 +348,7 @@
 }
 
 .onlineUsers {
+  overflow-y: scroll;
   padding: 2rem;
   padding-top: 1.5rem;
   display: flex;
@@ -242,6 +356,7 @@
   border-radius: 13px;
   margin-right: 2.8rem;
   height: 0 auto;
+  max-height: 35vh;
 
   .onlineUser {
     display: flex;
@@ -249,13 +364,22 @@
     background: linear-gradient(
       to top,
       #333 0.5%,
-      rgba(252, 245, 242, 0.85) 5%
+      rgba(179, 175, 175, 0.65) 5%
     );
     border: #333 2px solid;
     border-radius: 10px;
     margin-bottom: 1rem;
     min-width: 245px;
     max-width: 360px;
+
+    &.myTurn {
+      background: linear-gradient(
+        to top,
+        rgb(174, 206, 189) 0.5%,
+        rgba(179, 175, 175, 0.65) 5%
+      );
+      background-color: rgb(255, 255, 255);
+    }
 
     .top {
       display: flex;
@@ -288,6 +412,7 @@
         font-size: 1.6rem;
         padding: 1rem;
         margin-left: 0.3rem;
+        color: rgb(219, 154, 57);
       }
     }
   }
@@ -319,19 +444,28 @@
   position: fixed;
   bottom: 49px;
   padding: 0.85rem 2.4rem;
-  width: 11rem;
-  left: 2.4rem;
+  width: 10rem;
+  left: 5.8rem;
   z-index: 3;
   border: rgb(32, 32, 32) solid 1px;
 }
-.btn-dices {
-  background-color: rgb(182, 238, 175);
-  border-radius: 3px;
-  width: 11.5rem;
+.placeholder {
+  width: 15.5rem;
+  height: 5rem;
   padding: 0.9rem 2.4rem;
   position: fixed;
-  bottom: 49px;
-  left: 16rem;
+  left: 3rem;
+}
+.btn-dices {
+  font-size: 1.4rem;
+  background-color: rgb(182, 238, 175);
+  border-radius: 3px;
+  width: 15.5rem;
+  height: 5rem;
+  padding: 0.9rem 2.4rem;
+  position: fixed;
+  bottom: 120px;
+  left: 3rem;
   z-index: 3;
   border: rgb(29, 28, 28) solid 1px;
 
@@ -378,6 +512,8 @@
   left: 32.5vw;
 }
 .layer {
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   background-color: rgba(38, 39, 37, 0.5);
@@ -543,7 +679,7 @@
   position: fixed;
   z-index: 2;
   bottom: -19.5rem;
-  left: 28.5rem;
+  left: 19.8rem;
   background-color: rgba(22, 22, 24, 0.85);
   padding: 0.8rem 1.3rem;
   border-radius: 10px;

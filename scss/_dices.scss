@@ -1,4 +1,8 @@
 .dices-component {
+  bottom: 325px;
+  left: 217px;
+  position: absolute;
+
   .title {
     padding: 20px;
     font: 16px/20px Arial, sans-serif;
@@ -8,11 +12,9 @@
 
   .container {
     z-index: 2;
-    position: fixed;
+
     display: flex;
     justify-content: center;
-    bottom: 95px;
-    left: 17px;
   }
 
   .dice {

@@ -4,9 +4,17 @@ import shortid from 'shortid';
 import Game from './Game';
 
 
-import pepe5head from '../images/pepe5head.png';
-import snorlax from '../images/snorlax.png';
-const pieces = [
+import pepe5head from '../piecesImages/pepe5head.png';
+import snorlax from '../piecesImages/snorlax.png';
+import amongus1 from '../piecesImages/amongus1.png';
+import amongus2 from '../piecesImages/amongus2.png';
+import amongus3 from '../piecesImages/amongus3.png';
+import amongus4 from '../piecesImages/amongus4.png';
+import penguin from '../piecesImages/penguin.png';
+import ghost from '../piecesImages/ghost.png';
+import padoru from '../piecesImages/padoru.png';
+import padoru2 from '../piecesImages/padoru2.png';
+const globalPieces = [
     pepe5head,
     snorlax,
     pepe5head,
@@ -14,19 +22,19 @@ const pieces = [
     pepe5head,
     snorlax,
     pepe5head,
-    snorlax,
+    ghost,
     pepe5head,
     snorlax,
     pepe5head,
     snorlax,
     pepe5head,
-    snorlax,
-    pepe5head,
-    snorlax,
-    pepe5head,
-    snorlax,
-    pepe5head,
-    snorlax
+    amongus1,
+    amongus2,
+    amongus3,
+    amongus4,
+    penguin,
+    padoru,
+    padoru2
 ];
 
 class PiecePicker extends Component {
@@ -53,7 +61,7 @@ class PiecePicker extends Component {
                     const newUsersState = this.state.users;
                     let turn = 1;
                     for (let uuid in newUsersState) {
-                        newUsersState[uuid].piece_id = pieces[newUsersState[uuid].piece_id];
+                        newUsersState[uuid].piece_id = globalPieces[newUsersState[uuid].piece_id];
                         newUsersState[uuid].balance = 1500;
                         newUsersState[uuid].properties = {};
                         newUsersState[uuid].cards = [];
@@ -83,7 +91,7 @@ class PiecePicker extends Component {
                 }
                 // Listen for picks
                 if (this.props.isRoomCreator) {
-                    if (msg.message.myPick) {
+                    if (msg.message.myPick > -1) {
                         const curUsers = this.state.users;
 
                         let idAlreadyPicked = false;
@@ -142,32 +150,12 @@ class PiecePicker extends Component {
     }
 
     renderPieces = ()=> {
-        const pieces = [
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''},
-            {url: pepe5head, player: ''},
-            {url: snorlax, player: ''}
-        ];
+        const pieces = globalPieces.map(piece => ({url: piece, player:''}));
          
         for (let uuid of Object.keys(this.state.users)) {
             if (this.state.users[uuid].piece_id){
-                pieces[this.state.users[uuid].piece_id].player = 'other';
+                if (this.state.users[uuid].piece_id >= 0)
+                    pieces[this.state.users[uuid].piece_id].player = 'other';
             }
         }
         if (this.state.users[this.state.myUUID]){
@@ -213,7 +201,8 @@ class PiecePicker extends Component {
         return (
             <div>
                 {!this.state.started && 
-                    <div>
+                    <div className="picking-stage">
+                        <h1>Select your Piece</h1>
                         <div className="piece-picker">
                             {this.renderPieces()}
                         </div>

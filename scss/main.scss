@@ -18,6 +18,14 @@ $body-font: "Oswald", sans-serif, Tahoma, Verdana;
   box-sizing: border-box;
 }
 
+.broadcast-container {
+  background-color: rgb(233, 231, 235);
+  height: 55vh;
+  min-width: 265px;
+  max-width: 390px;
+  border-radius: 15px;
+}
+
 body {
   margin: 0;
   background-color: $background-color;
@@ -132,6 +140,7 @@ h6 {
   height: 994px;
   background: #3f3e3d;
   border: 2px solid $black;
+  left: 10rem;
 
   .title {
     grid-column: 1 / 9;
@@ -575,8 +584,9 @@ h6 {
     position: absolute;
 
     img {
-      width: 49px;
+      width: 63px;
     }
+    border: none;
   }
 }
 

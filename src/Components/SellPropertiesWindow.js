@@ -56,7 +56,7 @@ export class SellPropertiesWindow extends Component {
                 propertyCards.push(
                     <div key={i} className="propertyCard-with-btns">
                         <PropertyCard property={my.properties[property]}/>
-                        {my.properties[property].houses > 0 && <button className="sellHouses-btn" onClick={() => sellHouses(property)}>Sell Houses</button>}
+                        {this.props.allProperties[property].houses > 0 && <button className="sellHouses-btn" onClick={() => sellHouses(property)}>Sell Houses</button>}
                         <button className="sellProperty-btn" onClick={() => sellProperty(property)}>Sell Property</button>
                     </div>
                 );
@@ -108,7 +108,7 @@ export class SellPropertiesWindow extends Component {
                 propertyCards.push(
                     <div key={i} className="propertyCard-with-btns">
                         <PropertyCard property={my.properties[property]}/>
-                        {my.properties[property].houses === 0 && <button className="sellProperty-btn" onClick={() => setPrice(property)}>Sell Property</button>}
+                        {this.props.allProperties[property].houses === 0 && <button className="sellProperty-btn" onClick={() => setPrice(property)}>Sell Property</button>}
                     </div>
                 );
                 i++;

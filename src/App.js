@@ -6,7 +6,30 @@ import PiecePicker from './Components/PiecePicker';
 import Swal from "sweetalert2";  
 import shortid  from 'shortid';
 import './css/main.css';
- 
+
+import cool from './emojis/cool.png'; 
+import cute from './emojis/cute.png'; 
+import embarrassed from './emojis/embarrassed.png'; 
+import ghost from './emojis/ghost.png'; 
+import greed from './emojis/greed.png'; 
+import happy1 from './emojis/happy1.png'; 
+import happy2 from './emojis/happy2.png'; 
+import laughing1 from './emojis/laughing1.png'; 
+import laughing2 from './emojis/laughing2.png'; 
+import smart from './emojis/smart.png'; 
+
+const emojiFaces = [];
+for(let i = 0; i < 8; i++){emojiFaces.push(cool)};
+for(let i = 0; i < 5; i++){emojiFaces.push(cute)};
+for(let i = 0; i < 7; i++){emojiFaces.push(embarrassed)};
+for(let i = 0; i < 1; i++){emojiFaces.push(ghost)};
+for(let i = 0; i < 2; i++){emojiFaces.push(greed)};
+for(let i = 0; i < 20; i++){emojiFaces.push(happy1)};
+for(let i = 0; i < 20; i++){emojiFaces.push(happy2)};
+for(let i = 0; i < 7; i++){emojiFaces.push(laughing1)};
+for(let i = 0; i < 7; i++){emojiFaces.push(laughing2)};
+for(let i = 0; i < 12; i++){emojiFaces.push(smart)};
+
 class App extends Component {
   constructor(props) {  
     super(props);
@@ -23,9 +46,10 @@ class App extends Component {
       isRoomCreator: false,
       isDisabled: false,
       myTurn: false,
-      users: {[generatedUUID]: {name: 'uwu', piece_id: ''}},
+      users: {[generatedUUID]: {name: 'uwu', piece_id: -1}},
       name: 'uwu',
       uuid: generatedUUID,
+      randomNumbers: []
     };
 
     this.lobbyChannel = null;
@@ -33,7 +57,6 @@ class App extends Component {
     this.gameChannel = null;
     this.roomId = null;    
     this.pubnub.init(this);
-    
   }
   
   componentDidMount(){
@@ -104,6 +127,12 @@ class App extends Component {
       this.pubnub.getMessage(this.lobbyChannel, (msg) => {
 
         // Received users info
+            if (msg.message.randomNumbers){
+              this.setState({
+                randomNumbers: msg.message.randomNumbers
+              })
+            }
+
             if (msg.message.users) {
               console.log('received: ', msg.message.users);
               const users = msg.message.users;
@@ -139,12 +168,12 @@ class App extends Component {
                   // Send users back to all subscribers
                   this.pubnub.publish({
                     message: {
-                      users: this.state.users
+                      users: this.state.users,
+                      randomNumbers: this.state.randomNumbers
                     },
                     channel: this.lobbyChannel
                   });
                 }
-                
             }
 
             // Listen for gameStart
@@ -171,6 +200,15 @@ class App extends Component {
 
   // Create a room channel
   onPressCreate = (e) => {
+    // random numbers for emojis
+    const curRandomNumbers = [];
+    for (let i = 0; i < 20; i++){
+      curRandomNumbers.push(Math.round(Math.random() * 89))
+    }
+    this.setState({
+      randomNumbers: curRandomNumbers
+    });
+
     // Create a random name for the channel
     this.roomId = shortid.generate().substring(0,5).toUpperCase();
     this.lobbyChannel = 'monopolylobby--' + this.roomId;
@@ -230,7 +268,6 @@ class App extends Component {
       }
     })
   }
-
   // Join a room channel
   joinRoom = (value) => {
     this.roomId = value.toUpperCase();
@@ -240,7 +277,7 @@ class App extends Component {
     this.pubnub.hereNow({
       channels: [this.lobbyChannel], 
     }).then((response) => { 
-        if(response.totalOccupancy < 10){
+        if(response.totalOccupancy < 12){
           this.pubnub.subscribe({
             channels: [this.lobbyChannel],
             withPresence: true
@@ -258,6 +295,10 @@ class App extends Component {
             },
             channel: this.lobbyChannel
           });
+
+          this.setState({
+            isDisabled: true
+          })
         } 
         else{
           // Game in progress
@@ -303,10 +344,18 @@ class App extends Component {
   displayUsers = () => {
     const users = [];
     let i = 0;
-    for (var uuid in this.state.users) {
-      if (this.state.users.hasOwnProperty(uuid)) {
-        users.push(<div key={i}>{this.state.users[uuid].name}</div>);
-        i++;
+    if (this.state.randomNumbers.length > 1) {
+      for (var uuid in this.state.users) {
+        if (this.state.users.hasOwnProperty(uuid)) {
+          users.push(
+            <div className="lobbyUser" key={i}>
+              <div className="shadow"></div>
+              <div className="s-piece"><img src={emojiFaces[this.state.randomNumbers[i]]} alt="error"/></div>
+              {this.state.users[uuid].name}
+            </div>
+          );
+          i++;
+        }
       }
     }
     return users;
@@ -344,8 +393,9 @@ class App extends Component {
   }
 
   render() {  
-    return (  
-        <div>
+    return (
+      <div>
+        <div className="contenido">
           {
             !this.state.isPlaying &&
             <div className="title">
@@ -356,7 +406,7 @@ class App extends Component {
             !this.state.isPlaying &&
             <div className="game">
               <div className="wtf">
-                <input type="text" placeholder="nickname" onChange={e=> this.setName(e)}/>
+                <input type="text" placeholder="nickname" onChange={e=> this.setName(e)} disabled={this.state.isDisabled}/>
                 <div className="button-container">
                   <button 
                     className="create-button "
@@ -366,23 +416,24 @@ class App extends Component {
                   </button>
                   <button 
                     className="join-button"
+                    disabled={this.state.isDisabled}
                     onClick={(e) => this.onPressJoin()}
                     > Join 
                   </button>
                   {this.showStartButton()}
                 </div>                        
-                <div>{this.displayUsers()}</div>
-                
+                {this.state.isDisabled && <div className="lobbyUsers">{this.displayUsers()}</div>}
               </div>
             </div>
           }
+        </div>
           {
             this.state.isPlaying && 
             <div className="game-container">
               <PiecePicker isRoomCreator={this.state.isRoomCreator} lobbyChannel={this.pieceSelectionChannel} pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}/>
             </div>
           }
-        </div>
+      </div>
     );  
   } 
 }
