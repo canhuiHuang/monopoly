@@ -277,7 +277,30 @@ export class Game extends Component {
                     })
                 }
                 // Listen for user
-                
+                if(msg.message.user){
+                    console.log('simon mamona');
+                    console.log(msg.message.user);
+                    const curUsers = this.state.users;
+                    const curAllProperties = this.state.allProperties;
+                    // Assign property to user & adjust balance
+                    // If new property acquired
+                    if (msg.message.user.newPropertyName) {
+                        curUsers[msg.message.user.uuid].properties[msg.message.user.newPropertyName] = allProperties[msg.message.user.propertyName];
+                    }
+                    
+                    // Update balance
+                    if (msg.message.user.newBalance){
+                        curUsers[msg.message.user.uuid].balance = msg.message.user.newBalance;
+                    }
+                    
+                    // Assign ownership to allProperties
+                    curAllProperties[msg.message.property].owner = msg.message.user.uuid;
+
+                    this.setState({
+                        users: curUsers,
+                        allProperties: curAllProperties
+                    });
+                }
 
                 // Listen for broadcast message
                 if (msg.message.broadcast_message) {
@@ -523,7 +546,7 @@ export class Game extends Component {
                                                 })
                                                 console.log('aber ke es esto ', this.state.users, this.state.allProperties);
                                                 this.props.pubnub.publish({
-                                                    message: {user: {uuid: this.props.myUUID, propertyName: property.data.camelName, newBalance: curUsers[this.props.myUUID].balance }, property: property.data.camelName},
+                                                    message: {user: {uuid: this.props.myUUID, newPropertyName: property.data.camelName, newBalance: curUsers[this.props.myUUID].balance}, property: property.data.camelName},
                                                     channel: this.props.gameChannel
                                                 });
                                                 Swal.fire(`You have purchased ${property.data.property_name}!`, '', 'success');
@@ -844,7 +867,7 @@ export class Game extends Component {
                             allProperties: curAllProperties
                         });
                         this.props.pubnub.publish({
-                            message: {successful_seller: msg.publisher, soldToBank: true,users: this.state.users, allProperties: this.state.allProperties, transactionDone: true, broadcast_message: `${curUsers[msg.publisher].name} sold the houses of ${allProperties[msg.message.property].property_name} to the bank for $${earning}.`},
+                            message: {successful_seller: msg.publisher, soldToBank: true, user: {uuid: msg.publisher, newBalance: curUsers[msg.publisher].balance}, property: {name: msg.message.property, houses: 0}, transactionDone: true, broadcast_message: `${curUsers[msg.publisher].name} sold the houses of ${allProperties[msg.message.property].property_name} to the bank for $${earning}.`},
                             channel: this.props.gameChannel
                         })
                     }
