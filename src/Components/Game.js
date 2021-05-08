@@ -243,7 +243,18 @@ export class Game extends Component {
         else {
             curUsers[userUUID].position = (curUsers[userUUID].position + increment) % 40;
             if (curUsers[userUUID].position === 0) {
-                curUsers[userUUID].balance += 200;
+                if (userUUID === this.props.myUUID){
+                    curUsers[userUUID].balance += 200;
+                    const usersToUpdate = {};
+                    usersToUpdate[userUUID] = {newBalance: curUsers[userUUID].balance}
+                    this.props.pubnub.publish({
+                        message: {
+                            users: usersToUpdate,
+                            broadcast_message: `${curUsers[userUUID].name} collected $200 by passing GO.`
+                        },
+                        channel: this.props.gameChannel
+                    });
+                }
             }
             this.setState({
                 users: curUsers
@@ -258,48 +269,77 @@ export class Game extends Component {
         console.log('mounted boi');
 
         if (this.props.isRoomCreator) {
+            const usersToUpdate = {};
+            
+            usersToUpdate[this.props.myUUID] = {newPropertyName: 'casaDeSteve'};
+
+            this.props.pubnub.publish({
+                message: {
+                    users: usersToUpdate,
+                    updateProperty: {name: 'casaDeSteve', newOwner: this.props.myUUID, newHousesNumber: 3},
+                    broadcast_message: `testing.`
+                },
+                channel: this.props.gameChannel
+            });
             this.gameStart();
         }
 
         if(this.props.gameChannel != null){
             this.props.pubnub.getMessage(this.props.gameChannel, (msg) => {
-                console.log('IN GAME');
                 // Listen for users
-                if (msg.message.users) {
-                    this.setState({
-                        users: msg.message.users
-                    })
-                }
-                // Listen for allProperties
-                if (msg.message.allProperties) {
-                    this.setState({
-                        allProperties: msg.message.allProperties
-                    })
-                }
-                // Listen for user
-                if(msg.message.user){
-                    console.log('simon mamona');
-                    console.log(msg.message.user);
+                if(msg.message.users){
+                    console.log('mensaje completo ', msg.message);
+                    // current Users & allProperties states
                     const curUsers = this.state.users;
+
+                    const users = msg.message.users;
+                    // Check what to update for each user.
+                    for (let uuid in users){     
+                        const {newPropertyName, removePropertyName, newBalance, newJailState} = users[uuid];
+
+                        // Add a new properties.property
+                        if(newPropertyName) {
+                            curUsers[uuid].properties[newPropertyName] = allProperties[newPropertyName];
+                        }
+                        
+                        // Remove properties.property
+                        if (removePropertyName) {
+                            delete curUsers[uuid].properties[removePropertyName];
+                        }
+
+                        // Update Balance
+                        if(newBalance !== undefined) {
+                            curUsers[uuid].balance = newBalance;
+                        }
+
+                        // Update jailState
+                        if (newJailState) curUsers[uuid].inJail = newJailState;
+                    }
+
+                    // Update states
+                    this.setState({
+                        users: curUsers
+                    });
+                    console.log(this.state.users, this.state.allProperties);
+                }
+
+                // Listen for property
+                if(msg.message.updateProperty){
+                    console.log('entre al loop  de updateProperty');
                     const curAllProperties = this.state.allProperties;
-                    // Assign property to user & adjust balance
-                    // If new property acquired
-                    if (msg.message.user.newPropertyName) {
-                        curUsers[msg.message.user.uuid].properties[msg.message.user.newPropertyName] = allProperties[msg.message.user.propertyName];
-                    }
+
+                    const {name, newOwner, newHousesNumber} = msg.message.updateProperty;
+                    console.log(msg.message.updateProperty);
                     
-                    // Update balance
-                    if (msg.message.user.newBalance){
-                        curUsers[msg.message.user.uuid].balance = msg.message.user.newBalance;
-                    }
-                    
-                    // Assign ownership to allProperties
-                    curAllProperties[msg.message.property].owner = msg.message.user.uuid;
+                    // Update owner?
+                    if (newOwner !== undefined) curAllProperties[name].owner = newOwner;
+
+                    // Update houses number
+                    if (newHousesNumber !== undefined) curAllProperties[name].houses = newHousesNumber;
 
                     this.setState({
-                        users: curUsers,
                         allProperties: curAllProperties
-                    });
+                    })
                 }
 
                 // Listen for broadcast message
@@ -317,8 +357,7 @@ export class Game extends Component {
                 }
 
                 // Listen for dices result 
-                if (msg.message.dicesResult) {
-                     
+                if (msg.message.dicesResult) {   
                     // Update Dices   
                     const updateDices = (result) =>{
                         this.setState({
@@ -416,10 +455,10 @@ export class Game extends Component {
                                         this.setState({
                                             users: curUsers
                                         })
-                                        this.props.pubnub.publish({
-                                            message: {users: this.state.users},
-                                            channel: this.props.gameChannel
-                                        });
+                                        // this.props.pubnub.publish({
+                                        //     message: {users: this.state.users},
+                                        //     channel: this.props.gameChannel
+                                        // });
                                     }   // Wait for lander to pay.
                                     else {
                                         if (landerUUID === this.props.myUUID) {
@@ -481,19 +520,22 @@ export class Game extends Component {
                                                     users: curUsers,
                                                     allProperties: curAllProperties
                                                 })
-                                                this.props.pubnub.publish({
-                                                    message: {someoneDied: true, users: this.state.users, allProperties: this.state.allProperties, broadcast_message: `${lander.name} is bankrupt.`},
-                                                    channel: this.props.gameChannel
-                                                });
+                                                // this.props.pubnub.publish({
+                                                //     message: {someoneDied: true, users: this.state.users, allProperties: this.state.allProperties, broadcast_message: `${lander.name} is bankrupt.`},
+                                                //     channel: this.props.gameChannel
+                                                // });
                                             ////////////////////////////////////////////
                                         }
                                     }
+                                    this.props.pubnub.publish({
+                                        message: {
+                                            broadcast_message: `${lander} landed on ${allProperties[propertyName].data.property_name} & has to pay $${rentToPay} to ${owner.name}.`
+                                        },
+                                        channel: this.props.gameChannel
+                                    });
                                 }
-
-                                if (owner === this.props.myUUID){
-                                    //
-                                }
-                                else if (owner !== '') {
+                                
+                                if (owner !== '' && owner !== msg.message.dicesThrower) {
                                     payRent(msg.message.dicesThrower, owner, positionsArray[curPosition].property.data.camelName);
                                 }
 
@@ -531,22 +573,25 @@ export class Game extends Component {
                                         }).then((result) => {
                                             if (result.isConfirmed) {
                                                 const curUsers = this.state.users;
-                                                const curAllProperties = this.state.allProperties;
-                                                // Assign property
-                                                curUsers[this.props.myUUID].properties[property.data.camelName] = property;
-                                                curAllProperties[property.data.camelName].owner = this.props.myUUID;
 
-                                                // Adjust balance
-                                                curUsers[this.props.myUUID].balance -= property.data.price;
+                                                // Users package
+                                                const usersToUpdate = {};
+                                                usersToUpdate[this.props.myUUID] = {
+                                                    newPropertyName: property.data.camelName, 
+                                                    newBalance: curUsers[this.props.myUUID].balance - property.data.price
+                                                }
+                                                // Property package
+                                                const propertyToUpdate = {
+                                                    name: property.data.camelName,
+                                                    newOwner: this.props.myUUID
+                                                }
 
-                                                // Set & Publish Results
-                                                this.setState({
-                                                    users: curUsers,
-                                                    allProperties: curAllProperties
-                                                })
-                                                console.log('aber ke es esto ', this.state.users, this.state.allProperties);
+                                                // Send the packages
                                                 this.props.pubnub.publish({
-                                                    message: {user: {uuid: this.props.myUUID, newPropertyName: property.data.camelName, newBalance: curUsers[this.props.myUUID].balance}, property: property.data.camelName},
+                                                    message: {
+                                                        users: usersToUpdate, 
+                                                        updateProperty: propertyToUpdate
+                                                    },
                                                     channel: this.props.gameChannel
                                                 });
                                                 Swal.fire(`You have purchased ${property.data.property_name}!`, '', 'success');
@@ -561,6 +606,7 @@ export class Game extends Component {
                                             console.log('improve?');
                                             await Swal.fire({
                                                 title: `Would you like to improve ${property.data.property_name} for $${property.data.house_cost}?`,
+                                                html: `<i class="fa fa-home fa-3x"></i>`,
                                                 icon: 'info',
                                                 showDenyButton: true,
                                                 showCancelButton: false,
@@ -570,21 +616,24 @@ export class Game extends Component {
                                                 if (result.isConfirmed) {
                                                     const curUsers = this.state.users;
                                                     const curAllProperties = this.state.allProperties;
-                                                    // Add house to property
-                                                    curAllProperties[property.data.camelName].houses += 1;
 
-                                                    // Adjust balance
-                                                    curUsers[this.props.myUUID].balance -= property.data.house_cost;
+                                                    // Users package
+                                                    const usersToUpdate = {};
+                                                    usersToUpdate[this.props.myUUID] = {
+                                                        newBalance: curUsers[this.props.myUUID].balance - property.data.house_cost
+                                                    }
+                                                    // Property package
+                                                    const propertyToUpdate = {
+                                                        name: property.data.camelName,
+                                                        newHousesNumber: curAllProperties[property.data.camelName].houses + 1
+                                                    }
 
-                                                    // Set & Publish Results
-                                                    this.setState({
-                                                        users: curUsers,
-                                                        allProperties: curAllProperties
-                                                    })
+                                                    // Send the packages
                                                     this.props.pubnub.publish({
-                                                        message: {users: this.state.users, allProperties: this.state.allProperties},
+                                                        message: {users: usersToUpdate, updateProperty: propertyToUpdate},
                                                         channel: this.props.gameChannel
                                                     });
+
                                                     Swal.fire(`You purchased 1 house for ${property.data.property_name}!`, '', 'success');
                                                 } else if (result.isDenied || result.isDismissed) {
                                                     Swal.fire(`You chose not to improve ${property.data.property_name}`, '', 'warning')
@@ -597,14 +646,38 @@ export class Game extends Component {
                             const finishTurn = () => {
                                 const goAgain = msg.message.dicesResult.value1 === msg.message.dicesResult.value2;
         
+                                if (!msg.message.goAgain){
+                                    console.log('inside not go again');
+                                    
+                                    // Get the available turns
+                                    const currentTurns = [];
+                                    for(let uuid in this.state.users){
+                                        if(!this.state.users[uuid].bankrupt) {
+                                            currentTurns.push(this.state.users[uuid].turn)
+                                        }
+                                    }
+                                    // Sort the turns ASC. order
+                                    currentTurns.sort((a, b) => a - b);
+        
+                                    // Get to next available turn
+                                    const this_StaticTurn = this.state.users[msg.message.finisher].turn;
+                                    const index = currentTurns.indexOf(this_StaticTurn);
+                                    const nextIndex = (index + 1) % currentTurns.length;
+                                    const nextTurn = currentTurns[nextIndex];
+        
+                                    this.setState({
+                                        turn: nextTurn
+                                    })
+                                    console.log('NEXT TURN IS: ',this.state.turn);
+                                }
+        
                                 this.props.pubnub.publish({
-                                    message: {finishTurn: true, goAgain: goAgain, finisher: msg.message.dicesThrower},
+                                    message: {startTurn: this.state.turn},
                                     channel: this.props.gameChannel
                                 });
                             }
                             if (msg.message.dicesThrower === this.props.myUUID)
                                 finishTurn();
-                            console.log('YOU TOUCH MY T');
                         }
                         const moveAnimation = () => {
                             //Go to jail
@@ -638,18 +711,78 @@ export class Game extends Component {
                                 channel: this.props.gameChannel
                             });
                         }
-                        if (this.props.isRoomCreator)
-                            finishTurn();
+                        if (msg.message.dicesThrower === this.props.myUUID)
+                                finishTurn();
                     }
-                    
-
                 }
 
-                // Listen for successful offers
-                if (msg.message.transactionDone && (msg.message.successful_seller === this.props.myUUID || msg.message.successful_buyer === this.props.myUUID)) {
-                    if (msg.message.soldToBank) {
-                        Swal.fire('Order completed!', '', 'success');
-                    } else {
+                // Listen for requests
+                if (msg.message.request){
+                    if (msg.message.request === this.props.myUUID){
+                        if(msg.message.transaction.offerType === 'property'){
+                            const {property_name, price, propertyName} = msg.message.transaction;
+                            Swal.fire({
+                                title: `${this.state.users[msg.publisher].name} wants to sell you ${property_name} for $${price}`,
+                                html: this.htmlPropertyCard(allProperties[propertyName]),
+                                showDenyButton: true,
+                                showCancelButton: false,
+                                confirmButtonText: `Take Offer`,
+                                denyButtonText: `Deny Offer`,
+                            }).then((result) => { 
+                                if (result.isConfirmed) {
+                                    // users package
+                                    const usersToUpdate = {};
+                                    // Buyer
+                                    usersToUpdate[this.props.myUUID] = {
+                                        newBalance: this.state.users[this.props.myUUID].balance - price,
+                                        newPropertyName: propertyName
+                                    }
+                                    // Seller
+                                    usersToUpdate[msg.publisher] = {
+                                        newBalance: this.state.users[msg.publisher].balance + price,
+                                        removePropertyName: propertyName
+                                    }
+                                    // Property package
+                                    const updateProperty = {
+                                        name: propertyName,
+                                        newOwner: this.props.myUUID
+                                    }
+                                    this.props.pubnub.publish({
+                                        message: {users: usersToUpdate, updateProperty: updateProperty, transactionDone: true, transaction: {property_name, price, propertyName, seller: msg.publisher, buyer: this.props.myUUID}},
+                                        channel: this.props.gameChannel
+                                    })
+                                } else if (result.isDenied || result.isDismissed) {
+                                    this.props.pubnub.publish({
+                                        message: {deniedRequest: true, requester: msg.publisher},
+                                        channel: this.props.gameChannel
+                                    })
+                                    Swal.fire('Offer Denied', '', 'info');
+                                }
+                            })
+                        }
+                    }
+                }
+
+                // Listen for transactions
+                if (msg.message.transactionDone) {
+                    if (msg.message.transaction.soldTobank && msg.message.transaction.seller === this.props.myUUID) {
+                        const {property_name, houses_sold, soldHousesOnly} = msg.message.transaction;
+                        if (soldHousesOnly){
+                            Swal.fire(`You sold ${property_name}'s ${houses_sold} houses`, '', 'info');
+                        } else {
+                            Swal.fire(`You sold ${property_name} ${houses_sold>0? ' along with ' + houses_sold + ' houses' : ''}`, '', 'info');
+                        }
+                    }
+
+                    else if (msg.message.transaction.buyer === this.props.myUUID) {
+                        const {seller, price, property_name, propertyName} = msg.message.transaction;
+                        Swal.fire({
+                            icon: 'success',
+                            title: `You bought ${property_name} from ${this.state.users[seller].name} for $${price}`,
+                            html: this.htmlPropertyCard(allProperties[propertyName]),
+                            confirmButtonText: `Ok`,
+                        })
+                    } else if (msg.message.transaction.seller === this.props.myUUID){
                         Swal.fire('Offer Taken!', '', 'success');
                     }
                     this.setState({
@@ -657,44 +790,28 @@ export class Game extends Component {
                     })
                 }
                 // Listen for unsucessful offers
-                if (msg.message.deny && msg.message.sellerUUID === this.props.myUUID ) {
+                if (msg.message.deniedRequest && msg.message.requester === this.props.myUUID) {
                     Swal.fire('Offer Denied!', '', 'error');
                     this.setState({
                         sellDisabled: false
                     })
                 }
 
-                // Listen for Sell offers as Buyer
-                if (msg.message.sellProperty && msg.message.user === this.props.myUUID) {
-                    Swal.fire({
-                        title: `${this.state.users[msg.publisher].name} wants to sell you ${allProperties[msg.message.property].data.property_name} for $${msg.message.price}`,
-                        showDenyButton: true,
-                        showCancelButton: false,
-                        confirmButtonText: `Take Offer`,
-                        denyButtonText: `Deny Offer`,
-                      }).then((result) => { 
-                        if (result.isConfirmed) {
-                            this.props.pubnub.publish({
-                                message: {sellerUUID: msg.publisher, buyerUUID: this.props.myUUID, accept: true, property: msg.message.property, offer: msg.message.price},
-                                channel: this.props.gameChannel
-                            })
-                        } else if (result.isDenied || result.isDismissed) {
-                            this.props.pubnub.publish({
-                                message: {sellerUUID: msg.publisher, deny: true, property: msg.message.property},
-                                channel: this.props.gameChannel
-                            })
-                          Swal.fire('Offer Denied', '', 'info');
-                        }
-                      })
-                }
-
                 // Someone left
                 if (msg.message.userUUID) {
                     const curUsers = this.state.users;
                     delete curUsers[msg.message.userUUID];
+                    const curAllProperties = this.state.allProperties;
+                    for (let property in curAllProperties){
+                        if (curAllProperties[property].owner === msg.message.userUUID){
+                            curAllProperties[property].owner = '';
+                            curAllProperties[property].houses = 0;
+                        }
+                    }
 
                     this.setState({
-                        users: curUsers
+                        users: curUsers,
+                        allProperties: curAllProperties
                     })
                 }
 
@@ -718,26 +835,6 @@ export class Game extends Component {
 
                 // Host
                 if (this.props.isRoomCreator){
-                    // Listen for throw Dices request
-                    if(msg.message.getDicesNumbers) {
-                        const value1 = getRand(5);
-                        const value2 = getRand(5);
-                        
-                        let curConsecutiveThrows = this.state.consecutiveThrows;
-                        curConsecutiveThrows++;
-                        if (curConsecutiveThrows === 3) {
-                            this.setState({
-                                consecutiveThrows: 0
-                            })
-                        }
-                        
-                        const util_value1 = getRand(5);
-                        const util_value2 = getRand(5);
-                        this.props.pubnub.publish({
-                            message: {dicesResult: {value1: value1, value2: value2, consecutiveThrows: curConsecutiveThrows}, dicesThrower: msg.publisher, utilityLandingValues: {value1: util_value1, value2: util_value2}},
-                            channel: this.props.gameChannel
-                        })
-                    }
                     // xd
                     if (msg.message.someoneDied) {
                         let alive = 0;
@@ -755,122 +852,6 @@ export class Game extends Component {
                             })
                         }
                     }
-
-                    // Listen for finishTurn
-                    if (msg.message.finishTurn) {
-                        if (!msg.message.goAgain){
-                            console.log('inside not go again');
-                            
-                            // Get the available turns
-                            const currentTurns = [];
-                            for(let uuid in this.state.users){
-                                if(!this.state.users[uuid].bankrupt) {
-                                    currentTurns.push(this.state.users[uuid].turn)
-                                }
-                            }
-                            // Sort the turns ASC. order
-                            currentTurns.sort((a, b) => a - b);
-
-                            // Get to next available turn
-                            const this_StaticTurn = this.state.users[msg.message.finisher].turn;
-                            const index = currentTurns.indexOf(this_StaticTurn);
-                            const nextIndex = (index + 1) % currentTurns.length;
-                            const nextTurn = currentTurns[nextIndex];
-
-                            this.setState({
-                                turn: nextTurn
-                            })
-                            console.log('NEXT TURN IS: ',this.state.turn);
-                        }
-
-                        this.props.pubnub.publish({
-                            message: {startTurn: this.state.turn},
-                            channel: this.props.gameChannel
-                        });
-                    }
-
-                    // Listen for succesfull offers
-                    else if (msg.message.accept) {
-                        const curUsers = this.state.users;
-
-                        // Seller
-                        curUsers[msg.message.sellerUUID].balance += parseInt(msg.message.offer);
-                        const transferedProperty = curUsers[msg.message.sellerUUID].properties[msg.message.property];
-                        delete curUsers[msg.message.sellerUUID].properties[msg.message.property];
-
-                        // Buyer
-                        curUsers[msg.message.buyerUUID].properties[msg.message.property] = transferedProperty;
-                        curUsers[msg.message.buyerUUID].balance -= msg.message.offer;
-
-                        // Set owner on allProperties
-                        const curAllProperties = this.state.allProperties;
-                        curAllProperties[msg.message.property].owner = msg.message.buyerUUID;
-
-                        this.setState({
-                            users: curUsers,
-                            allProperties: curAllProperties
-                        })
-
-                        // Publish results
-                        this.props.pubnub.publish({
-                            message: {
-                                users: this.state.users,
-                                allProperties: this.state.allProperties,
-                                transactionDone: true, 
-                                successful_seller: msg.message.sellerUUID, 
-                                successful_buyer: msg.message.buyerUUID, 
-                                broadcast_message: `${curUsers[msg.message.sellerUUID].name} sold ${allProperties[msg.message.property].property_name} to ${curUsers[msg.message.buyerUUID].name} for $${msg.message.offer}.`},
-                            channel: this.props.gameChannel
-                        })
-                    }
-
-                    // Sell Property to bank
-                    else if (msg.message.sellProperty && msg.message.user === 'bank') {
-                        const curUsers = this.state.users;
-                        const curAllProperties = this.state.allProperties;
-
-                        const amountOfHouses = curAllProperties[msg.message.property].houses;
-                        
-                        const earning = amountOfHouses*Math.round(curUsers[msg.publisher].properties[msg.message.property].data.house_cost / 2) + curUsers[msg.publisher].properties[msg.message.property].data.mortgage_value;
-                        curUsers[msg.publisher].balance += earning;
-
-                        delete curUsers[msg.publisher].properties[msg.message.property];
-
-                        // Set owner on allProperties
-                        curAllProperties[msg.message.property].owner = '';
-
-                        this.setState({
-                            users: curUsers,
-                            allProperties: curAllProperties
-                        });
-                        this.props.pubnub.publish({
-                            message: {successful_seller: msg.publisher, soldToBank: true,users: this.state.users, allProperties: this.state.allProperties, transactionDone: true, broadcast_message: `${curUsers[msg.publisher].name} sold ${allProperties[msg.message.property].property_name} to the bank for $${earning}.`},
-                            channel: this.props.gameChannel
-                        })
-                    }
-
-                    // Sell Houses to Bank
-                    else if (msg.message.sellHouses) {
-                        const curUsers = this.state.users;
-                        const curAllProperties = this.state.allProperties;
-
-                        const amountOfHouses = curAllProperties[msg.message.property].houses;
-
-                        const earning = amountOfHouses*Math.round(curUsers[msg.publisher].properties[msg.message.property].data.house_cost / 2);
-                        curUsers[msg.publisher].balance += earning;
-
-                        // Set Houses to 0 of property on allProperties
-                        curAllProperties[msg.message.property].houses = 0;
-
-                        this.setState({
-                            users: curUsers,
-                            allProperties: curAllProperties
-                        });
-                        this.props.pubnub.publish({
-                            message: {successful_seller: msg.publisher, soldToBank: true, user: {uuid: msg.publisher, newBalance: curUsers[msg.publisher].balance}, property: {name: msg.message.property, houses: 0}, transactionDone: true, broadcast_message: `${curUsers[msg.publisher].name} sold the houses of ${allProperties[msg.message.property].property_name} to the bank for $${earning}.`},
-                            channel: this.props.gameChannel
-                        })
-                    }
                 }
                 
             })
@@ -886,8 +867,25 @@ export class Game extends Component {
             sellDisabled: true,
             dicesDisabled: true
         });
+        const value1 = getRand(5);
+        const value2 = getRand(5);
+        
+        let curConsecutiveThrows = this.state.consecutiveThrows;
+        curConsecutiveThrows++;
+        if (curConsecutiveThrows === 3) {
+            this.setState({
+                consecutiveThrows: 0
+            })
+        } else {
+            this.setState({
+                consecutiveThrows: curConsecutiveThrows
+            })
+        }
+        
+        const util_value1 = getRand(5);
+        const util_value2 = getRand(5);
         this.props.pubnub.publish({
-            message: {getDicesNumbers: true},
+            message: {dicesResult: {value1: value1, value2: value2, consecutiveThrows: curConsecutiveThrows}, dicesThrower: msg.publisher, utilityLandingValues: {value1: util_value1, value2: util_value2}},
             channel: this.props.gameChannel
         })
     }

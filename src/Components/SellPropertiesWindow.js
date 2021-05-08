@@ -26,25 +26,73 @@ export class SellPropertiesWindow extends Component {
 
     renderProperties = (selectedUser) => {
         // Sell to Bank
-        const sellHouses = (property) => {
+        const sellHouses = (propertyName) => {
+            // Users package
+            const usersToUpdate = {};
+            const earning = Math.round(this.props.allProperties[propertyName].houses * this.props.allProperties[propertyName].data.house_cost / 2);
+            usersToUpdate[this.props.myUUID] = {newBalance: this.props.users[this.props.myUUID].balance + earning}
+
             this.props.onOffer();
             this.props.selectUser(null);
+
             this.props.pubnub.publish({
-                message: {sellHouses: true, property: property},
+                message: {
+                    users: usersToUpdate, 
+                    updateProperty: {name: propertyName, newHousesNumber: 0},
+                    transactionDone: true,
+                    transaction: {
+                        soldTobank: true,
+                        soldHousesOnly: true,
+                        seller: this.props.myUUID,
+                        property_name: this.props.allProperties[propertyName].data.property_name, 
+                        houses_sold: this.props.allProperties[propertyName].houses
+                    },
+                    broadcast_message: `${this.props.users[this.props.myUUID].name} sold the houses of ${this.props.allProperties[propertyName].data.property_name} to the bank for $${earning}.`
+                },
                 channel: this.props.gameChannel
             });
         }
         // Sell to Bank or User
-        const sellProperty = (property, price = 0) => {
-            const selectedUser = this.props.selectedUser;
-            console.log('selected user: ',selectedUser );
-
+        const sellProperty = (propertyName, price = 0) => {
             this.props.onOffer();
+
+            if (selectedUser === 'bank') {
+                // Users package
+                const usersToUpdate = {};
+                const earning = Math.round(this.props.allProperties[propertyName].houses * this.props.allProperties[propertyName].data.house_cost / 2) + this.props.allProperties[propertyName].data.mortgage_value;
+                usersToUpdate[this.props.myUUID] = {newBalance: this.props.users[this.props.myUUID].balance + earning, removePropertyName: propertyName};
+
+                this.props.pubnub.publish({
+                    message: {
+                        users: usersToUpdate, 
+                        updateProperty: {name: propertyName, newHousesNumber: 0, newOwner: ''},
+                        transactionDone: true,
+                        transaction: {
+                            soldTobank: true,
+                            seller: this.props.myUUID,
+                            property_name: this.props.allProperties[propertyName].data.property_name, 
+                            houses_sold: this.props.allProperties[propertyName].houses
+                        },
+                        broadcast_message: `${this.props.users[this.props.myUUID].name} sold ${this.props.allProperties[propertyName].data.property_name} to the bank for $${earning}.`
+                    },
+                    channel: this.props.gameChannel
+                });
+            } else {
+                this.props.pubnub.publish({
+                    message: {
+                        request: selectedUser,
+                        transaction: {
+                            offerType: 'property',
+                            seller: this.props.myUUID,
+                            property_name: this.props.allProperties[propertyName].data.property_name,
+                            propertyName: propertyName,
+                            price: parseInt(price)
+                        },
+                    },
+                    channel: this.props.gameChannel
+                });
+            }
             this.props.selectUser(null);
-            this.props.pubnub.publish({
-                message: {sellProperty: true, property: property, user: selectedUser, price: price},
-                channel: this.props.gameChannel
-            });
         }
 
         // Display properties & cards
