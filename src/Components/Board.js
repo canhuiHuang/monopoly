@@ -96,7 +96,7 @@ function Board({users, allProperties, dicesValues, rollIt}) {
 
 		const positionOccupied = thisUUID => {
 			for (let uuid in users) {
-				if (uuid != thisUUID) {
+				if (uuid != thisUUID && !users[uuid].bankrupt) {
 					if (users[uuid].position === users[thisUUID].position) {
 						return true;
 					}
@@ -106,11 +106,13 @@ function Board({users, allProperties, dicesValues, rollIt}) {
 		}
 
 		for(let uuid in users){
-			pieces.push(
-			<div key={i} className={`piece player-${users[uuid].turn}`} 
-				style={{transform: `translate3D(${casillas[users[uuid].position].x + (positionOccupied(uuid)? i*4 : 0)}px,${casillas[users[uuid].position].y + (positionOccupied(uuid)? i*9 : 0)}px,0)`}}>
-				<img src={users[uuid].piece_id} alt={users[uuid].name}/>
-			</div>);
+			if (!users[uuid].bankrupt){
+				pieces.push(
+					<div key={i} className={`piece player-${users[uuid].turn}`} 
+						style={{transform: `translate3D(${casillas[users[uuid].position].x + (positionOccupied(uuid)? i*4 : 0)}px,${casillas[users[uuid].position].y + (positionOccupied(uuid)? i*9 : 0)}px,0)`}}>
+						<img src={users[uuid].piece_id} alt={users[uuid].name}/>
+					</div>);
+			}
 			i++
 		}
 		return pieces;
