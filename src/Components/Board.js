@@ -76,9 +76,10 @@ function Board({users, allProperties, dicesValues, rollIt}) {
 				)
 			else
 				casas.push(
-					<i key={i} className="fa fa-hotel" style={{
+					<i key={i} className="fa fa-hotel fa-2x" style={{
 						position: 'absolute',
 						top: '-24px',
+						left: '20px',
 						alignSelf: 'center',
 						textAlign: 'center'
 					}}></i>

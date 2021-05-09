@@ -78,6 +78,7 @@ class PiecePicker extends Component {
                         newUsersState[uuid].turn = turn;
                         newUsersState[uuid].position = 0;
                         newUsersState[uuid].inJail = false;
+                        newUsersState[uuid].turnsInJail = 0;
                         turn++;
                     }
                     console.log(newUsersState);

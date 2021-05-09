@@ -135,6 +135,8 @@ export class SellPropertiesWindow extends Component {
                         // Check if the user typed a value in the input field
                         if(result.value <= this.props.users[this.props.selectedUser].balance && result.value > 0){
                             sellProperty(property, result.value);
+                        } else if (result.isDismissed){
+                            // nothing bruh
                         } else {
                             Swal.fire({
                                 position: 'center',

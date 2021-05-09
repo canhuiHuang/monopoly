@@ -426,7 +426,7 @@
   position: fixed;
   z-index: 3; }
 
-.sellProperty-window {
+.sellProperty-window.propertyCard {
   border-radius: 8px;
   padding: 2.4rem;
   background-color: #ecf0f1;
@@ -440,12 +440,12 @@
   left: 32.5vw;
   z-index: 6;
   overflow-y: scroll; }
-  .sellProperty-window .propertyCards {
+  .sellProperty-window.propertyCard .propertyCards {
     padding-top: 1rem;
     padding-bottom: 1.4rem;
     display: flex;
     flex-wrap: wrap; }
-    .sellProperty-window .propertyCards .propertyCard-with-btns {
+    .sellProperty-window.propertyCard .propertyCards .propertyCard-with-btns {
       display: flex;
       flex-direction: column;
       align-items: center;
