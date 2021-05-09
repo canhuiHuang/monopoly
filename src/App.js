@@ -308,7 +308,7 @@ class App extends Component {
             position: 'top',
             allowOutsideClick: false,
             title: 'Error',
-            text: 'Game in progress. Try another room.',
+            text: 'Lobby is full.',
             width: 275,
             padding: '0.7em',
             customClass: {
