@@ -139,11 +139,33 @@ export class Game extends Component {
             dicesValues: {value1: 1, value2: 2},
             rollIt: false,
             broadcast_messages: [],
-            winner: ''
+            winnerUUID: ''
         }
 
         console.log('max turn: ', this.state.maxTurn);
         this.movePiece = this.movePiece.bind(this);
+    }
+
+    checkForGameOver = () => {
+        let alives = 0;
+        for (let uuid in this.state.users){
+            if (!this.state.users[uuid].bankrupt){
+                alives++;
+            }
+        }
+        if (alives < 2){
+            for (let uuid in this.state.users){
+                if (!this.state.users[uuid].bankrupt){
+                    this.setState({
+                        winnerUUID: uuid
+                    })
+                }
+                this.props.pubnub.publish({
+                    message: {broadcast_message: `${this.state.users[uuid].name} is victorious!`},
+                    channel: this.props.gameChannel
+                });
+            }
+        }
     }
 
     htmlPropertyCard = (property) => {
@@ -478,36 +500,21 @@ export class Game extends Component {
                         setTimeout(()=>{
                             deadUsers.forEach(uuid => {
                                 curUsers[uuid].bankrupt = true;
-                                if (this.state.turn === this.state.users[this.props.myUUID].turn){
-                                    this.props.pubnub.publish({
-                                        message: {broadcast_message: `${curUsers[uuid].name} is on bankrupt.`},
-                                        channel: this.props.gameChannel
-                                    });
+                                for(let firstAlive in curUsers){
+                                    if (!curUsers[firstAlive].bankrupt && this.props.myUUID === firstAlive){
+                                        this.props.pubnub.publish({
+                                            message: {broadcast_message: `${curUsers[uuid].name} is on bankrupt.`},
+                                            channel: this.props.gameChannel
+                                        });
+                                        break;
+                                    }
                                 }
                             })
                             this.setState({
                                 users: curUsers
                             });
-                            let alives = 0;
-                            for (let uuid in this.state.users){
-                                if (!this.state.users[uuid].bankrupt){
-                                    alives++;
-                                }
-                            }
-                            if (alives < 2){
-                                for (let uuid in this.state.users){
-                                    if (!this.state.users[uuid].bankrupt){
-                                        this.setState({
-                                            winner: uuid
-                                        })
-                                    }
-                                    this.props.pubnub.publish({
-                                        message: {broadcast_message: `${curUsers[uuid].name} is victorious!`},
-                                        channel: this.props.gameChannel
-                                    });
-                                }
-                            }
-                        }, 1250);
+                            this.checkForGameOver();
+                        },1250) 
                     }
                     console.log(this.state.users, this.state.allProperties);
                 }
@@ -656,7 +663,7 @@ export class Game extends Component {
                                     if (msg.message.dicesThrower === this.props.myUUID){
                                         Swal.fire({
                                             icon: 'warning',
-                                            title: `Pay ${lander.name} to ${owner.name}!`,
+                                            title: `Pay ${rentToPay} to ${owner.name}!`,
                                             timer: 1750
                                         })
                                     }
@@ -707,7 +714,7 @@ export class Game extends Component {
                                             // users package
                                             const usersToUpdate = {};
                                             usersToUpdate[landerUUID] = {newBalance: lander.balance - rentToPay}
-                                            usersToUpdate[ownerUUID] = {addBalance: Math.abs(lander.balance - rentToPay)}
+                                            usersToUpdate[ownerUUID] = {addBalance: lander.balance}
 
                                             // properties package
                                             const propertiesToUpdate = {};
@@ -722,7 +729,7 @@ export class Game extends Component {
                                             })
                                             Swal.fire({
                                                 icon: 'warning',
-                                                title: `Pay ${lander.name} to ${owner.name}!`,
+                                                title: `Pay ${rentToPay} to ${owner.name}!`,
                                                 timer: 1750
                                             })
                                         ////////////////////////////////////////////
@@ -775,7 +782,8 @@ export class Game extends Component {
                                     usersToUpdate[this.props.myUUID] = {addBalance: -taxAmount}
 
                                     this.props.pubnub.publish({
-                                        message: {users: usersToUpdate, broadcast_message: `${this.state.users[this.props.myUUID].name} pays $${taxAmount} of tax.`}
+                                        message: {users: usersToUpdate, broadcast_message: `${this.state.users[this.props.myUUID].name} pays $${taxAmount} of tax.`},
+                                        channel: this.props.gameChannel
                                     })
                                 } else {
                                     const taxAmount = curPosition === 4? tax_pos4(this.state.users[msg.message.dicesThrower]) : 75;
@@ -1104,6 +1112,9 @@ export class Game extends Component {
                         users: curUsers,
                         allProperties: curAllProperties
                     })
+                    setTimeout(()=>{
+                        this.checkForGameOver();
+                    },1250)
                 }
 
                 // startTurn
@@ -1154,7 +1165,7 @@ export class Game extends Component {
     render() {
         return (
             <div className="game">
-                {this.state.winner && <VictoryScreen users={this.state.users} winner={this.state.winner}/>}
+                {this.state.winnerUUID && <VictoryScreen users={this.state.users} winnerUUID={this.state.winnerUUID}/>}
                 <div>
                     <button disabled={this.state.sellDisabled || this.state.turn !== this.props.myTurn} className="btn btn-sell" onClick={() => this.setState({
                     showSellWindow: !this.state.showSellWindow

@@ -2,9 +2,10 @@ import React,{useState, useEffect} from 'react';
 import Confetti from 'react-confetti';
 import {useWindowSize,useAudio} from 'react-use';
 
-function VictoryScreen({users,winner}) {
+function VictoryScreen({users,winnerUUID}) {
     const { width, height } = useWindowSize()
     const [conffetiOpacity, setConffetiOpacity] = useState(1);
+    const [winner, setWinner] = useState(users[winnerUUID]);
 
     const conffeti_duration = 1750;
     
@@ -29,17 +30,18 @@ function VictoryScreen({users,winner}) {
                 height= {height}
                 opacity= {conffetiOpacity}
             />}
-            <h1>{users[winner].name} is victorious!</h1>
+            <h1>{winner.name} is victorious!</h1>
             <div className="piece">
-                <img src={users[winner].piece_id} alt="" />
+                <img src={winner.piece_id} alt="" />
             </div>
             <button 
                 className="btn btn-gameOver" 
                 onClick={()=> window.location.reload()} 
                 style={{visibility:
                     conffetiOpacity <= 0? 'visible': 'hidden'
-                }}>
-                Done</button>
+            }}>
+                Done
+            </button>
         </div>
     )
 }
