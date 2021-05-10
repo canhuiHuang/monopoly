@@ -496,9 +496,11 @@ export class Game extends Component {
                             }
                             if (alives < 2){
                                 for (let uuid in this.state.users){
-                                    this.setState({
-                                        winner: this.state.users[uuid].name
-                                    })
+                                    if (!this.state.users[uuid].bankrupt){
+                                        this.setState({
+                                            winner: uuid
+                                        })
+                                    }
                                     this.props.pubnub.publish({
                                         message: {broadcast_message: `${curUsers[uuid].name} is victorious!`},
                                         channel: this.props.gameChannel
@@ -651,6 +653,13 @@ export class Game extends Component {
                                     this.setState({
                                         users: curUsers
                                     })
+                                    if (msg.message.dicesThrower === this.props.myUUID){
+                                        Swal.fire({
+                                            icon: 'warning',
+                                            title: `Pay ${lander.name} to ${owner.name}!`,
+                                            timer: 1750
+                                        })
+                                    }
                                 }   // Wait for lander to pay.
                                 else {
                                     if (landerUUID === this.props.myUUID) {
@@ -711,6 +720,11 @@ export class Game extends Component {
                                                 message: {users: usersToUpdate, updateProperties: propertiesToUpdate},
                                                 channel: this.props.gameChannel
                                             })
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: `Pay ${lander.name} to ${owner.name}!`,
+                                                timer: 1750
+                                            })
                                         ////////////////////////////////////////////
                                     }
                                 }
@@ -730,15 +744,48 @@ export class Game extends Component {
                             } else if (positionsArray[curPosition].type === 'chance') {
                                 await Swal.fire('Testing Chance!', '', 'question');
                             } else if (positionsArray[curPosition].type === 'goToJail') {
-                                Swal.fire(`${this.state.users[msg.message.dicesThrower].name} goes to Jail`, '', 'info');
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: `${this.state.users[msg.message.dicesThrower].name} goes to Jail`,
+                                    timer: 2350
+                                })
                                 move('jail');
                             } else if (positionsArray[curPosition].type === 'GO') {
                                 if (this.state.turn === this.props.myTurn){
-                                    await Swal.fire('$200 for you!', '', 'success');
+                                    await Swal.fire({
+                                        icon: 'success',
+                                        title: `Collect $200.`,
+                                        timer: 2350
+                                    })
                                 }
                             } else if (positionsArray[curPosition].type === 'tax') {
-                                await Swal.fire('Testing tax!', '', 'warning');
-                                // Pay here
+                                const tax_pos4 = (user) => {
+                                    return user.balance * 0.1 >200? 200 : Math.round(user.balance * 0.1);
+                                }
+                                if(msg.message.dicesThrower === this.props.myUUID){
+                                    const taxAmount = curPosition === 4? tax_pos4(this.state.users[msg.message.dicesThrower]) : 75;
+                                    await Swal.fire({
+                                        icon: 'warning',
+                                        title: `Pay $${taxAmount} of tax.`,
+                                        confirmButtonText: `Ok :(`,
+                                        timer: 4500
+                                    })
+                                    // users package
+                                    const usersToUpdate = {};
+                                    usersToUpdate[this.props.myUUID] = {addBalance: -taxAmount}
+
+                                    this.props.pubnub.publish({
+                                        message: {users: usersToUpdate, broadcast_message: `${this.state.users[this.props.myUUID].name} pays $${taxAmount} of tax.`}
+                                    })
+                                } else {
+                                    const taxAmount = curPosition === 4? tax_pos4(this.state.users[msg.message.dicesThrower]) : 75;
+                                    await Swal.fire({
+                                        icon: 'warning',
+                                        title: `${this.state.users[msg.message.dicesThrower].name} pays $${taxAmount} of tax.`,
+                                        confirmButtonText: `Ok :(`,
+                                        timer: 2450
+                                    })
+                                }
                             }
 
                             // dicesThrower
@@ -776,14 +823,22 @@ export class Game extends Component {
                                                 this.props.pubnub.publish({
                                                     message: {
                                                         users: usersToUpdate, 
-                                                        updateProperty: propertyToUpdate
+                                                        updateProperty: propertyToUpdate,
+                                                        broadcast_message: `${curUsers[this.props.myUUID].name} bought ${property.data.property_name}.`
                                                     },
                                                     channel: this.props.gameChannel
                                                 });
-                                                Swal.fire(`You have purchased ${property.data.property_name}!`, '', 'success');
-
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: `You have purchased ${property.data.property_name}!`,
+                                                    timer: 2350
+                                                })
                                             } else if (result.isDenied || result.isDismissed) {
-                                                Swal.fire(`You chose not to purchase ${property.data.property_name}`, '', 'warning')
+                                                Swal.fire({
+                                                    icon: 'warning',
+                                                    title: `You chose not to purchase ${property.data.property_name}`,
+                                                    timer: 2350
+                                                })
                                             }
                                         })
                                     } else if (owner === this.props.myUUID && property.data.type === 'normal') {
@@ -816,13 +871,23 @@ export class Game extends Component {
 
                                                     // Send the packages
                                                     this.props.pubnub.publish({
-                                                        message: {users: usersToUpdate, updateProperty: propertyToUpdate},
+                                                        message: {users: usersToUpdate, updateProperty: propertyToUpdate,
+                                                            broadcast_message: `${curUsers[this.props.myUUID].name} bought a house for ${property.data.property_name}.`},
                                                         channel: this.props.gameChannel
                                                     });
 
-                                                    Swal.fire(`You purchased 1 house for ${property.data.property_name}!`, '', 'success');
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: `You purchased 1 house for ${property.data.property_name}!`,
+                                                        timer: 2350
+                                                    })
+                                                    
                                                 } else if (result.isDenied || result.isDismissed) {
-                                                    Swal.fire(`You chose not to improve ${property.data.property_name}`, '', 'warning')
+                                                    Swal.fire({
+                                                        icon: 'warning',
+                                                        title: `You chose not to improve ${property.data.property_name}`,
+                                                        timer: 2350
+                                                    })
                                                 }
                                             })
                                         }
@@ -850,7 +915,7 @@ export class Game extends Component {
                                 
                         }
                         const moveAnimation = () => {
-                            //If Jail & thir turn in Jail
+                            //If Jail & third turn in Jail
                             if (this.state.users[msg.message.dicesThrower].inJail && this.state.users[msg.message.dicesThrower].turnsInJail > 1 ){
                                 const curUsers = this.state.users;
                                 curUsers[msg.message.dicesThrower].inJail = false;
@@ -867,7 +932,6 @@ export class Game extends Component {
                                         channel: this.props.gameChannel
                                     })
                                 }
-                                
                             }
                             if (!this.state.users[msg.message.dicesThrower].inJail || (this.state.users[msg.message.dicesThrower].inJail && msg.message.dicesResult.value1 === msg.message.dicesResult.value2)){
                                 const randInterval = Math.round((Math.random() * 101) + 200);
@@ -898,13 +962,27 @@ export class Game extends Component {
                                             channel: this.props.gameChannel
                                         })
                                     }
-                                } else if (this.state.users[msg.message.dicesThrower].inJail){
-                                    const curUsers = this.state.users;
-                                    curUsers[msg.message.dicesThrower].turnsInJail++;
-                                    this.setState({
-                                        users: curUsers
-                                    })
                                 }
+                            } else if (this.state.users[msg.message.dicesThrower].inJail){
+                                const curUsers = this.state.users;
+                                curUsers[msg.message.dicesThrower].turnsInJail++;
+                                this.setState({
+                                    users: curUsers
+                                })
+                                if (msg.message.dicesThrower === this.props.myUUID){
+                                    this.setNextTurn();
+                                    this.props.pubnub.publish({
+                                        message: {startTurn: this.state.turn},
+                                        channel: this.props.gameChannel
+                                    });
+                                }
+                                setTimeout(()=>{
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: `You are going to stay here a little bit longer.`,
+                                        timer: 2350
+                                    });
+                                },1500)
                             }
                         }
                         
@@ -1035,7 +1113,11 @@ export class Game extends Component {
                     })
 
                     if (this.state.turn === this.props.myTurn) {
-                        Swal.fire(`Your Turn`, '', 'info')
+                        Swal.fire({
+                            icon: 'info',
+                            title: `Your turn`,
+                            timer: 2350
+                        })
                         this.setState({
                             sellDisabled: false,
                             dicesDisabled: false
@@ -1072,7 +1154,7 @@ export class Game extends Component {
     render() {
         return (
             <div className="game">
-                {this.state.winner && <VictoryScreen winner={this.state.winner}/>}
+                {this.state.winner && <VictoryScreen users={this.state.users} winner={this.state.winner}/>}
                 <div>
                     <button disabled={this.state.sellDisabled || this.state.turn !== this.props.myTurn} className="btn btn-sell" onClick={() => this.setState({
                     showSellWindow: !this.state.showSellWindow
