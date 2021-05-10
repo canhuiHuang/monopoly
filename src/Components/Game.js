@@ -40,6 +40,9 @@ import dunklerGartenPortal from './cardImages/dunklerGartenPortal.jpg';
 import goldMine from './cardImages/goldMine.png';
 import cfe from './cardImages/cfe.jpg';
 
+import go from './cardImages/go.jpg';
+import gotojailcard from './cardImages/gotojailcard.png';
+
 const allProperties = {
     laCasaDeTuCorazon: {data: properties.laCasaDeTuCorazon, image: laCasaDeTuCorazon, houses: 0, owner: ''},
     casaDeSteve: {data: properties.casaDeSteve, image: casaDeSteve, houses: 0, owner: ''},
@@ -282,6 +285,11 @@ export class Game extends Component {
             
             curUsers[userUUID].position = 40;
             curUsers[userUUID].inJail = true;
+            this.setState({
+                users: curUsers
+            })
+        } else if (increment === 'go') {
+            curUsers[userUUID].position = 0;
             this.setState({
                 users: curUsers
             })
@@ -742,6 +750,35 @@ export class Game extends Component {
                                     channel: this.props.gameChannel
                                 });
                             }
+                            const chestCards = [
+                                {descp: 'Advance to GO (Collect $200)', image: go, execute: ()=>{
+                                    setTimeout(()=>{
+                                        let i = 0;
+                                        var handler = setInterval(() => {
+                                            move(1);
+                                            i++;
+                                            if (i >= 40 - curPosition) {
+                                                clearInterval(handler);
+                                            }
+                                        }, 145);
+                                    },100)
+                                }},
+                                {descp: 'Bank error in your favor. Collect $200', image: go, execute: ()=>{
+                                    const curUsers = this.state.users;
+                                    curUsers[msg.message.dicesThrower].balance += 200;
+                                    this.setState({
+                                        users: curUsers
+                                    })
+                                }},
+                                {descp: "Doctor's fee. Pay $50", image: go, execute: ()=>{
+                                    const curUsers = this.state.users;
+                                    curUsers[msg.message.dicesThrower].balance -= 50;
+                                    this.setState({
+                                        users: curUsers
+                                    })
+                                }},
+                            ];
+                            chestCards[1].execute();    // <-- remove this after
                             if (positionsArray[curPosition].type === 'normal' || positionsArray[curPosition].type === 'utility'){                     
                                 if (owner !== '' && owner !== msg.message.dicesThrower) {
                                     payRent(msg.message.dicesThrower, owner, positionsArray[curPosition].property.data.camelName);
