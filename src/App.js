@@ -17,7 +17,7 @@ import happy1 from './emojis/happy1.png';
 import happy2 from './emojis/happy2.png'; 
 import laughing1 from './emojis/laughing1.png'; 
 import laughing2 from './emojis/laughing2.png'; 
-import smart from './emojis/smart.png'; 
+import smart from './emojis/smart.png';
 
 const emojiFaces = [];
 for(let i = 0; i < 8; i++){emojiFaces.push(cool)};
@@ -35,11 +35,20 @@ class App extends Component {
   constructor(props) {  
     super(props);
     const generatedUUID = 'uuid-' + shortid.generate() + shortid.generate();
-    this.pubnub = new PubNubReact({
-      publishKey: "pub-c-6d0fb65e-2fe5-465e-9c57-e092377761aa", 
-      subscribeKey: "sub-c-4b54e996-9fa8-11eb-9adf-f2e9c1644994",
-      uuid: generatedUUID
-    });
+    if(process.env.NODE_ENV !== 'production'){
+      this.pubnub = new PubNubReact({
+        publishKey: process.env.REACT_APP_PUBLISH_KEY, 
+        subscribeKey: process.env.REACT_APP_SUBSCRIBE_KEY,
+        uuid: generatedUUID
+      });
+    } else {
+      this.pubnub = new PubNubReact({
+        publishKey: process.env.GITHUB_PUBLISH_KEY, 
+        subscribeKey: process.env.GITHUB_SUBSCRIBE_KEY,
+        uuid: generatedUUID
+      });
+    }
+    
     
     this.state = {
       piece: '',

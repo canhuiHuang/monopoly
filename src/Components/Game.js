@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import Board from './Board';
 import UsersStats from './UsersStats';
-import buyWindow from './buyWindow';
 import Swal from "sweetalert2";
-import jsx_swal from '@sweetalert/with-react';
 import properties from './Data/properties.json';
 import SellWindow from './SellWindow';
 import WaitingForOffer from './WaitingForOffer';
