@@ -35,19 +35,11 @@ class App extends Component {
   constructor(props) {  
     super(props);
     const generatedUUID = 'uuid-' + shortid.generate() + shortid.generate();
-    if(process.env.NODE_ENV !== 'production'){
-      this.pubnub = new PubNubReact({
-        publishKey: process.env.REACT_APP_PUBLISH_KEY, 
-        subscribeKey: process.env.REACT_APP_SUBSCRIBE_KEY,
-        uuid: generatedUUID
-      });
-    } else {
-      this.pubnub = new PubNubReact({
-        publishKey: process.env.PUBLISH_KEY, 
-        subscribeKey: process.env.SUBSCRIBE_KEY,
-        uuid: generatedUUID
-      });
-    }
+    this.pubnub = new PubNubReact({
+      publishKey: process.env.GITHUB_PUBLISH_KEY, 
+      subscribeKey: process.env.GITHUB_SUBSCRIBE_KEY,
+      uuid: generatedUUID
+    });
     
     
     this.state = {
