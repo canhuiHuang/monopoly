@@ -43,8 +43,8 @@ class App extends Component {
       });
     } else {
       this.pubnub = new PubNubReact({
-        publishKey: process.env.PUBLISH_KEY, 
-        subscribeKey: process.env.SUBSCRIBE_KEY,
+        publishKey: process.env.GITHUB_PUBLISH_KEY, 
+        subscribeKey: process.env.GITHUB_SUBSCRIBE_KEY,
         uuid: generatedUUID
       });
     }
