@@ -23,6 +23,8 @@ import nezuko from '../piecesImages/nezuko.png';
 import ghost from '../piecesImages/ghost.png';
 import padoru from '../piecesImages/padoru.png';
 import padoru2 from '../piecesImages/padoru2.png';
+import pikachu from '../piecesImages/pikachu.png';
+import slowpoke from '../piecesImages/slowpoke.png';
 const globalPieces = [
     cup,
     toiletPaper,
@@ -43,7 +45,9 @@ const globalPieces = [
     amongus4,
     penguin,
     padoru,
-    padoru2
+    padoru2,
+    pikachu,
+    slowpoke
 ];
 
 class PiecePicker extends Component {
@@ -79,6 +83,7 @@ class PiecePicker extends Component {
                         newUsersState[uuid].position = 0;
                         newUsersState[uuid].inJail = false;
                         newUsersState[uuid].turnsInJail = 0;
+                        newUsersState[uuid].jailCards = 0;
                         turn++;
                     }
                     console.log(newUsersState);

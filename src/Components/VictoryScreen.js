@@ -7,10 +7,9 @@ function VictoryScreen({users,winnerUUID}) {
     const [conffetiOpacity, setConffetiOpacity] = useState(1);
     const [winner, setWinner] = useState(users[winnerUUID]);
 
-    const conffeti_duration = 1750;
+    const conffeti_duration = 2850;
     
     useEffect(() => {
-        console.log('mommy');
         setTimeout(()=>{
             let i = 1;
             var tid = setInterval(()=>{
@@ -19,7 +18,7 @@ function VictoryScreen({users,winnerUUID}) {
                     clearInterval(tid);
                 }
                 i -= 0.01;
-            }, 32)
+            }, 38)
         }, conffeti_duration)
     }, [])
 

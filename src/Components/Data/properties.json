@@ -168,7 +168,7 @@
         "camelName": "hotelCalifornia"
     },
     "cheetosCorp": {
-        "property_name": "Cheetos Corp.",
+        "property_name": "Cheetos Corp",
         "type": "normal",
         "price": 220,
         "rent": [18, 90, 240, 500, 850, 1050],
@@ -180,7 +180,7 @@
         "camelName": "cheetosCorp"
     },
     "helloKittyCorp": {
-        "property_name": "Hello Kitty Corp.",
+        "property_name": "Hello Kitty Corp",
         "type": "normal",
         "price": 240,
         "rent": [18, 100, 260, 600, 920, 1100],
@@ -204,7 +204,7 @@
         "camelName": "middlenwoodPortal"
     },
     "arizonaCorp": {
-        "property_name": "Arizona Corp.",
+        "property_name": "Arizona Corp",
         "type": "normal",
         "price": 260,
         "rent": [22, 110, 300, 800, 975, 1150],
