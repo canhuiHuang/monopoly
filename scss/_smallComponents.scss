@@ -7,6 +7,11 @@
 }
 
 .contenido {
+  .game {
+    display: flex;
+    flex-direction: column;
+  }
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -354,6 +359,7 @@
 
 .onlineUsers {
   overflow-y: scroll;
+  overflow-x: hidden;
   padding: 2rem;
   padding-top: 1.5rem;
   display: flex;

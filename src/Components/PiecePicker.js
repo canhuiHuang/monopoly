@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import rollover_sound from '../sounds/rollover.mp3'
 import shortid from 'shortid';
 import Game from './Game';
+import Footer from './Footer';
 
 import cup from '../piecesImages/cup.png';
 import pepe5head from '../piecesImages/pepe5head.png';
@@ -223,6 +224,7 @@ class PiecePicker extends Component {
                         </div>
                         {this.props.isRoomCreator && <button onClick={()=>this.start()} disabled={!this.isReady()}>Start Game</button>}
                         {this.isReady() && !this.props.isRoomCreator && <div>Waiting for others to pick...</div> }
+                        <Footer />
                     </div>
                 }
                 {

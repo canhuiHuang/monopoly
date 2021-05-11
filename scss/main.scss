@@ -778,3 +778,13 @@ h6 {
   border: rgba(32, 32, 32, 0.8) solid 3px;
   box-shadow: 0 1px 9px rgba(19, 14, 14, 0.16), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
+
+.firma {
+  text-align: center;
+  position: fixed;
+  align-self: center;
+  font-size: 0.6rem;
+  bottom: 1.3rem;
+  width: 100vw;
+  color: rgb(108, 105, 112);
+}

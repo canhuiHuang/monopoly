@@ -371,13 +371,8 @@ export class Game extends Component {
         })
         console.log('mounted boi');
 
+        // Set up the random indexes of chest & chance Cards.
         if (this.props.isRoomCreator) {
-            const curUsers = this.state.users;
-            curUsers[this.props.myUUID].jailCards = 2;
-            this.setState({
-                users: curUsers
-            })
-
             const tempChestCardsIndexes = [];
             const tempChanceCardsIndexes = [];
             for (let i = 0; i < 7; i++){

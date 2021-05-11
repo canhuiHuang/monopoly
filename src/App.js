@@ -6,6 +6,7 @@ import PiecePicker from './Components/PiecePicker';
 import Swal from "sweetalert2";  
 import shortid  from 'shortid';
 import './css/main.css';
+import Footer from './Components/Footer';
 
 import cool from './emojis/cool.png'; 
 import cute from './emojis/cute.png'; 
@@ -426,6 +427,7 @@ class App extends Component {
                 </div>                        
                 {this.state.isDisabled && <div className="lobbyUsers">{this.displayUsers()}</div>}
               </div>
+              <Footer />
             </div>
           }
         </div>
