@@ -41,7 +41,6 @@ class App extends Component {
       uuid: generatedUUID
     });
     
-    
     this.state = {
       piece: '',
       isPlaying: false,
