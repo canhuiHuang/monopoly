@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Game from './Components/Game';
-import Board from './Components/Board';
 import PubNubReact from 'pubnub-react';
 import PiecePicker from './Components/PiecePicker';
 import Swal from "sweetalert2";  

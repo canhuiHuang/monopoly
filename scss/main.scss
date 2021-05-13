@@ -589,6 +589,7 @@ h6 {
 }
 
 .chat {
+  z-index: -1;
   overflow-y: scroll;
   position: fixed;
   width: 320px;

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import AnimatedNumber from "animated-number-react";
 import CountUp from 'react-countup';
 
 export class userStat extends Component {

@@ -3,7 +3,7 @@ import React from 'react'
 function Footer() {
     return (
         <div className="firma">
-            <h2>v0.08alpha. Made by Boku Dev</h2>
+            <h2>v1.02alpha. Made by Boku Dev</h2>
         </div>
     )
 }
