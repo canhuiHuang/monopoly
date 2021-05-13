@@ -1048,7 +1048,7 @@ export class Game extends Component {
                                             this.setNextNStartTurn();
                                             setconsecutiveThrows = 0;
                                             const usersToUpdate = {};
-                                            usersToUpdate[lander] = {consecutiveThrows: setconsecutiveThrows}
+                                            usersToUpdate[msg.message.dicesThrower] = {consecutiveThrows: setconsecutiveThrows}
                                             this.props.pubnub.publish({
                                                 message: {users: usersToUpdate},
                                                 channel: this.props.gameChannel
