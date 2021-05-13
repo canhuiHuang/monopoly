@@ -789,11 +789,11 @@ export class Game extends Component {
                                             let i = 0
                                             var handler = setInterval(() => {
                                                 move(1);
+                                                i++;
                                                 if (i >= Math.abs(nearestUtilityIndex - curPosition)) {
                                                     clearInterval(handler);
                                                     setTimeout(()=>{landing(nearestUtilityIndex)}, 100)
                                                 }
-                                                i++;
                                             }, 115);
                                         },100)
                                     }},
@@ -1045,18 +1045,24 @@ export class Game extends Component {
                                         let setconsecutiveThrows;
                                         if (!goAgain){
                                             // nextTurn & start Turn
-                                            this.setNextTurn();
+                                            this.setNextNStartTurn();
                                             setconsecutiveThrows = 0;
+                                            const usersToUpdate = {};
+                                            usersToUpdate[lander] = {consecutiveThrows: setconsecutiveThrows}
+                                            this.props.pubnub.publish({
+                                                message: {users: usersToUpdate},
+                                                channel: this.props.gameChannel
+                                            });
                                         } else {
                                             // Start turn only
                                             setconsecutiveThrows = msg.message.consecutiveThrows + 1;
+                                            const usersToUpdate = {};
+                                            usersToUpdate[msg.message.dicesThrower] = {consecutiveThrows: setconsecutiveThrows}
+                                            this.props.pubnub.publish({
+                                                message: {startTurn: this.state.turn, users: usersToUpdate},
+                                                channel: this.props.gameChannel
+                                            });
                                         }
-                                        const usersToUpdate = {};
-                                        usersToUpdate[msg.message.dicesThrower] = {consecutiveThrows: setconsecutiveThrows}
-                                        this.props.pubnub.publish({
-                                            message: {startTurn: this.state.turn, users: usersToUpdate},
-                                            channel: this.props.gameChannel
-                                        });
                                     }, 2500)
                                 }
                             }
@@ -1211,17 +1217,6 @@ export class Game extends Component {
                                         newOwner: this.props.myUUID
                                     }
     
-                                    // Send the packages
-                                    
-                                    this.props.pubnub.publish({
-                                        message: {
-                                            users: usersToUpdate, 
-                                            updateProperty: propertyToUpdate,
-                                            startTurn: this.state.turn,
-                                            broadcast_message: `${curUsers[this.props.myUUID].name} bought ${property.data.property_name}.`
-                                        },
-                                        channel: this.props.gameChannel
-                                    });
                                     Swal.fire({
                                         icon: 'success',
                                         title: `You have purchased ${property.data.property_name}!`,
@@ -1263,16 +1258,6 @@ export class Game extends Component {
                                             newHousesNumber: curAllProperties[property.data.camelName].houses + 1
                                         }
     
-                                        // Send the packages
-                                        this.setNextTurn();
-                                        this.props.pubnub.publish({
-                                            message: {
-                                                users: usersToUpdate, 
-                                                updateProperty: propertyToUpdate,
-                                                startTurn: this.state.turn,
-                                                broadcast_message: `${curUsers[this.props.myUUID].name} bought a house for ${property.data.property_name}.`},
-                                            channel: this.props.gameChannel
-                                        });
                                         Swal.fire({
                                             icon: 'success',
                                             title: `You purchased 1 house for ${property.data.property_name}!`,
@@ -1296,17 +1281,24 @@ export class Game extends Component {
                     // Start next turn
                     let setconsecutiveThrows;
                     if (!goAgain){
-                        this.setNextTurn();
+                        this.setNextNStartTurn();
                         setconsecutiveThrows = 0;
+                        const usersToUpdate = {};
+                        usersToUpdate[lander] = {consecutiveThrows: setconsecutiveThrows}
+                        this.props.pubnub.publish({
+                            message: {users: usersToUpdate},
+                            channel: this.props.gameChannel
+                        });
                     } else {
                         setconsecutiveThrows = msg.message.consecutiveThrows + 1;
+                        const usersToUpdate = {};
+                        usersToUpdate[lander] = {consecutiveThrows: setconsecutiveThrows}
+                        this.props.pubnub.publish({
+                            message: {startTurn: this.state.turn, users: usersToUpdate, wentAgain: true},
+                            channel: this.props.gameChannel
+                        });
                     }
-                    const usersToUpdate = {};
-                    usersToUpdate[lander] = {consecutiveThrows: setconsecutiveThrows}
-                    this.props.pubnub.publish({
-                        message: {startTurn: this.state.turn, users: usersToUpdate},
-                        channel: this.props.gameChannel
-                    });
+                    
                 }
 
                 // Listen for to me
@@ -1626,11 +1618,13 @@ export class Game extends Component {
                     })
 
                     if (this.state.turn === this.props.myTurn) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: `Your turn`,
-                            timer: 2350
-                        })
+                        if (!msg.message.wentAgain){
+                            Swal.fire({
+                                icon: 'info',
+                                title: `Your turn`,
+                                timer: 2350
+                            })
+                        }
                         this.setState({
                             sellDisabled: false,
                             dicesDisabled: false
