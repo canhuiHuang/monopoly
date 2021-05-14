@@ -9,9 +9,9 @@ function Chat({messages}) {
 
     const renderMessages = () => {
         const messages_list = [];
-        messages.forEach((message)=>{
+        messages.forEach((message, index)=>{
             messages_list.push(
-                <li className="message">
+                <li key={index} className="message">
                     {message}
                 </li>
             )

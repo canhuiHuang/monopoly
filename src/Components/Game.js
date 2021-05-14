@@ -361,7 +361,7 @@ export class Game extends Component {
         })
 
         this.props.pubnub.publish({
-            message: {setNextTurn: nextTurn, startTurn: true},
+            message: {setNextNStartTurn: nextTurn},
             channel: this.props.gameChannel
         });
     }
@@ -487,7 +487,7 @@ export class Game extends Component {
                                 }
                                 
                                 // Everyone
-                                const payRent = async (landerUUID, ownerUUID, propertyName) => {
+                                const payRent = (landerUUID, ownerUUID, propertyName) => {
                                     const lander = this.state.users[landerUUID];
                                     const owner = this.state.users[ownerUUID];
 
@@ -551,19 +551,13 @@ export class Game extends Component {
                                     }
 
                                     // Get the maximum amount of money from lander first
+                                    const goAgain = msg.message.dicesResult.value1 === msg.message.dicesResult.value2;
+                                    const setconsecutiveThrows = goAgain? msg.message.consecutiveThrows + 1 : 0;
                                     if (lander.balance >= rentToPay) {
                                         console.log('balance: ', lander.balance,'rentTopay: ',rentToPay);
-                                        lander.balance -= rentToPay;
-                                        owner.balance += rentToPay;
 
-                                        const curUsers = this.state.users;
-                                        curUsers[landerUUID] = lander;
-                                        curUsers[ownerUUID] = owner;
-                                        this.setState({
-                                            users: curUsers
-                                        })
                                         const usersToUpdate = {};
-                                        usersToUpdate[landerUUID] = {addBalance: -rentToPay};
+                                        usersToUpdate[landerUUID] = {addBalance: -rentToPay, consecutiveThrows:setconsecutiveThrows};
                                         usersToUpdate[ownerUUID] = {addBalance: rentToPay};
                                         this.props.pubnub.publish({
                                             message: {users: usersToUpdate, swalAlert: `Pay ${rentToPay} to ${owner.name}!`, icon: 'warning', toMe: msg.message.dicesThrower, timer: 1750},
@@ -615,7 +609,7 @@ export class Game extends Component {
 
                                             // users package
                                             const usersToUpdate = {};
-                                            usersToUpdate[landerUUID] = {newBalance: lander.balance - rentToPay}
+                                            usersToUpdate[landerUUID] = {newBalance: lander.balance - rentToPay, consecutiveThrows:setconsecutiveThrows}
                                             usersToUpdate[ownerUUID] = {addBalance: lander.balance}
 
                                             // properties package
@@ -844,12 +838,11 @@ export class Game extends Component {
                                         },100)
                                     }},
                                     {descp: "You're in good mood & happily give everyone $50", image: friends, execute: ()=>{
-                                        if (msg.message.dicesThrower === this.props.myUUID){
                                             const curUsers = this.state.users;
                                             const usersToUpdate = {};
                                             let generosidad = 0;
                                             for(let uuid in curUsers){
-                                                if (!curUsers[uuid].bankrupt && uuid !== this.props.myUUID){
+                                                if (!curUsers[uuid].bankrupt && uuid !== msg.message.dicesThrower){
                                                     usersToUpdate[uuid] = {addBalance: 50};
                                                     generosidad -= generosidad;
                                                 }
@@ -860,7 +853,6 @@ export class Game extends Component {
                                                 message: {users: usersToUpdate},
                                                 channel: this.props.gameChannel
                                             })
-                                        }
                                     }},
                                     {descp: 'Advance to GO (Collect $200)', image: go, execute: ()=>{
                                         setTimeout(()=>{
@@ -918,7 +910,7 @@ export class Game extends Component {
                                             var handler = setInterval(() => {
                                                 move(-1);
                                                 i++
-                                                if (i > 3) {
+                                                if (i >= 3) {
                                                     clearInterval(handler);
                                                     setTimeout(()=>{landing(curPosition - 3)}, 100) // Considering this is Chance, curPosition - 3 cannot be negative.
                                                 }
@@ -950,19 +942,23 @@ export class Game extends Component {
                                         payRent(msg.message.dicesThrower, owner, positionsArray[curPosition].property.data.camelName);
                                     }
                                 } else if (positionsArray[curPosition].type === 'chest') {
+                                    const goAgain = msg.message.dicesResult.value1 === msg.message.dicesResult.value2;
                                     this.props.pubnub.publish({
                                         message: {broadcast_message: `${this.state.users[msg.message.dicesThrower].name} got a Community Chest card: "${chestCards[this.state.chestCardsIndexes[this.state.chestCardsIndex]].descp}"`,
                                         chestAlert: true, 
                                         h3: `${this.state.users[msg.message.dicesThrower].name} picked a chance Card`,
                                         p: chestCards[this.state.chestCardsIndexes[this.state.chestCardsIndex]].descp,
-                                        imageIndex: this.state.chestCardsIndexes[this.state.chestCardsIndex]
+                                        imageIndex: this.state.chestCardsIndexes[this.state.chestCardsIndex],
+                                        goAgain: goAgain,
+                                        dicesThrower: msg.message.dicesThrower,
+                                        consecutiveThrows: msg.message.consecutiveThrows
                                     },
                                         channel: this.props.gameChannel
                                     })
                                     
                                     setTimeout(()=> {
                                         chestCards[this.state.chestCardsIndexes[this.state.chestCardsIndex]].execute();
-                                    }, 1500)
+                                    }, 100)
 
                                     let curIndex = this.state.chestCardsIndex;
                                     curIndex = (curIndex + 1) % 105;
@@ -973,18 +969,22 @@ export class Game extends Component {
                                     },1500)
 
                                 } else if (positionsArray[curPosition].type === 'chance') {
+                                    const goAgain = msg.message.dicesResult.value1 === msg.message.dicesResult.value2;
                                     this.props.pubnub.publish({
                                         message: {broadcast_message: `${this.state.users[msg.message.dicesThrower].name} got a Chance card: "${chanceCards[this.state.chanceCardsIndexes[this.state.chanceCardsIndex]].descp}"`,
                                         chanceAlert: true, 
                                         h3: `${this.state.users[msg.message.dicesThrower].name} picked a chance Card`,
                                         p: chanceCards[this.state.chanceCardsIndexes[this.state.chanceCardsIndex]].descp,
-                                        imageIndex: this.state.chanceCardsIndexes[this.state.chanceCardsIndex]
+                                        imageIndex: this.state.chanceCardsIndexes[this.state.chanceCardsIndex],
+                                        goAgain: goAgain,
+                                        dicesThrower: msg.message.dicesThrower,
+                                        consecutiveThrows: msg.message.consecutiveThrows
                                     },
                                         channel: this.props.gameChannel
                                     })
                                     setTimeout(()=> {
                                         chanceCards[this.state.chanceCardsIndexes[this.state.chanceCardsIndex]].execute();
-                                    }, 1500)
+                                    }, 100)
 
                                     let curIndex = this.state.chanceCardsIndex;
                                     curIndex = (curIndex + 1) % 105;
@@ -1016,17 +1016,17 @@ export class Game extends Component {
                                     const taxAmount = curPosition === 4? tax_pos4(this.state.users[msg.message.dicesThrower]) : 75;
                                     // users package
                                     const usersToUpdate = {};
-                                    usersToUpdate[this.props.myUUID] = {addBalance: -taxAmount}
+                                    usersToUpdate[msg.message.dicesThrower] = {addBalance: -taxAmount}
 
                                     this.props.pubnub.publish({
                                         message: {
                                             users: usersToUpdate, 
                                             swalAlert: `Pay $${taxAmount} of tax.`, icon: 'warning', timer: 4500,
-                                            broadcast_message: `${this.state.users[this.props.myUUID].name} pays $${taxAmount} of tax.`},
+                                            broadcast_message: `${this.state.users[msg.message.dicesThrower].name} pays $${taxAmount} of tax.`},
                                         channel: this.props.gameChannel
                                     })
                                 }
-                                
+
                                 // dicesThrower??
                                 const goAgain = msg.message.dicesResult.value1 === msg.message.dicesResult.value2;
                                 if (positionsArray[curPosition].type === 'normal' || positionsArray[curPosition].type === 'utility') {
@@ -1040,7 +1040,7 @@ export class Game extends Component {
                                         },
                                         channel: this.props.gameChannel
                                     });
-                                } else {
+                                } else if (positionsArray[curPosition].type === 'GO' || positionsArray[curPosition].type === 'tax' || positionsArray[curPosition].type === 'goToJail' || positionsArray[curPosition].type === 'visit'){
                                     setTimeout(()=>{
                                         let setconsecutiveThrows;
                                         if (!goAgain){
@@ -1063,7 +1063,7 @@ export class Game extends Component {
                                                 channel: this.props.gameChannel
                                             });
                                         }
-                                    }, 2500)
+                                    }, 120)
                                 }
                             }
                             const moveAnimation = () => {
@@ -1187,118 +1187,150 @@ export class Game extends Component {
 
                 // Listen for landing
                 if (msg.message.landing && msg.message.lander === this.props.myUUID){
-                    const {lander,curPosition, goAgain} = msg.message;
+                    const {curPosition, goAgain} = msg.message;
+                    const usersToUpdate = {};
+                    const setconsecutiveThrows = goAgain? msg.message.consecutiveThrows + 1 : 0;
 
                     const property = positionsArray[curPosition].property;
 
                     // If has enough money
-                    const asynfunc = async () => {
-                        if (property.owner === '' && this.state.users[this.props.myUUID].balance >= property.data.price) {
-                            await Swal.fire({
-                                title: `Would you like to purchase ${property.data.property_name}?`,
-                                html: this.htmlPropertyCard(property),
+                    if (property.owner === '' && this.state.users[this.props.myUUID].balance >= property.data.price) {
+                        Swal.fire({
+                            title: `Would you like to purchase ${property.data.property_name}?`,
+                            html: this.htmlPropertyCard(property),
+                            showDenyButton: true,
+                            showCancelButton: false,
+                            confirmButtonText: `Buy`,
+                            denyButtonText: `No thanks`,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const curUsers = this.state.users;
+
+                                // Users package
+                                usersToUpdate[this.props.myUUID] = {
+                                    newPropertyName: property.data.camelName, 
+                                    newBalance: curUsers[this.props.myUUID].balance - property.data.price,
+                                    consecutiveThrows: setconsecutiveThrows
+                                }
+                                // Property package
+                                const propertyToUpdate = {
+                                    name: property.data.camelName,
+                                    newOwner: this.props.myUUID
+                                }
+                                this.props.pubnub.publish({
+                                    message:{users: usersToUpdate, updateProperty: propertyToUpdate,broadcast_message: `${curUsers[this.props.myUUID].name} bought ${property.data.property_name}.`},
+                                    channel: this.props.gameChannel
+                                })
+                                // Start next turn
+                                if (!goAgain){
+                                    this.setNextNStartTurn();
+                                } else {
+                                    this.props.pubnub.publish({
+                                        message: {startTurn: this.state.turn, wentAgain: true},
+                                        channel: this.props.gameChannel
+                                    });
+                                }
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: `You have purchased ${property.data.property_name}!`,
+                                    timer: 2350
+                                })
+                            } else if (result.isDenied || result.isDismissed) {
+                                // Start next turn
+                                if (!goAgain){
+                                    this.setNextNStartTurn();
+                                } else {
+                                    this.props.pubnub.publish({
+                                        message: {startTurn: this.state.turn, wentAgain: true},
+                                        channel: this.props.gameChannel
+                                    });
+                                }
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: `You chose not to purchase ${property.data.property_name}`,
+                                    timer: 2350
+                                })
+                            }
+                        })
+                    } else if (property.owner === this.props.myUUID && property.data.type === 'normal') {
+                        // If has enough money
+                        if (this.state.users[this.props.myUUID].balance >= property.data.house_cost && this.state.allProperties[property.data.camelName].houses < 5){
+                            console.log('improve?');
+                            Swal.fire({
+                                title: `Would you like to improve ${property.data.property_name} for $${property.data.house_cost}?`,
+                                html: `<i class="fa fa-home fa-3x"></i>`,
+                                icon: 'info',
                                 showDenyButton: true,
                                 showCancelButton: false,
-                                confirmButtonText: `Buy`,
+                                confirmButtonText: `Improve`,
                                 denyButtonText: `No thanks`,
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     const curUsers = this.state.users;
-    
+                                    const curAllProperties = this.state.allProperties;
+
                                     // Users package
-                                    const usersToUpdate = {};
                                     usersToUpdate[this.props.myUUID] = {
-                                        newPropertyName: property.data.camelName, 
-                                        newBalance: curUsers[this.props.myUUID].balance - property.data.price
+                                        newBalance: curUsers[this.props.myUUID].balance - property.data.house_cost,
+                                        consecutiveThrows: setconsecutiveThrows
                                     }
                                     // Property package
                                     const propertyToUpdate = {
                                         name: property.data.camelName,
-                                        newOwner: this.props.myUUID
+                                        newHousesNumber: curAllProperties[property.data.camelName].houses + 1
                                     }
-    
+
+                                    this.props.pubnub.publish({
+                                        message:{users: usersToUpdate, updateProperty: propertyToUpdate, broadcast_message: `${curUsers[this.props.myUUID].name} improved ${property.data.camelName}.`},
+                                        channel: this.props.gameChannel
+                                    })
+                                    // Start next turn
+                                    if (!goAgain){
+                                        this.setNextNStartTurn();
+                                    } else {
+                                        this.props.pubnub.publish({
+                                            message: {startTurn: this.state.turn, wentAgain: true},
+                                            channel: this.props.gameChannel
+                                        });
+                                    }
+
                                     Swal.fire({
                                         icon: 'success',
-                                        title: `You have purchased ${property.data.property_name}!`,
+                                        title: `You purchased 1 house for ${property.data.property_name}!`,
                                         timer: 2350
                                     })
+                                    
                                 } else if (result.isDenied || result.isDismissed) {
+                                    // Start next turn
+                                    if (!goAgain){
+                                        this.setNextNStartTurn();
+                                    } else {
+                                        this.props.pubnub.publish({
+                                            message: {startTurn: this.state.turn, wentAgain: true},
+                                            channel: this.props.gameChannel
+                                        });
+                                    }
                                     Swal.fire({
                                         icon: 'warning',
-                                        title: `You chose not to purchase ${property.data.property_name}`,
+                                        title: `You chose not to improve ${property.data.property_name}`,
                                         timer: 2350
                                     })
                                 }
                             })
-                        } else if (property.owner === this.props.myUUID && property.data.type === 'normal') {
-                            // If has enough money
-                            if (this.state.users[this.props.myUUID].balance >= property.data.house_cost && this.state.allProperties[property.data.camelName].houses < 5){
-                                console.log('improve?');
-                                await Swal.fire({
-                                    title: `Would you like to improve ${property.data.property_name} for $${property.data.house_cost}?`,
-                                    html: `<i class="fa fa-home fa-3x"></i>`,
-                                    icon: 'info',
-                                    showDenyButton: true,
-                                    showCancelButton: false,
-                                    confirmButtonText: `Improve`,
-                                    denyButtonText: `No thanks`,
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        const curUsers = this.state.users;
-                                        const curAllProperties = this.state.allProperties;
-    
-                                        // Users package
-                                        const usersToUpdate = {};
-                                        usersToUpdate[this.props.myUUID] = {
-                                            newBalance: curUsers[this.props.myUUID].balance - property.data.house_cost
-                                        }
-                                        // Property package
-                                        const propertyToUpdate = {
-                                            name: property.data.camelName,
-                                            newHousesNumber: curAllProperties[property.data.camelName].houses + 1
-                                        }
-    
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: `You purchased 1 house for ${property.data.property_name}!`,
-                                            timer: 2350
-                                        })
-                                        
-                                    } else if (result.isDenied || result.isDismissed) {
-                                        Swal.fire({
-                                            icon: 'warning',
-                                            title: `You chose not to improve ${property.data.property_name}`,
-                                            timer: 2350
-                                        })
-                                    }
-                                })
-                            }
-                            
+                        }
+                        
+                    } else {
+                        // Start next turn
+                        if (!goAgain){
+                            this.setNextNStartTurn();
+                        } else {
+                            this.props.pubnub.publish({
+                                message: {startTurn: this.state.turn, wentAgain: true},
+                                channel: this.props.gameChannel
+                            });
                         }
                     }
-                    asynfunc();
-                    
-                    // Start next turn
-                    let setconsecutiveThrows;
-                    if (!goAgain){
-                        this.setNextNStartTurn();
-                        setconsecutiveThrows = 0;
-                        const usersToUpdate = {};
-                        usersToUpdate[lander] = {consecutiveThrows: setconsecutiveThrows}
-                        this.props.pubnub.publish({
-                            message: {users: usersToUpdate},
-                            channel: this.props.gameChannel
-                        });
-                    } else {
-                        setconsecutiveThrows = msg.message.consecutiveThrows + 1;
-                        const usersToUpdate = {};
-                        usersToUpdate[lander] = {consecutiveThrows: setconsecutiveThrows}
-                        this.props.pubnub.publish({
-                            message: {startTurn: this.state.turn, users: usersToUpdate, wentAgain: true},
-                            channel: this.props.gameChannel
-                        });
-                    }
-                    
                 }
 
                 // Listen for to me
@@ -1324,10 +1356,31 @@ export class Game extends Component {
                         turn: msg.message.setNextTurn
                     })
                 }
+                if (msg.message.setNextNStartTurn){
+                    this.setState({
+                        turn: msg.message.setNextNStartTurn
+                    })
+
+                    if (this.state.turn === this.props.myTurn) {
+                        if (!msg.message.wentAgain){
+                            Swal.fire({
+                                icon: 'info',
+                                title: `Your turn`,
+                                timer: 2350
+                            })
+                        }
+                        this.setState({
+                            sellDisabled: false,
+                            dicesDisabled: false
+                        })
+                    } else {
+                        this.spectateTurn();
+                    }
+                }
 
                 // chest & chance alert
                 if (msg.message.chestAlert){
-                    const {h3, p, imageIndex} = msg.message;
+                    const {h3, p, imageIndex, goAgain, dicesThrower} = msg.message;
                     Swal.fire({
                         html: `
                             <h3>${h3} picked a chance Card</h3>
@@ -1336,10 +1389,34 @@ export class Game extends Component {
                                 <img src=${chestCardsImages[imageIndex]} alt=""/>
                             </div>`,
                         timer: 5550
+                    }).then(()=>{
+                        if (dicesThrower === this.props.myUUID){
+                            let setconsecutiveThrows;
+                            if (!goAgain){
+                                // nextTurn & start Turn
+                                this.setNextNStartTurn();
+                                setconsecutiveThrows = 0;
+                                const usersToUpdate = {};
+                                usersToUpdate[dicesThrower] = {consecutiveThrows: setconsecutiveThrows}
+                                this.props.pubnub.publish({
+                                    message: {users: usersToUpdate},
+                                    channel: this.props.gameChannel
+                                });
+                            } else {
+                                // Start turn only
+                                setconsecutiveThrows = msg.message.consecutiveThrows + 1;
+                                const usersToUpdate = {};
+                                usersToUpdate[dicesThrower] = {consecutiveThrows: setconsecutiveThrows}
+                                this.props.pubnub.publish({
+                                    message: {startTurn: this.state.turn, users: usersToUpdate},
+                                    channel: this.props.gameChannel
+                                });
+                            }
+                        }
                     })
                 } 
                 else if (msg.message.chanceAlert){
-                    const {h3, p, imageIndex} = msg.message;
+                    const {h3, p, imageIndex, goAgain, dicesThrower} = msg.message;
                     Swal.fire({
                         html: `
                             <h3>${h3} picked a chance Card</h3>
@@ -1348,6 +1425,31 @@ export class Game extends Component {
                                 <img src=${chanceCardsImages[imageIndex]} alt=""/>
                             </div>`,
                         timer: 5550
+                    }).then(()=>{
+                        if (dicesThrower === this.props.myUUID){
+                            let setconsecutiveThrows;
+                            if (!goAgain){
+                                // nextTurn & start Turn
+                                this.setNextNStartTurn();
+                                setconsecutiveThrows = 0;
+                                const usersToUpdate = {};
+                                usersToUpdate[dicesThrower] = {consecutiveThrows: setconsecutiveThrows}
+                                this.props.pubnub.publish({
+                                    message: {users: usersToUpdate},
+                                    channel: this.props.gameChannel
+                                });
+                            } else {
+                                // Start turn only
+                                setconsecutiveThrows = msg.message.consecutiveThrows + 1;
+                                const usersToUpdate = {};
+                                usersToUpdate[dicesThrower] = {consecutiveThrows: setconsecutiveThrows}
+                                this.props.pubnub.publish({
+                                    message: {startTurn: this.state.turn, users: usersToUpdate},
+                                    channel: this.props.gameChannel
+                                });
+                            }
+                        }
+                        
                     })
                 }
 
@@ -1379,7 +1481,7 @@ export class Game extends Component {
                         const {newPropertyName, removePropertyName, newBalance, newJailState, addBalance, setPosition, turnsInJail, addJailCards, consecutiveThrows} = users[uuid];
 
                         // Update position
-                        if (setPosition){
+                        if (setPosition !== undefined){
                             curUsers[uuid].position = setPosition;
                         }
 

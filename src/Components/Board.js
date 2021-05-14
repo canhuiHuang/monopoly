@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React from 'react';
 import Dices from './Dices';
 
 function Board({users, allProperties, dicesValues, rollIt}) {
@@ -96,7 +96,7 @@ function Board({users, allProperties, dicesValues, rollIt}) {
 
 		const positionOccupied = thisUUID => {
 			for (let uuid in users) {
-				if (uuid != thisUUID && !users[uuid].bankrupt) {
+				if (uuid !== thisUUID && !users[uuid].bankrupt) {
 					if (users[uuid].position === users[thisUUID].position) {
 						return true;
 					}
