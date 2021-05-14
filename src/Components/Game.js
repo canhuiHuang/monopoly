@@ -1072,6 +1072,7 @@ export class Game extends Component {
                                     const curUsers = this.state.users;
                                     curUsers[msg.message.dicesThrower].inJail = false;
                                     curUsers[msg.message.dicesThrower].turnsInJail = 0;
+                                    curUsers[msg.message.dicesThrower].position = 10;
                                     this.setState({
                                         users: curUsers
                                     })
@@ -1256,7 +1257,6 @@ export class Game extends Component {
                     } else if (property.owner === this.props.myUUID && property.data.type === 'normal') {
                         // If has enough money
                         if (this.state.users[this.props.myUUID].balance >= property.data.house_cost && this.state.allProperties[property.data.camelName].houses < 5){
-                            console.log('improve?');
                             Swal.fire({
                                 title: `Would you like to improve ${property.data.property_name} for $${property.data.house_cost}?`,
                                 html: `<i class="fa fa-home fa-3x"></i>`,
