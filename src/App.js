@@ -1,19 +1,41 @@
 import React, { Component } from 'react';
-import Game from './Components/Game';
-import Board from './Components/Board';
 import PubNubReact from 'pubnub-react';
 import PiecePicker from './Components/PiecePicker';
 import Swal from "sweetalert2";  
 import shortid  from 'shortid';
 import './css/main.css';
- 
+import Footer from './Components/Footer';
+
+import cool from './emojis/cool.png'; 
+import cute from './emojis/cute.png'; 
+import embarrassed from './emojis/embarrassed.png'; 
+import ghost from './emojis/ghost.png'; 
+import greed from './emojis/greed.png'; 
+import happy1 from './emojis/happy1.png'; 
+import happy2 from './emojis/happy2.png'; 
+import laughing1 from './emojis/laughing1.png'; 
+import laughing2 from './emojis/laughing2.png'; 
+import smart from './emojis/smart.png';
+
+const emojiFaces = [];
+for(let i = 0; i < 8; i++){emojiFaces.push(cool)};
+for(let i = 0; i < 5; i++){emojiFaces.push(cute)};
+for(let i = 0; i < 7; i++){emojiFaces.push(embarrassed)};
+for(let i = 0; i < 1; i++){emojiFaces.push(ghost)};
+for(let i = 0; i < 2; i++){emojiFaces.push(greed)};
+for(let i = 0; i < 20; i++){emojiFaces.push(happy1)};
+for(let i = 0; i < 20; i++){emojiFaces.push(happy2)};
+for(let i = 0; i < 7; i++){emojiFaces.push(laughing1)};
+for(let i = 0; i < 7; i++){emojiFaces.push(laughing2)};
+for(let i = 0; i < 12; i++){emojiFaces.push(smart)};
+
 class App extends Component {
   constructor(props) {  
     super(props);
     const generatedUUID = 'uuid-' + shortid.generate() + shortid.generate();
     this.pubnub = new PubNubReact({
-      publishKey: "pub-c-6d0fb65e-2fe5-465e-9c57-e092377761aa", 
-      subscribeKey: "sub-c-4b54e996-9fa8-11eb-9adf-f2e9c1644994",
+      publishKey: process.env.REACT_APP_PUBLISH_KEY, 
+      subscribeKey: process.env.REACT_APP_SUBSCRIBE_KEY,
       uuid: generatedUUID
     });
     
@@ -23,17 +45,17 @@ class App extends Component {
       isRoomCreator: false,
       isDisabled: false,
       myTurn: false,
-      users: {[generatedUUID]: {name: 'uwu', player: 'player-null', piece_id: ''}},
+      users: {[generatedUUID]: {name: 'uwu', piece_id: -1}},
       name: 'uwu',
       uuid: generatedUUID,
-      player: 'player-null'
+      randomNumbers: []
     };
 
     this.lobbyChannel = null;
+    this.pieceSelectionChannel = null;
     this.gameChannel = null;
     this.roomId = null;    
     this.pubnub.init(this);
-    
   }
   
   componentDidMount(){
@@ -43,7 +65,7 @@ class App extends Component {
         if (event.action === 'join') {
           const curUsers = this.state.users;
           if (!curUsers.hasOwnProperty(event.uuid)){
-            curUsers[event.uuid] = {name: 'goku', player: 'player-null', piece_id: ''};
+            curUsers[event.uuid] = {name: 'goku', piece_id: ''};
             this.setState({
               users: curUsers
             })
@@ -72,6 +94,18 @@ class App extends Component {
           });
         }
       }
+      if (event.action === 'leave'){
+        // Publish to Game
+        if (event.channel.startsWith('monopolygame--')) {
+          this.pubnub.publish({
+            message: {
+              userUUID: event.uuid
+            },
+            channel: event.channel
+          });
+        }
+      }
+      
       console.log('presence listener: ',event);
     }
 
@@ -94,7 +128,14 @@ class App extends Component {
       this.pubnub.getMessage(this.lobbyChannel, (msg) => {
 
         // Received users info
+            if (msg.message.randomNumbers){
+              this.setState({
+                randomNumbers: msg.message.randomNumbers
+              })
+            }
+
             if (msg.message.users) {
+              console.log('received: ', msg.message.users);
               const users = msg.message.users;
               
               // If name hasn't set yet, send name to host.
@@ -119,25 +160,37 @@ class App extends Component {
             if (msg.message.namePhase && this.state.isRoomCreator) {
                 const curUsers = this.state.users;
                 console.log('soy host y recibi ', msg);
-                curUsers[msg.publisher].name = msg.message.namePhase;
-                this.setState({
-                  users: curUsers
-                });
+                if (curUsers[msg.publisher]) {
+                  curUsers[msg.publisher].name = msg.message.namePhase;
+                  this.setState({
+                    users: curUsers
+                  });
 
-                // Send users back to all subscribers
-                this.pubnub.publish({
-                  message: {
-                    users: this.state.users
-                  },
-                  channel: this.lobbyChannel
-                });
+                  // Send users back to all subscribers
+                  this.pubnub.publish({
+                    message: {
+                      users: this.state.users,
+                      randomNumbers: this.state.randomNumbers
+                    },
+                    channel: this.lobbyChannel
+                  });
+                }
             }
 
             // Listen for gameStart
-            if (msg.message.gameStart){
+            if (msg.message.gameStart && msg.message.pieceSelectionChannel){
+
+              this.pieceSelectionChannel = msg.message.pieceSelectionChannel;
+
+              this.pubnub.subscribe({
+                channels: [this.pieceSelectionChannel],
+                withPresence: true
+              });
+
               this.setState({
                 isPlaying: true
-              });}
+              });
+            }
             
           // Close the modals if they are opened
           Swal.close();
@@ -148,10 +201,18 @@ class App extends Component {
 
   // Create a room channel
   onPressCreate = (e) => {
+    // random numbers for emojis
+    const curRandomNumbers = [];
+    for (let i = 0; i < 20; i++){
+      curRandomNumbers.push(Math.round(Math.random() * 89))
+    }
+    this.setState({
+      randomNumbers: curRandomNumbers
+    });
+
     // Create a random name for the channel
     this.roomId = shortid.generate().substring(0,5).toUpperCase();
     this.lobbyChannel = 'monopolylobby--' + this.roomId;
-    console.log(this.roomId);
 
     this.pubnub.subscribe({
       channels: [this.lobbyChannel],
@@ -208,7 +269,6 @@ class App extends Component {
       }
     })
   }
-
   // Join a room channel
   joinRoom = (value) => {
     this.roomId = value.toUpperCase();
@@ -218,7 +278,7 @@ class App extends Component {
     this.pubnub.hereNow({
       channels: [this.lobbyChannel], 
     }).then((response) => { 
-        if(response.totalOccupancy < 10){
+        if(response.totalOccupancy < 12){
           this.pubnub.subscribe({
             channels: [this.lobbyChannel],
             withPresence: true
@@ -232,10 +292,14 @@ class App extends Component {
           this.pubnub.publish({
             message: {
               notRoomCreator: true,
-              name: this.state.name
+              namePhase: this.state.name
             },
             channel: this.lobbyChannel
           });
+
+          this.setState({
+            isDisabled: true
+          })
         } 
         else{
           // Game in progress
@@ -243,7 +307,7 @@ class App extends Component {
             position: 'top',
             allowOutsideClick: false,
             title: 'Error',
-            text: 'Game in progress. Try another room.',
+            text: 'Lobby is full.',
             width: 275,
             padding: '0.7em',
             customClass: {
@@ -281,10 +345,18 @@ class App extends Component {
   displayUsers = () => {
     const users = [];
     let i = 0;
-    for (var uuid in this.state.users) {
-      if (this.state.users.hasOwnProperty(uuid)) {
-        users.push(<div key={i}>{this.state.users[uuid].name}</div>);
-        i++;
+    if (this.state.randomNumbers.length > 1) {
+      for (var uuid in this.state.users) {
+        if (this.state.users.hasOwnProperty(uuid)) {
+          users.push(
+            <div className="lobbyUser" key={i}>
+              <div className="shadow"></div>
+              <div className="s-piece"><img src={emojiFaces[this.state.randomNumbers[i]]} alt="error"/></div>
+              {this.state.users[uuid].name}
+            </div>
+          );
+          i++;
+        }
       }
     }
     return users;
@@ -293,8 +365,6 @@ class App extends Component {
     this.setState({
       name: e.target.value
     })
-    
-    console.log(this.pubnub.getUUID());
   }
 
   showStartButton = () => {
@@ -307,37 +377,37 @@ class App extends Component {
   }
 
   startGame = () => {
+
+    this.pieceSelectionChannel = 'piecePickerLobby--' + shortid.generate().toUpperCase();
+
     this.setState({
       isPlaying: true
     })
 
     this.pubnub.publish({
       message: {
-        gameStart: true
+        gameStart: true,
+        pieceSelectionChannel: this.pieceSelectionChannel
       },
       channel: this.lobbyChannel
     });
   }
 
-  onPublish = (messagePackage) => {
-    this.pubnub.publish({
-      message: messagePackage,
-      channel: this.lobbyChannel});
-    console.log('msg package sent:', messagePackage);
-  }
-
   render() {  
-    return (  
-        <div> 
-          <div className="title">
+    return (
+      <div>
+        <div className="contenido">
+          {
+            !this.state.isPlaying &&
+            <div className="title">
             <p>Monopoly</p>
           </div>
-
+          }
           {
             !this.state.isPlaying &&
             <div className="game">
               <div className="wtf">
-                <input type="text" placeholder="nickname" onChange={e=> this.setName(e)}/>
+                <input type="text" placeholder="nickname" onChange={e=> this.setName(e)} disabled={this.state.isDisabled}/>
                 <div className="button-container">
                   <button 
                     className="create-button "
@@ -347,24 +417,26 @@ class App extends Component {
                   </button>
                   <button 
                     className="join-button"
+                    disabled={this.state.isDisabled}
                     onClick={(e) => this.onPressJoin()}
                     > Join 
                   </button>
                   {this.showStartButton()}
                 </div>                        
-                <div>{this.displayUsers()}</div>
-                
+                {this.state.isDisabled && <div className="lobbyUsers">{this.displayUsers()}</div>}
               </div>
-            </div>
-          }
-          {
-            !this.state.isPlaying && 
-            <div className="game-container">
-              <PiecePicker isRoomCreator={this.state.isRoomCreator}lobbyChannel={this.lobbyChannel} pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}onPublish={this.onPublish}/>
-              <Board />
+              <Footer />
             </div>
           }
         </div>
+          {
+            this.state.isPlaying && 
+            <div className="game-container">
+              <PiecePicker isRoomCreator={this.state.isRoomCreator} lobbyChannel={this.pieceSelectionChannel} pubnub={this.pubnub} users={this.state.users} myUUID={this.state.uuid}/>
+            </div>
+          }
+          {/* {!this.state.isPlaying &&} */}
+      </div>
     );  
   } 
 }

@@ -1,19 +1,145 @@
-//Picker stage
-$self-color: #6a9b75;
-$other-color: #e46a44;
+@import "variables";
+.swal2-popup {
+  align-items: center;
+  .name {
+    color: #333;
+  }
+}
+
+.contenido {
+  .game {
+    display: flex;
+    flex-direction: column;
+  }
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .title {
+    grid-column: 1 / 9;
+    grid-row: 4;
+    font-size: 4rem;
+    font-weight: 420;
+    letter-spacing: 12px;
+    color: rgb(139, 139, 143);
+  }
+
+  .wtf {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  input {
+    height: 2.2rem;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 0.8rem;
+    &:focus {
+      outline-color: rgb(139, 139, 143);
+    }
+  }
+  button {
+    margin: 0.1rem 0.6rem;
+    height: 2.2rem;
+    border-radius: 8px;
+    width: 5.2rem;
+    border: none;
+    background-color: rgb(207, 195, 236);
+    transition: transform 0.1s;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgb(228, 218, 245);
+      transform: scale(1.03);
+    }
+  }
+
+  .lobbyUsers {
+    margin-top: 5rem;
+    background-color: rgb(233, 231, 235);
+    padding: 1.5rem 4.2rem;
+    border-radius: 32px;
+    border: solid 7px rgb(80, 74, 95);
+
+    .lobbyUser {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      margin: 0 2rem;
+      color: rgb(139, 139, 143);
+      font-size: 1.5rem;
+      word-wrap: break-word;
+      position: relative;
+
+      .s-piece {
+        z-index: 2;
+      }
+      .shadow {
+        width: 65px;
+        height: 30px;
+        border-bottom-left-radius: 50% 50%;
+        border-bottom-right-radius: 50% 50%;
+        border-top-left-radius: 50% 50%;
+        border-top-right-radius: 50% 50%;
+        // background: radial-gradient(rgba(253, 4, 4, 0.85) 28%, transparent 70%);
+        background: radial-gradient(
+          rgba(60, 54, 97, 0.85) 28%,
+          transparent 70%
+        );
+        position: absolute;
+        bottom: 1.5rem;
+        z-index: 1;
+        align-self: center;
+      }
+    }
+  }
+}
+.lobbyUsers {
+  display: flex;
+}
+
+.picking-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgb(139, 139, 143);
+
+  h1 {
+    margin-top: 4.5rem;
+    margin-bottom: 0.8rem;
+    font-size: 2.2rem;
+  }
+
+  button {
+    border-radius: 10px;
+    width: 12rem;
+    height: 2.4rem;
+    background-color: rgb(227, 223, 236);
+    border: rgba(51, 51, 51, 0.2) solid 2px;
+    transition: all 0.1s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.08);
+    }
+  }
+  font-size: 1.5rem;
+}
 
 .piece-picker {
   display: flex;
   flex-wrap: wrap;
   overflow-x: hidden;
   overflow-y: scroll;
-  background-color: rgb(212, 224, 224);
+  background-color: rgb(233, 231, 235);
   width: 600px;
   height: 300px;
   align-self: center;
   border-radius: 25px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  border: 2px solid #333;
+  border: solid 4px rgb(80, 74, 95);
+  margin-bottom: 1.7rem;
 
   .s-piece-container {
     display: flex;
@@ -30,8 +156,9 @@ $other-color: #e46a44;
     justify-content: center;
     padding: 2rem;
     border-radius: 20px;
+    cursor: pointer;
     &:hover {
-      border: 2px solid rgba(51, 51, 51, 0.3);
+      border: 3px solid rgba(62, 104, 61, 0.4);
     }
     &.self {
       border: 4.8px solid $self-color;
@@ -60,6 +187,541 @@ $other-color: #e46a44;
       padding: 0.7rem;
       height: 85px;
       width: 85px;
+    }
+  }
+}
+
+.game {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.player-1 {
+  border: 2px solid $player1-color;
+  &.land {
+    background-color: $player1-color;
+  }
+}
+.player-2 {
+  border: 2px solid $player2-color;
+  &.land {
+    background-color: $player2-color;
+  }
+}
+.player-3 {
+  border: 2px solid $player3-color;
+  &.land {
+    background-color: $player3-color;
+  }
+}
+.player-4 {
+  border: 2px solid $player4-color;
+  &.land {
+    background-color: $player4-color;
+  }
+}
+.player-5 {
+  border: 2px solid $player5-color;
+  &.land {
+    background-color: $player5-color;
+  }
+}
+.player-6 {
+  border: 2px solid $player6-color;
+  &.land {
+    background-color: $player6-color;
+  }
+}
+.player-7 {
+  border: 2px solid $player7-color;
+  &.land {
+    background-color: $player7-color;
+  }
+}
+.player-8 {
+  border: 2px solid $player8-color;
+  &.land {
+    background-color: $player8-color;
+  }
+}
+.player-9 {
+  border: 2px solid $player9-color;
+  &.land {
+    background-color: $player9-color;
+  }
+}
+.player-10 {
+  border: 2px solid $player10-color;
+  &.land {
+    background-color: $player10-color;
+  }
+}
+.player-11 {
+  border: 2px solid $player11-color;
+  &.land {
+    background-color: $player11-color;
+  }
+}
+.player-12 {
+  border: 2px solid $player12-color;
+  &.land {
+    background-color: $player12-color;
+  }
+}
+.player-13 {
+  border: 2px solid $player13-color;
+  &.land {
+    background-color: $player13-color;
+  }
+}
+.player-14 {
+  border: 2px solid $player14-color;
+  &.land {
+    background-color: $player14-color;
+  }
+}
+.player-15 {
+  border: 2px solid $player15-color;
+  &.land {
+    background-color: $player15-color;
+  }
+}
+.player-16 {
+  border: 2px solid $player16-color;
+  &.land {
+    background-color: $player16-color;
+  }
+}
+
+// Sell
+.title-sell,
+.title-sellProperty {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+}
+.userCards {
+  padding-top: 1rem;
+  padding-bottom: 1.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+
+  .userCard {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    border: #333 solid 2px;
+    border-radius: 10px;
+    min-width: 110px;
+    max-width: 150px;
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease-in;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.03);
+    }
+    &.bank {
+      background-color: rgb(215, 238, 212);
+    }
+
+    .icon {
+      position: relative;
+      max-width: 42px;
+      max-height: 42px;
+      border-radius: 50%;
+      padding: 1.2rem;
+      margin: 0.5rem;
+      overflow: hidden;
+      background-color: rgba(77, 75, 75, 0.75);
+    }
+    img {
+      top: 0;
+      left: 0;
+      position: absolute;
+      max-width: 42px;
+      max-height: 42px;
+    }
+
+    .name {
+      font-size: 1.2rem;
+      padding: 1.2rem;
+      word-wrap: break-word;
+      max-width: 150px;
+    }
+  }
+}
+
+.onlineUsers {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 2rem;
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: 13px;
+  margin-right: 2.8rem;
+  height: 0 auto;
+  max-height: 35vh;
+
+  .onlineUser {
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(
+      to top,
+      #333 0.5%,
+      rgba(179, 175, 175, 0.65) 5%
+    );
+    border: #333 2px solid;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    min-width: 245px;
+    max-width: 360px;
+
+    &.myTurn {
+      background: linear-gradient(
+        to top,
+        rgb(174, 206, 189) 0.5%,
+        rgba(179, 175, 175, 0.65) 5%
+      );
+      background-color: rgb(255, 255, 255);
+    }
+
+    .top {
+      display: flex;
+      .icon {
+        position: relative;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        padding: 1.2rem;
+        margin: 0.5rem;
+        overflow: hidden;
+        background-color: rgba(77, 75, 75, 0.75);
+
+        img {
+          top: 0;
+          left: 2px;
+          position: absolute;
+          width: 36px;
+        }
+      }
+
+      .name {
+        font-size: 1.2rem;
+        padding: 1.2rem;
+      }
+    }
+    .bottom {
+      .balance {
+        font-size: 1.6rem;
+        padding: 1rem;
+        margin-left: 0.3rem;
+        color: rgb(219, 154, 57);
+      }
+    }
+  }
+}
+
+.btn {
+  padding: 0.4rem 2.2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16), 0 1px 6px rgba(0, 0, 0, 0.23);
+  transition: transform 0.12s ease;
+  cursor: pointer;
+  &:disabled {
+    cursor: not-allowed;
+    background-color: rgb(150, 146, 146);
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.btn:hover {
+  transform: scale(1.03);
+}
+.btn-sell {
+  background-color: rgb(212, 73, 73);
+  color: rgb(241, 241, 241);
+  position: fixed;
+  bottom: 49px;
+  padding: 0.85rem 2.4rem;
+  width: 10rem;
+  left: 5.8rem;
+  z-index: 3;
+  border: rgb(32, 32, 32) solid 1px;
+}
+.placeholder {
+  width: 15.5rem;
+  height: 5rem;
+  padding: 0.9rem 2.4rem;
+  position: fixed;
+  left: 3rem;
+}
+.btn-dices {
+  font-size: 1.4rem;
+  background-color: rgb(182, 238, 175);
+  border-radius: 3px;
+  width: 15.5rem;
+  height: 5rem;
+  padding: 0.9rem 2.4rem;
+  position: fixed;
+  bottom: 120px;
+  left: 3rem;
+  z-index: 3;
+  border: rgb(29, 28, 28) solid 1px;
+
+  &:hover {
+    border: rgb(175, 245, 168) solid 1px;
+  }
+}
+.sellProperty-btn,
+.sellHouses-btn {
+  max-width: 130px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0.2rem;
+  border: none;
+  border-radius: 16px;
+  padding: 0.4rem 1rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.16), 0 1px 6px rgba(0, 0, 0, 0.23);
+  transition: transform 0.2s ease-in, font-weight 0.2s ease-in;
+
+  &:hover {
+    transform: scale(1.03);
+  }
+}
+.sellProperty-btn {
+  background-color: rgb(231, 150, 150);
+}
+.sellHouses-btn {
+  background-color: rgb(202, 118, 118);
+}
+.btn-done {
+  border-radius: 5px;
+}
+.sellWindow {
+  border-radius: 8px;
+  padding: 2.4rem;
+  background-color: rgb(236, 240, 241);
+  z-index: 4;
+  position: fixed;
+  align-self: center;
+  text-align: center;
+  min-width: 35vw;
+  max-width: 38vw;
+  top: 20vh;
+  left: 32.5vw;
+}
+.layer {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(38, 39, 37, 0.5);
+  position: fixed;
+  z-index: 3;
+}
+
+.sellProperty-window {
+  border-radius: 8px;
+  padding: 2.4rem;
+  background-color: rgb(236, 240, 241);
+  position: fixed;
+  align-self: center;
+  text-align: center;
+  min-width: 35vw;
+  max-width: 42vw;
+  max-height: 800px;
+  top: 10vh;
+  left: 32.5vw;
+  z-index: 6;
+  overflow-y: scroll;
+
+  .propertyCards {
+    padding-top: 1rem;
+    padding-bottom: 1.4rem;
+    display: flex;
+    flex-wrap: wrap;
+
+    .propertyCard-with-btns {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0.6rem;
+    }
+  }
+}
+.propertyCard {
+  background-color: rgb(245, 245, 245);
+  margin: 0.3rem;
+  padding: 5px 2px;
+  transition: transform 0.1s ease-in;
+
+  &:hover {
+    transform: scale(1.03);
+  }
+
+  .propertyCard-container {
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0.2rem;
+    width: 186px;
+    height: auto;
+    position: relative;
+    font-size: 0.8rem;
+    font-weight: 530;
+
+    .line {
+      width: 170px;
+      height: 2px;
+      background-color: #333;
+      border-radius: 1px;
+      align-self: center;
+    }
+    .line-bottom {
+      margin-bottom: 15px;
+    }
+
+    .special-name {
+      padding-top: 2px;
+      padding-bottom: 2px;
+      font-size: 0.8rem;
+      font-weight: 750;
+    }
+    .desc {
+      text-align: left;
+      text-indent: 13px;
+      margin: 2px 5px;
+      font-size: 0.7rem;
+    }
+    .mortgage-transport,
+    .mortgage-utility {
+      margin-top: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+    .name {
+      border: 1px solid #333;
+      margin: 5px 3px;
+      min-height: 37px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      padding-top: 9px;
+
+      &.orange {
+        color: #333;
+      }
+    }
+    .rent {
+      margin-top: 0.5rem;
+    }
+    .house {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.1rem;
+      margin-left: 0.9rem;
+      margin-right: 0.9rem;
+    }
+    .hotel {
+      display: flex;
+      justify-content: center;
+    }
+    .mortgage,
+    .houses-cost,
+    .hotel-cost {
+      font-size: 0.75rem;
+    }
+
+    img {
+      border-radius: 13px;
+      z-index: 7;
+      width: 130px;
+      max-height: 185px;
+      position: absolute;
+      margin-left: auto;
+      margin-right: auto;
+      left: 0;
+      right: 0;
+      bottom: 2.5rem;
+      opacity: 0.15;
+      overflow: hidden;
+    }
+    .transport,
+    .utility {
+      margin-top: 8px;
+      margin-bottom: 7px;
+      position: static;
+      opacity: 1;
+      width: 60px;
+      height: 60px;
+    }
+    .transport {
+      width: 72px;
+      height: 72px;
+    }
+    .info-footer {
+      font-size: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+  }
+}
+
+.sellProperty-container {
+  overflow-y: scroll;
+  .layer {
+    z-index: 5;
+  }
+}
+
+.card-list {
+  display: flex;
+  text-align: center;
+  position: fixed;
+  z-index: 2;
+  bottom: -19.5rem;
+  left: 19.8rem;
+  background-color: rgba(22, 22, 24, 0.85);
+  padding: 0.8rem 1.3rem;
+  border-radius: 10px;
+  padding-right: 160px;
+  padding-bottom: 10rem;
+  transition: bottom ease-in-out 0.2s;
+  cursor: pointer;
+  &:hover {
+    bottom: -7.2rem;
+  }
+  &.show {
+    bottom: -7.2rem;
+  }
+
+  .propertyCard {
+    border-radius: 2px;
+    cursor: initial;
+    z-index: 2;
+    margin: 0;
+    box-shadow: -1rem 0 1.2rem $background-color;
+    transition: 0.2s;
+
+    &:not(:first-child) {
+      margin-left: -130px;
+    }
+    &:hover {
+      transform: translateY(-1rem) scale(1.11);
+      margin-left: 1.1rem;
+      margin-right: 1.1rem;
+    }
+    &:hover ~ .propertyCard {
+      transform: translateX(130px);
     }
   }
 }
